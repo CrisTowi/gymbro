@@ -7,6 +7,7 @@ export interface Exercise {
   description: string;
   instructions: string[];
   tags: string[];
+  referenceUrl?: string;
 }
 
 export type MuscleGroup =
