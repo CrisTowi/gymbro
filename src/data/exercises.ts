@@ -16,7 +16,7 @@ export const exercises: Exercise[] = [
       'Press the bar back up to lockout',
     ],
     tags: ['push', 'compound', 'chest'],
-    referenceUrl: 'https://musclewiki.com/barbell/chest/pectoralis-major/barbell-bench-press',
+    referenceUrl: 'https://exrx.net/WeightExercises/PectoralSternal/BBBenchPress',
   },
   {
     id: 'incline-dumbbell-press',
@@ -32,7 +32,7 @@ export const exercises: Exercise[] = [
       'Keep feet flat on the floor',
     ],
     tags: ['push', 'compound', 'upper-chest'],
-    referenceUrl: 'https://musclewiki.com/dumbbells/chest/pectoralis-major/dumbbell-incline-press',
+    referenceUrl: 'https://exrx.net/WeightExercises/PectoralClavicular/DBInclineBenchPress',
   },
   {
     id: 'cable-flyes',
@@ -48,7 +48,7 @@ export const exercises: Exercise[] = [
       'Squeeze chest at the peak, return slowly',
     ],
     tags: ['push', 'isolation', 'chest'],
-    referenceUrl: 'https://musclewiki.com/cables/chest/pectoralis-major/cable-fly',
+    referenceUrl: 'https://exrx.net/WeightExercises/PectoralSternal/CBStandingFly',
   },
   {
     id: 'dumbbell-chest-press',
@@ -64,7 +64,7 @@ export const exercises: Exercise[] = [
       'Keep core engaged throughout',
     ],
     tags: ['push', 'compound', 'chest'],
-    referenceUrl: 'https://musclewiki.com/dumbbells/chest/pectoralis-major/dumbbell-bench-press',
+    referenceUrl: 'https://exrx.net/WeightExercises/PectoralSternal/DBBenchPress',
   },
 
   // SHOULDERS
@@ -82,7 +82,7 @@ export const exercises: Exercise[] = [
       'Lower bar back to shoulders with control',
     ],
     tags: ['push', 'compound', 'shoulders'],
-    referenceUrl: 'https://musclewiki.com/barbell/shoulders/lateral-deltoid/barbell-overhead-press',
+    referenceUrl: 'https://exrx.net/WeightExercises/DeltoidAnterior/BBMilitaryPress',
   },
   {
     id: 'lateral-raises',
@@ -98,7 +98,7 @@ export const exercises: Exercise[] = [
       'Lower slowly with control',
     ],
     tags: ['push', 'isolation', 'shoulders'],
-    referenceUrl: 'https://musclewiki.com/dumbbells/shoulders/lateral-deltoid/dumbbell-lateral-raise',
+    referenceUrl: 'https://exrx.net/WeightExercises/DeltoidLateral/DBLateralRaise',
   },
   {
     id: 'front-raises',
@@ -114,7 +114,7 @@ export const exercises: Exercise[] = [
       'Keep core engaged and avoid swinging',
     ],
     tags: ['push', 'isolation', 'shoulders'],
-    referenceUrl: 'https://musclewiki.com/dumbbells/shoulders/anterior-deltoid/dumbbell-front-raise',
+    referenceUrl: 'https://exrx.net/WeightExercises/DeltoidAnterior/DBAlternatingFrontRaise',
   },
   {
     id: 'arnold-press',
@@ -130,7 +130,7 @@ export const exercises: Exercise[] = [
       'Keep movement controlled throughout',
     ],
     tags: ['push', 'compound', 'shoulders'],
-    referenceUrl: 'https://musclewiki.com/dumbbells/shoulders/lateral-deltoid/dumbbell-arnold-press',
+    referenceUrl: 'https://exrx.net/WeightExercises/DeltoidAnterior/DBArnoldPress',
   },
 
   // TRICEPS
@@ -148,7 +148,7 @@ export const exercises: Exercise[] = [
       'Return slowly to starting position',
     ],
     tags: ['push', 'isolation', 'triceps'],
-    referenceUrl: 'https://musclewiki.com/cables/arms/triceps/cable-pushdown',
+    referenceUrl: 'https://exrx.net/WeightExercises/Triceps/CBPushdown',
   },
   {
     id: 'tricep-dips',
@@ -164,7 +164,7 @@ export const exercises: Exercise[] = [
       'Press back up to starting position',
     ],
     tags: ['push', 'compound', 'triceps'],
-    referenceUrl: 'https://musclewiki.com/bodyweight/arms/triceps/parallel-bar-triceps-dip',
+    referenceUrl: 'https://exrx.net/WeightExercises/Triceps/BWBenchDip',
   },
   {
     id: 'overhead-tricep-extension',
@@ -180,7 +180,7 @@ export const exercises: Exercise[] = [
       'Keep upper arms stationary throughout',
     ],
     tags: ['push', 'isolation', 'triceps'],
-    referenceUrl: 'https://musclewiki.com/dumbbells/arms/triceps/dumbbell-triceps-extension',
+    referenceUrl: 'https://exrx.net/WeightExercises/Triceps/DBOneArmTriExtBench',
   },
 
   // BACK
@@ -198,7 +198,7 @@ export const exercises: Exercise[] = [
       'Stand tall at top, then lower with control',
     ],
     tags: ['pull', 'compound', 'back'],
-    referenceUrl: 'https://musclewiki.com/barbell/back/barbell-deadlift',
+    referenceUrl: 'https://exrx.net/WeightExercises/ErectorSpinae/BBDeadlift',
   },
   {
     id: 'pull-ups',
@@ -214,7 +214,7 @@ export const exercises: Exercise[] = [
       'Avoid swinging or kipping',
     ],
     tags: ['pull', 'compound', 'back'],
-    referenceUrl: 'https://musclewiki.com/bodyweight/back/latissimus-dorsi/pull-up',
+    referenceUrl: 'https://exrx.net/WeightExercises/LatissimusDorsi/BWPullup',
   },
   {
     id: 'barbell-rows',
@@ -230,7 +230,7 @@ export const exercises: Exercise[] = [
       'Lower with control, maintaining back position',
     ],
     tags: ['pull', 'compound', 'back'],
-    referenceUrl: 'https://musclewiki.com/barbell/back/latissimus-dorsi/barbell-bent-over-row',
+    referenceUrl: 'https://exrx.net/WeightExercises/BackGeneral/BBBentOverRow',
   },
   {
     id: 'lat-pulldowns',
@@ -246,7 +246,7 @@ export const exercises: Exercise[] = [
       'Return to full extension with control',
     ],
     tags: ['pull', 'compound', 'back'],
-    referenceUrl: 'https://musclewiki.com/cables/back/latissimus-dorsi/cable-lat-pulldown',
+    referenceUrl: 'https://exrx.net/WeightExercises/LatissimusDorsi/CBFrontPulldown',
   },
   {
     id: 'face-pulls',
@@ -262,7 +262,7 @@ export const exercises: Exercise[] = [
       'Return slowly to starting position',
     ],
     tags: ['pull', 'isolation', 'rear-delts'],
-    referenceUrl: 'https://musclewiki.com/cables/shoulders/posterior-deltoid/cable-face-pull',
+    referenceUrl: 'https://exrx.net/WeightExercises/DeltoidPosterior/CBStandingRearDeltRowRope',
   },
   {
     id: 'seated-cable-rows',
@@ -278,7 +278,7 @@ export const exercises: Exercise[] = [
       'Return with control, allowing stretch',
     ],
     tags: ['pull', 'compound', 'back'],
-    referenceUrl: 'https://musclewiki.com/cables/back/latissimus-dorsi/cable-seated-row',
+    referenceUrl: 'https://exrx.net/WeightExercises/BackGeneral/CBSeatedRow',
   },
 
   // BICEPS
@@ -296,7 +296,7 @@ export const exercises: Exercise[] = [
       'Lower slowly to full extension',
     ],
     tags: ['pull', 'isolation', 'biceps'],
-    referenceUrl: 'https://musclewiki.com/dumbbells/arms/biceps/dumbbell-curl',
+    referenceUrl: 'https://exrx.net/WeightExercises/Biceps/DBCurl',
   },
   {
     id: 'hammer-curls',
@@ -312,7 +312,7 @@ export const exercises: Exercise[] = [
       'Lower with control',
     ],
     tags: ['pull', 'isolation', 'biceps'],
-    referenceUrl: 'https://musclewiki.com/dumbbells/arms/biceps/dumbbell-hammer-curl',
+    referenceUrl: 'https://exrx.net/WeightExercises/Brachioradialis/DBHammerCurl',
   },
   {
     id: 'barbell-curls',
@@ -328,7 +328,7 @@ export const exercises: Exercise[] = [
       'Lower with control to full extension',
     ],
     tags: ['pull', 'isolation', 'biceps'],
-    referenceUrl: 'https://musclewiki.com/barbell/arms/biceps/barbell-curl',
+    referenceUrl: 'https://exrx.net/WeightExercises/Biceps/BBCurl',
   },
 
   // QUADRICEPS
@@ -346,7 +346,7 @@ export const exercises: Exercise[] = [
       'Drive through feet to stand back up',
     ],
     tags: ['legs', 'compound', 'quadriceps'],
-    referenceUrl: 'https://musclewiki.com/barbell/legs/quadriceps/barbell-squat',
+    referenceUrl: 'https://exrx.net/WeightExercises/Quadriceps/BBSquat',
   },
   {
     id: 'leg-press',
@@ -362,7 +362,7 @@ export const exercises: Exercise[] = [
       'Press back up without locking knees',
     ],
     tags: ['legs', 'compound', 'quadriceps'],
-    referenceUrl: 'https://musclewiki.com/machine/legs/quadriceps/machine-leg-press',
+    referenceUrl: 'https://exrx.net/WeightExercises/Quadriceps/SL45LegPress',
   },
   {
     id: 'bulgarian-split-squats',
@@ -378,7 +378,7 @@ export const exercises: Exercise[] = [
       'Drive through front heel to stand',
     ],
     tags: ['legs', 'compound', 'quadriceps'],
-    referenceUrl: 'https://musclewiki.com/dumbbells/legs/quadriceps/dumbbell-bulgarian-split-squat',
+    referenceUrl: 'https://exrx.net/WeightExercises/Quadriceps/BBSingleLegSplitSquat',
   },
   {
     id: 'leg-extensions',
@@ -394,7 +394,7 @@ export const exercises: Exercise[] = [
       'Lower with control, avoid letting weight stack slam',
     ],
     tags: ['legs', 'isolation', 'quadriceps'],
-    referenceUrl: 'https://musclewiki.com/machine/legs/quadriceps/machine-leg-extension',
+    referenceUrl: 'https://exrx.net/WeightExercises/Quadriceps/LVLegExtension',
   },
 
   // HAMSTRINGS
@@ -412,7 +412,7 @@ export const exercises: Exercise[] = [
       'Drive hips forward to return to standing',
     ],
     tags: ['legs', 'compound', 'hamstrings'],
-    referenceUrl: 'https://musclewiki.com/barbell/legs/hamstrings/barbell-romanian-deadlift',
+    referenceUrl: 'https://exrx.net/WeightExercises/OlympicLifts/RomanianDeadlift',
   },
   {
     id: 'leg-curls',
@@ -428,7 +428,7 @@ export const exercises: Exercise[] = [
       'Lower with control to starting position',
     ],
     tags: ['legs', 'isolation', 'hamstrings'],
-    referenceUrl: 'https://musclewiki.com/machine/legs/hamstrings/machine-leg-curl',
+    referenceUrl: 'https://exrx.net/WeightExercises/Hamstrings/LVLyingLegCurl',
   },
 
   // CALVES
@@ -446,7 +446,7 @@ export const exercises: Exercise[] = [
       'Squeeze at top, lower with control',
     ],
     tags: ['legs', 'isolation', 'calves'],
-    referenceUrl: 'https://musclewiki.com/machine/legs/calves/machine-standing-calf-raise',
+    referenceUrl: 'https://exrx.net/WeightExercises/Gastrocnemius/LVStandingCalfRaise',
   },
 
   // GLUTES
@@ -464,7 +464,7 @@ export const exercises: Exercise[] = [
       'Squeeze glutes at top, lower with control',
     ],
     tags: ['legs', 'compound', 'glutes'],
-    referenceUrl: 'https://musclewiki.com/barbell/legs/glutes/barbell-hip-thrust',
+    referenceUrl: 'https://exrx.net/WeightExercises/GluteusMaximus/BBHipThrust',
   },
 
   // CORE
@@ -482,7 +482,7 @@ export const exercises: Exercise[] = [
       'Breathe steadily throughout',
     ],
     tags: ['core', 'isometric', 'bodyweight'],
-    referenceUrl: 'https://musclewiki.com/bodyweight/core/rectus-abdominis/front-plank',
+    referenceUrl: 'https://exrx.net/WeightExercises/RectusAbdominis/BWFrontPlank',
   },
   {
     id: 'cable-crunches',
@@ -498,7 +498,7 @@ export const exercises: Exercise[] = [
       'Return to starting position with control',
     ],
     tags: ['core', 'isolation', 'abs'],
-    referenceUrl: 'https://musclewiki.com/cables/core/rectus-abdominis/cable-crunch',
+    referenceUrl: 'https://exrx.net/WeightExercises/RectusAbdominis/CBKneelingCrunch',
   },
 ];
 
