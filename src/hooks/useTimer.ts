@@ -19,8 +19,14 @@ export function useTimer(onComplete?: () => void): UseTimerReturn {
   const [remainingSeconds, setRemainingSeconds] = useState(0);
   const [totalSeconds, setTotalSeconds] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
+
+  // Absolute timestamp when the timer should finish
+  const endTimeRef = useRef<number>(0);
+  // How many seconds were remaining when paused (for resume)
+  const pausedRemainingRef = useRef<number>(0);
+
   const onCompleteRef = useRef(onComplete);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   onCompleteRef.current = onComplete;
 
@@ -31,27 +37,47 @@ export function useTimer(onComplete?: () => void): UseTimerReturn {
     }
   }, []);
 
+  const tick = useCallback(() => {
+    const now = Date.now();
+    const remaining = Math.round((endTimeRef.current - now) / 1000);
+
+    if (remaining <= 0) {
+      clearTimer();
+      setRemainingSeconds(0);
+      setIsRunning(false);
+      onCompleteRef.current?.();
+    } else {
+      setRemainingSeconds(remaining);
+    }
+  }, [clearTimer]);
+
   useEffect(() => {
     if (isRunning && remainingSeconds > 0) {
-      intervalRef.current = setInterval(() => {
-        setRemainingSeconds((prev) => {
-          if (prev <= 1) {
-            clearTimer();
-            setIsRunning(false);
-            onCompleteRef.current?.();
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
+      // Tick immediately to catch up after tab switch
+      tick();
+      intervalRef.current = setInterval(tick, 1000);
     }
 
     return clearTimer;
-  }, [isRunning, clearTimer]);
+  }, [isRunning, clearTimer, tick]);
+
+  // Recalculate when the tab becomes visible again
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible' && isRunning) {
+        tick();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => document.removeEventListener('visibilitychange', handleVisibility);
+  }, [isRunning, tick]);
 
   const start = useCallback(
     (seconds: number) => {
       clearTimer();
+      endTimeRef.current = Date.now() + seconds * 1000;
+      pausedRemainingRef.current = 0;
       setTotalSeconds(seconds);
       setRemainingSeconds(seconds);
       setIsRunning(true);
@@ -60,30 +86,51 @@ export function useTimer(onComplete?: () => void): UseTimerReturn {
   );
 
   const pause = useCallback(() => {
+    const now = Date.now();
+    const remaining = Math.max(0, Math.round((endTimeRef.current - now) / 1000));
+    pausedRemainingRef.current = remaining;
     clearTimer();
     setIsRunning(false);
+    setRemainingSeconds(remaining);
   }, [clearTimer]);
 
   const resume = useCallback(() => {
-    if (remainingSeconds > 0) {
+    const remaining = pausedRemainingRef.current || remainingSeconds;
+    if (remaining > 0) {
+      endTimeRef.current = Date.now() + remaining * 1000;
+      pausedRemainingRef.current = 0;
       setIsRunning(true);
     }
   }, [remainingSeconds]);
 
   const reset = useCallback(() => {
     clearTimer();
+    endTimeRef.current = 0;
+    pausedRemainingRef.current = 0;
     setIsRunning(false);
     setRemainingSeconds(0);
     setTotalSeconds(0);
   }, [clearTimer]);
 
   const addTime = useCallback((seconds: number) => {
-    setRemainingSeconds((prev) => prev + seconds);
+    endTimeRef.current += seconds * 1000;
     setTotalSeconds((prev) => prev + seconds);
+    setRemainingSeconds(
+      Math.round((endTimeRef.current - Date.now()) / 1000)
+    );
   }, []);
 
   const reduceTime = useCallback((seconds: number) => {
-    setRemainingSeconds((prev) => Math.max(0, prev - seconds));
+    const now = Date.now();
+    const newEnd = endTimeRef.current - seconds * 1000;
+    if (newEnd <= now) {
+      // Reducing would finish the timer
+      endTimeRef.current = now;
+      setRemainingSeconds(0);
+    } else {
+      endTimeRef.current = newEnd;
+      setRemainingSeconds(Math.round((newEnd - now) / 1000));
+    }
   }, []);
 
   const progress =
