@@ -1,0 +1,213 @@
+/* Floating action button */
+.fab {
+  position: fixed;
+  bottom: 90px;
+  right: 16px;
+  z-index: 900;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(108, 92, 231, 0.4);
+  transition: all var(--transition-fast);
+}
+
+.fab:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 20px rgba(108, 92, 231, 0.5);
+}
+
+.fabOpen {
+  background: var(--color-bg-elevated);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+/* Backdrop */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 850;
+  background: rgba(0, 0, 0, 0.4);
+  animation: fadeIn var(--transition-fast) forwards;
+}
+
+/* Menu */
+.menu {
+  position: fixed;
+  bottom: 148px;
+  right: 16px;
+  z-index: 900;
+  width: 240px;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  transform: scale(0.9) translateY(10px);
+  opacity: 0;
+  pointer-events: none;
+  transform-origin: bottom right;
+  transition: all var(--transition-fast);
+}
+
+.menuOpen {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.menuHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.menuTitle {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+}
+
+.menuBadge {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: var(--color-accent);
+  background: var(--color-accent-glow);
+  padding: 2px 6px;
+  border-radius: var(--radius-full);
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  text-align: left;
+  transition: background var(--transition-fast);
+}
+
+.menuItem:hover {
+  background: var(--color-bg-card-hover);
+  color: var(--color-text-primary);
+}
+
+.menuItem.destructive {
+  color: var(--color-danger);
+}
+
+.menuItem.destructive:hover {
+  background: var(--color-danger-bg);
+}
+
+.menuIcon {
+  font-size: var(--text-base);
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* Confirm row */
+.confirmRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+}
+
+.confirmText {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  flex: 1;
+}
+
+.confirmYes {
+  padding: 4px 12px;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  background: var(--color-danger);
+  color: white;
+  border-radius: var(--radius-sm);
+  transition: filter var(--transition-fast);
+}
+
+.confirmYes:hover {
+  filter: brightness(1.15);
+}
+
+.confirmNo {
+  padding: 4px 12px;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  background: var(--color-bg-elevated);
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  transition: background var(--transition-fast);
+}
+
+.confirmNo:hover {
+  background: var(--color-bg-card-hover);
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 950;
+  padding: var(--space-sm) var(--space-lg);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  box-shadow: var(--shadow-lg);
+  animation: toastIn 0.3s ease forwards;
+}
+
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* Adjust for pages without nav (workout, summary) */
+@media (max-width: 767px) {
+  .fab {
+    bottom: 90px;
+  }
+
+  .menu {
+    bottom: 148px;
+  }
+}
+
+@media (min-width: 768px) {
+  .fab {
+    bottom: 24px;
+  }
+
+  .menu {
+    bottom: 82px;
+  }
+}

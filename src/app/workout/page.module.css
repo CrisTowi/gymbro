@@ -1,0 +1,219 @@
+.page {
+  min-height: 100dvh;
+  background: var(--color-bg);
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  color: var(--color-text-muted);
+  font-size: var(--text-lg);
+}
+
+.error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  gap: var(--space-lg);
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-border);
+  padding: var(--space-md);
+}
+
+.headerTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-sm);
+}
+
+.backButton {
+  padding: var(--space-sm);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-secondary);
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.backButton:hover {
+  background: var(--color-bg-card);
+  color: var(--color-text-primary);
+}
+
+.headerCenter {
+  text-align: center;
+}
+
+.routineName {
+  font-size: var(--text-lg);
+  font-weight: 700;
+}
+
+.timerBadge {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  background: var(--color-bg-card);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+}
+
+.progressBar {
+  height: 4px;
+  background: var(--color-border);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-bottom: var(--space-sm);
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width 0.5s ease;
+  min-width: 0;
+}
+
+.statsRow {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-lg);
+}
+
+.statItem {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+}
+
+.exercises {
+  max-width: var(--max-width-narrow);
+  margin: 0 auto;
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding-bottom: 100px;
+}
+
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: var(--space-md);
+  background: linear-gradient(0deg, var(--color-bg) 60%, transparent);
+  z-index: 40;
+}
+
+.finishButton {
+  display: block;
+  width: 100%;
+  max-width: var(--max-width-narrow);
+  margin: 0 auto;
+  padding: var(--space-md) var(--space-xl);
+  border-radius: var(--radius-lg);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: white;
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-lg);
+}
+
+.finishButton:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+
+/* Confirm modal */
+.confirmOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(10, 10, 15, 0.9);
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-md);
+  animation: fadeIn 0.2s ease forwards;
+  backdrop-filter: blur(4px);
+}
+
+.confirmModal {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-xl);
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  animation: scaleIn 0.2s ease forwards;
+}
+
+.confirmTitle {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  margin-bottom: var(--space-sm);
+}
+
+.confirmText {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-xl);
+}
+
+.confirmButtons {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.confirmCancel {
+  flex: 1;
+  padding: var(--space-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  transition: all var(--transition-fast);
+}
+
+.confirmCancel:hover {
+  background: var(--color-bg-card-hover);
+}
+
+.confirmEnd {
+  flex: 1;
+  padding: var(--space-md);
+  background: var(--color-accent);
+  border-radius: var(--radius-md);
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: white;
+  transition: all var(--transition-fast);
+}
+
+.confirmEnd:hover {
+  background: var(--color-accent-hover);
+}
+
+@media (min-width: 768px) {
+  .header {
+    padding: var(--space-md) var(--space-xl);
+  }
+}

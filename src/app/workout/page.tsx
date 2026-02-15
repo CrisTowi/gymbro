@@ -1,0 +1,445 @@
+'use client';
+
+import { useEffect, useState, useCallback, Suspense } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { v4 as uuidv4 } from 'uuid';
+import { SessionLog, ExerciseLog, SetLog, RoutineType, RoutineExercise } from '@/types';
+import { getRoutineById } from '@/data/routines';
+import { getExerciseById } from '@/data/exercises';
+import { saveActiveSession, getActiveSession, saveSession } from '@/utils/storage';
+import { useTimer } from '@/hooks/useTimer';
+import { useNotification } from '@/hooks/useNotification';
+import { formatDuration } from '@/utils/time';
+import WorkoutExercise from '@/components/WorkoutExercise/WorkoutExercise';
+import RestTimer from '@/components/RestTimer/RestTimer';
+import styles from './page.module.css';
+
+interface ExerciseOverride {
+  exerciseId: string;
+  sets: number;
+  reps: number;
+  restTimeSeconds: number;
+}
+
+function readOverrides(): ExerciseOverride[] | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = sessionStorage.getItem('gymtrack_workout_overrides');
+    if (!raw) return null;
+    sessionStorage.removeItem('gymtrack_workout_overrides');
+    return JSON.parse(raw) as ExerciseOverride[];
+  } catch {
+    return null;
+  }
+}
+
+function WorkoutContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const routineId = searchParams.get('routine') as RoutineType | null;
+  const routine = routineId ? getRoutineById(routineId) : null;
+
+  const [session, setSession] = useState<SessionLog | null>(null);
+  const [effectiveExercises, setEffectiveExercises] = useState<RoutineExercise[]>([]);
+  const [activeExerciseIndex, setActiveExerciseIndex] = useState(0);
+  const [showTimer, setShowTimer] = useState(false);
+  const [currentRestTime, setCurrentRestTime] = useState(120);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [showConfirmEnd, setShowConfirmEnd] = useState(false);
+
+  const { permission, requestPermission, sendNotification } = useNotification();
+
+  const handleTimerComplete = useCallback(() => {
+    setShowTimer(false);
+    sendNotification('Rest Complete!', {
+      body: 'Time to start your next set. Let\'s go!',
+      tag: 'rest-timer',
+      requireInteraction: true,
+    });
+  }, [sendNotification]);
+
+  const timer = useTimer(handleTimerComplete);
+
+  useEffect(() => {
+    if (permission === 'default') {
+      requestPermission();
+    }
+  }, [permission, requestPermission]);
+
+  useEffect(() => {
+    if (!routine || !routineId) return;
+
+    const existingSession = getActiveSession();
+    if (existingSession && existingSession.routineId === routineId) {
+      setSession(existingSession);
+      setEffectiveExercises(routine.exercises);
+      return;
+    }
+
+    const overrides = readOverrides();
+
+    const exerciseConfig: RoutineExercise[] = overrides
+      ? overrides.map((o, i) => ({
+          exerciseId: o.exerciseId,
+          sets: o.sets,
+          reps: o.reps,
+          restTimeSeconds: o.restTimeSeconds,
+          notes: routine.exercises[i]?.notes,
+        }))
+      : routine.exercises;
+
+    setEffectiveExercises(exerciseConfig);
+
+    const newSession: SessionLog = {
+      id: uuidv4(),
+      date: new Date().toISOString(),
+      routineId: routineId,
+      startTime: new Date().toISOString(),
+      exercises: exerciseConfig.map((ex) => ({
+        exerciseId: ex.exerciseId,
+        sets: Array.from({ length: ex.sets }, (_, i) => ({
+          setNumber: i + 1,
+          reps: 0,
+          weightLbs: 0,
+          completed: false,
+        })),
+      })),
+      completed: false,
+      totalWeightLbs: 0,
+    };
+
+    setSession(newSession);
+    saveActiveSession(newSession);
+  }, [routine, routineId]);
+
+  useEffect(() => {
+    if (!session) return;
+    const interval = setInterval(() => {
+      const start = new Date(session.startTime).getTime();
+      const now = Date.now();
+      setElapsedSeconds(Math.floor((now - start) / 1000));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [session]);
+
+  const updateSession = useCallback(
+    (updater: (prev: SessionLog) => SessionLog) => {
+      setSession((prev) => {
+        if (!prev) return prev;
+        const updated = updater(prev);
+        const totalWeight = updated.exercises.reduce(
+          (total, ex) =>
+            total +
+            ex.sets
+              .filter((s) => s.completed)
+              .reduce((sum, s) => sum + s.weightLbs * s.reps, 0),
+          0
+        );
+        const withTotal = { ...updated, totalWeightLbs: totalWeight };
+        saveActiveSession(withTotal);
+        return withTotal;
+      });
+    },
+    []
+  );
+
+  const handleSetComplete = useCallback(
+    (exerciseIndex: number, setIndex: number, weight: number, reps: number) => {
+      updateSession((prev) => {
+        const exercises = [...prev.exercises];
+        const exercise = { ...exercises[exerciseIndex] };
+        const sets = [...exercise.sets];
+        sets[setIndex] = {
+          ...sets[setIndex],
+          weightLbs: weight,
+          reps,
+          completed: true,
+          timestamp: new Date().toISOString(),
+        };
+        exercise.sets = sets;
+        exercises[exerciseIndex] = exercise;
+        return { ...prev, exercises };
+      });
+
+      const exerciseConfig = effectiveExercises[exerciseIndex];
+      const restTime = exerciseConfig?.restTimeSeconds || 120;
+      setCurrentRestTime(restTime);
+      timer.start(restTime);
+      setShowTimer(true);
+    },
+    [updateSession, effectiveExercises, timer]
+  );
+
+  const handleUpdateSet = useCallback(
+    (exerciseIndex: number, setIndex: number, updates: Partial<SetLog>) => {
+      updateSession((prev) => {
+        const exercises = [...prev.exercises];
+        const exercise = { ...exercises[exerciseIndex] };
+        const sets = [...exercise.sets];
+        sets[setIndex] = { ...sets[setIndex], ...updates };
+        exercise.sets = sets;
+        exercises[exerciseIndex] = exercise;
+        return { ...prev, exercises };
+      });
+    },
+    [updateSession]
+  );
+
+  const handleAddSet = useCallback(
+    (exerciseIndex: number) => {
+      updateSession((prev) => {
+        const exercises = [...prev.exercises];
+        const exercise = { ...exercises[exerciseIndex] };
+        exercise.sets = [
+          ...exercise.sets,
+          {
+            setNumber: exercise.sets.length + 1,
+            reps: 0,
+            weightLbs: 0,
+            completed: false,
+          },
+        ];
+        exercises[exerciseIndex] = exercise;
+        return { ...prev, exercises };
+      });
+    },
+    [updateSession]
+  );
+
+  const handleRemoveSet = useCallback(
+    (exerciseIndex: number, setIndex: number) => {
+      updateSession((prev) => {
+        const exercises = [...prev.exercises];
+        const exercise = { ...exercises[exerciseIndex] };
+        exercise.sets = exercise.sets.filter((_, i) => i !== setIndex);
+        exercise.sets = exercise.sets.map((s, i) => ({
+          ...s,
+          setNumber: i + 1,
+        }));
+        exercises[exerciseIndex] = exercise;
+        return { ...prev, exercises };
+      });
+    },
+    [updateSession]
+  );
+
+  const handleMoveExercise = useCallback(
+    (fromIndex: number, toIndex: number) => {
+      updateSession((prev) => {
+        const exercises = [...prev.exercises];
+        const [moved] = exercises.splice(fromIndex, 1);
+        exercises.splice(toIndex, 0, moved);
+        return { ...prev, exercises };
+      });
+
+      setEffectiveExercises((prev) => {
+        const next = [...prev];
+        const [moved] = next.splice(fromIndex, 1);
+        next.splice(toIndex, 0, moved);
+        return next;
+      });
+
+      setActiveExerciseIndex((prev) => {
+        if (prev === fromIndex) return toIndex;
+        if (prev === toIndex) return fromIndex;
+        return prev;
+      });
+    },
+    [updateSession]
+  );
+
+  const handleFinishWorkout = useCallback(() => {
+    if (!session) return;
+
+    const endTime = new Date().toISOString();
+    const duration = Math.floor(
+      (new Date(endTime).getTime() - new Date(session.startTime).getTime()) /
+        1000
+    );
+
+    const completedSession: SessionLog = {
+      ...session,
+      endTime,
+      duration,
+      completed: true,
+    };
+
+    saveSession(completedSession);
+    saveActiveSession(null);
+    router.push(`/summary?sessionId=${session.id}`);
+  }, [session, router]);
+
+  const handleSkipTimer = useCallback(() => {
+    timer.reset();
+    setShowTimer(false);
+  }, [timer]);
+
+  if (!routine || !session) {
+    return (
+      <div className={styles.page}>
+        <div className={styles.error}>
+          <h2>No routine selected</h2>
+          <button onClick={() => router.push('/')} className={styles.backButton}>
+            Go Home
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const totalCompletedSets = session.exercises.reduce(
+    (sum, ex) => sum + ex.sets.filter((s) => s.completed).length,
+    0
+  );
+  const totalSets = session.exercises.reduce(
+    (sum, ex) => sum + ex.sets.length,
+    0
+  );
+
+  return (
+    <div className={styles.page}>
+      <header className={styles.header}>
+        <div className={styles.headerTop}>
+          <button
+            className={styles.backButton}
+            onClick={() => setShowConfirmEnd(true)}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12" />
+              <polyline points="12 19 5 12 12 5" />
+            </svg>
+          </button>
+
+          <div className={styles.headerCenter}>
+            <h1 className={styles.routineName} style={{ color: routine.color }}>
+              {routine.icon} {routine.name}
+            </h1>
+          </div>
+
+          <div className={styles.timerBadge}>
+            {formatDuration(elapsedSeconds)}
+          </div>
+        </div>
+
+        <div className={styles.progressBar}>
+          <div
+            className={styles.progressFill}
+            style={{
+              width: `${totalSets > 0 ? (totalCompletedSets / totalSets) * 100 : 0}%`,
+              backgroundColor: routine.color,
+            }}
+          />
+        </div>
+
+        <div className={styles.statsRow}>
+          <span className={styles.statItem}>
+            {totalCompletedSets}/{totalSets} sets
+          </span>
+          <span className={styles.statItem}>
+            {session.totalWeightLbs.toLocaleString()} lbs total
+          </span>
+        </div>
+      </header>
+
+      <div className={styles.exercises}>
+        {session.exercises.map((exerciseLog, index) => {
+          const exercise = getExerciseById(exerciseLog.exerciseId);
+          const exerciseConfig = effectiveExercises[index];
+          if (!exercise || !exerciseConfig) return null;
+
+          return (
+            <WorkoutExercise
+              key={`${exerciseLog.exerciseId}-${index}`}
+              exercise={exercise}
+              sets={exerciseLog.sets}
+              targetSets={exerciseConfig.sets}
+              targetReps={exerciseConfig.reps}
+              notes={exerciseConfig.notes}
+              isActive={activeExerciseIndex === index}
+              canMoveUp={index > 0}
+              canMoveDown={index < session.exercises.length - 1}
+              onSetComplete={(setIdx, weight, reps) =>
+                handleSetComplete(index, setIdx, weight, reps)
+              }
+              onUpdateSet={(setIdx, updates) =>
+                handleUpdateSet(index, setIdx, updates)
+              }
+              onAddSet={() => handleAddSet(index)}
+              onRemoveSet={(setIdx) => handleRemoveSet(index, setIdx)}
+              onToggleActive={() =>
+                setActiveExerciseIndex(activeExerciseIndex === index ? -1 : index)
+              }
+              onMoveUp={() => handleMoveExercise(index, index - 1)}
+              onMoveDown={() => handleMoveExercise(index, index + 1)}
+            />
+          );
+        })}
+      </div>
+
+      <div className={styles.footer}>
+        <button
+          className={styles.finishButton}
+          onClick={() => setShowConfirmEnd(true)}
+          style={{ backgroundColor: routine.color }}
+        >
+          Finish Workout
+        </button>
+      </div>
+
+      {showTimer && (
+        <RestTimer
+          remainingSeconds={timer.remainingSeconds}
+          totalSeconds={timer.totalSeconds}
+          isRunning={timer.isRunning}
+          progress={timer.progress}
+          onAddTime={() => timer.addTime(15)}
+          onReduceTime={() => timer.reduceTime(15)}
+          onSkip={handleSkipTimer}
+          onPause={timer.pause}
+          onResume={timer.resume}
+        />
+      )}
+
+      {showConfirmEnd && (
+        <div className={styles.confirmOverlay}>
+          <div className={styles.confirmModal}>
+            <h3 className={styles.confirmTitle}>End Workout?</h3>
+            <p className={styles.confirmText}>
+              {totalCompletedSets === 0
+                ? 'You haven\'t completed any sets yet. Are you sure?'
+                : `You've completed ${totalCompletedSets} of ${totalSets} sets. Finish now?`}
+            </p>
+            <div className={styles.confirmButtons}>
+              <button
+                className={styles.confirmCancel}
+                onClick={() => setShowConfirmEnd(false)}
+              >
+                Keep Going
+              </button>
+              <button
+                className={styles.confirmEnd}
+                onClick={handleFinishWorkout}
+              >
+                Finish
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default function WorkoutPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className={styles.page}>
+          <div className={styles.loading}>Loading workout...</div>
+        </div>
+      }
+    >
+      <WorkoutContent />
+    </Suspense>
+  );
+}

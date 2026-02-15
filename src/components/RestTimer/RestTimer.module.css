@@ -1,0 +1,154 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(10, 10, 15, 0.95);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease forwards;
+  backdrop-filter: blur(10px);
+}
+
+.overlay.almostDone {
+  animation: pulseBackground 1s ease-in-out infinite;
+}
+
+@keyframes pulseBackground {
+  0%, 100% { background: rgba(10, 10, 15, 0.95); }
+  50% { background: rgba(108, 92, 231, 0.15); }
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xl);
+  padding: var(--space-xl);
+  max-width: 400px;
+  width: 100%;
+}
+
+.title {
+  font-size: var(--text-xl);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.timerCircle {
+  position: relative;
+  width: 200px;
+  height: 200px;
+}
+
+.svg {
+  width: 100%;
+  height: 100%;
+}
+
+.trackCircle {
+  stroke: var(--color-border);
+}
+
+.progressCircle {
+  stroke: var(--color-accent);
+  transition: stroke-dashoffset 1s linear;
+}
+
+.timeDisplay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.time {
+  font-size: var(--text-4xl);
+  font-weight: 800;
+  font-family: var(--font-mono);
+  color: var(--color-text-primary);
+}
+
+.timePulse {
+  animation: pulse 1s ease-in-out infinite;
+  color: var(--color-accent);
+}
+
+.totalTime {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.adjustButtons {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+}
+
+.adjustButton {
+  padding: var(--space-sm) var(--space-lg);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  font-size: var(--text-base);
+  font-weight: 600;
+  font-family: var(--font-mono);
+  color: var(--color-text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.adjustButton:hover:not(:disabled) {
+  background: var(--color-bg-card-hover);
+  border-color: var(--color-border-light);
+}
+
+.adjustButton:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.pauseButton {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--color-bg-elevated);
+  border: 2px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-primary);
+  transition: all var(--transition-fast);
+}
+
+.pauseButton:hover {
+  background: var(--color-bg-card-hover);
+  border-color: var(--color-accent);
+}
+
+.skipButton {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-lg);
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  transition: all var(--transition-fast);
+}
+
+.skipButton:hover {
+  background: var(--color-bg-card);
+  color: var(--color-text-secondary);
+  border-color: var(--color-border-light);
+}
