@@ -1,0 +1,3 @@
+## Git Rules
+- Do NOT commit or push unless the user explicitly asks you to.
+- Always wait for explicit confirmation before running git add, git commit, or git push.
