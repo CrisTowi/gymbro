@@ -1,14 +1,16 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { Exercise, SetLog } from '@/types';
 import { formatWeight, lbsToKg } from '@/utils/weight';
-import {
-  getLastSessionForExercise,
-  getRecommendedSetsForExercise,
-  RecommendedSet,
-} from '@/utils/storage';
+import { RecommendedSet } from '@/lib/api';
 import styles from './WorkoutExercise.module.css';
+
+interface LastPerformance {
+  weightLbs: number;
+  reps: number;
+  date: string;
+}
 
 interface WorkoutExerciseProps {
   exercise: Exercise;
@@ -19,6 +21,8 @@ interface WorkoutExerciseProps {
   isActive: boolean;
   canMoveUp: boolean;
   canMoveDown: boolean;
+  lastPerformance: LastPerformance | null;
+  recommendedSets: RecommendedSet[];
   onSetComplete: (setIndex: number, weight: number, reps: number) => void;
   onUpdateSet: (setIndex: number, updates: Partial<SetLog>) => void;
   onAddSet: () => void;
@@ -37,6 +41,8 @@ export default function WorkoutExercise({
   isActive,
   canMoveUp,
   canMoveDown,
+  lastPerformance,
+  recommendedSets,
   onSetComplete,
   onUpdateSet,
   onAddSet,
@@ -45,15 +51,6 @@ export default function WorkoutExercise({
   onMoveUp,
   onMoveDown,
 }: WorkoutExerciseProps) {
-  const lastPerformance = useMemo(
-    () => getLastSessionForExercise(exercise.id),
-    [exercise.id]
-  );
-  const recommendedSets = useMemo(
-    () => getRecommendedSetsForExercise(exercise.id, sets.length),
-    [exercise.id, sets.length]
-  );
-
   const completedSets = sets.filter((s) => s.completed).length;
   const allComplete = completedSets === sets.length;
   const hasRecommendations = recommendedSets.length > 0;

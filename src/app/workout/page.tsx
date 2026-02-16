@@ -6,10 +6,19 @@ import { v4 as uuidv4 } from 'uuid';
 import { SessionLog, ExerciseLog, SetLog, RoutineType, RoutineExercise } from '@/types';
 import { getRoutineById } from '@/data/routines';
 import { getExerciseById } from '@/data/exercises';
-import { saveActiveSession, getActiveSession, saveSession } from '@/utils/storage';
 import { useTimer } from '@/hooks/useTimer';
 import { useNotification } from '@/hooks/useNotification';
 import { formatDuration } from '@/utils/time';
+import {
+  fetchActiveSession,
+  createSession,
+  updateSession as apiUpdateSession,
+  clearActiveSession,
+  fetchLastExercisePerformance,
+  fetchRecommendedSets,
+  LastExercisePerformance,
+  RecommendedSet,
+} from '@/lib/api';
 import WorkoutExercise from '@/components/WorkoutExercise/WorkoutExercise';
 import RestTimer from '@/components/RestTimer/RestTimer';
 import styles from './page.module.css';
@@ -47,6 +56,10 @@ function WorkoutContent() {
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [showConfirmEnd, setShowConfirmEnd] = useState(false);
 
+  // Pre-fetched data for each exercise
+  const [lastPerfMap, setLastPerfMap] = useState<Record<string, LastExercisePerformance | null>>({});
+  const [recSetsMap, setRecSetsMap] = useState<Record<string, RecommendedSet[]>>({});
+
   const { permission, requestPermission, sendNotification } = useNotification();
 
   const handleTimerComplete = useCallback(() => {
@@ -66,62 +79,101 @@ function WorkoutContent() {
     }
   }, [permission, requestPermission]);
 
+  // Load exercise recommendation data
+  const loadExerciseData = useCallback(async (exerciseConfigs: RoutineExercise[]) => {
+    const perfMap: Record<string, LastExercisePerformance | null> = {};
+    const recsMap: Record<string, RecommendedSet[]> = {};
+
+    await Promise.all(
+      exerciseConfigs.map(async (ex) => {
+        try {
+          perfMap[ex.exerciseId] = await fetchLastExercisePerformance(ex.exerciseId);
+        } catch {
+          perfMap[ex.exerciseId] = null;
+        }
+        try {
+          recsMap[ex.exerciseId] = await fetchRecommendedSets(ex.exerciseId, ex.sets);
+        } catch {
+          recsMap[ex.exerciseId] = [];
+        }
+      })
+    );
+
+    setLastPerfMap(perfMap);
+    setRecSetsMap(recsMap);
+  }, []);
+
+  // Initialize or resume session
   useEffect(() => {
     if (!routine || !routineId) return;
 
-    const existingSession = getActiveSession();
-    if (existingSession && existingSession.routineId === routineId) {
-      setSession(existingSession);
-      const resumedConfig: RoutineExercise[] = existingSession.exercises.map((ex, i) => {
-        const routineEx = routine.exercises[i];
-        return {
+    async function init() {
+      try {
+        const existingSession = await fetchActiveSession();
+        if (existingSession && existingSession.routineId === routineId) {
+          setSession(existingSession);
+          const resumedConfig: RoutineExercise[] = existingSession.exercises.map((ex, i) => {
+            const routineEx = routine!.exercises[i];
+            return {
+              exerciseId: ex.exerciseId,
+              sets: routineEx?.sets ?? ex.sets.length,
+              reps: routineEx?.reps ?? 12,
+              restTimeSeconds: routineEx?.restTimeSeconds ?? 120,
+              notes: routineEx?.notes,
+            };
+          });
+          setEffectiveExercises(resumedConfig);
+          await loadExerciseData(resumedConfig);
+          return;
+        }
+
+        const overrides = readOverrides();
+
+        const exerciseConfig: RoutineExercise[] = overrides
+          ? overrides.map((o, i) => ({
+              exerciseId: o.exerciseId,
+              sets: o.sets,
+              reps: o.reps,
+              restTimeSeconds: o.restTimeSeconds,
+              notes: routine!.exercises[i]?.notes,
+            }))
+          : routine!.exercises;
+
+        setEffectiveExercises(exerciseConfig);
+
+        const sessionId = uuidv4();
+        const now = new Date().toISOString();
+
+        const exerciseLogs: ExerciseLog[] = exerciseConfig.map((ex) => ({
           exerciseId: ex.exerciseId,
-          sets: routineEx?.sets ?? ex.sets.length,
-          reps: routineEx?.reps ?? 12,
-          restTimeSeconds: routineEx?.restTimeSeconds ?? 120,
-          notes: routineEx?.notes,
-        };
-      });
-      setEffectiveExercises(resumedConfig);
-      return;
+          sets: Array.from({ length: ex.sets }, (_, i) => ({
+            setNumber: i + 1,
+            reps: 0,
+            weightLbs: 0,
+            completed: false,
+          })),
+        }));
+
+        const newSession = await createSession({
+          sessionId,
+          date: now,
+          routineId: routineId!,
+          startTime: now,
+          exercises: exerciseLogs,
+        });
+
+        setSession(newSession);
+        await loadExerciseData(exerciseConfig);
+      } catch (err) {
+        console.error('Failed to initialize workout:', err);
+      }
     }
 
-    const overrides = readOverrides();
-
-    const exerciseConfig: RoutineExercise[] = overrides
-      ? overrides.map((o, i) => ({
-          exerciseId: o.exerciseId,
-          sets: o.sets,
-          reps: o.reps,
-          restTimeSeconds: o.restTimeSeconds,
-          notes: routine.exercises[i]?.notes,
-        }))
-      : routine.exercises;
-
-    setEffectiveExercises(exerciseConfig);
-
-    const newSession: SessionLog = {
-      id: uuidv4(),
-      date: new Date().toISOString(),
-      routineId: routineId,
-      startTime: new Date().toISOString(),
-      exercises: exerciseConfig.map((ex) => ({
-        exerciseId: ex.exerciseId,
-        sets: Array.from({ length: ex.sets }, (_, i) => ({
-          setNumber: i + 1,
-          reps: 0,
-          weightLbs: 0,
-          completed: false,
-        })),
-      })),
-      completed: false,
-      totalWeightLbs: 0,
-    };
-
-    setSession(newSession);
-    saveActiveSession(newSession);
+    init();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [routine, routineId]);
 
+  // Elapsed time ticker
   useEffect(() => {
     if (!session) return;
     const interval = setInterval(() => {
@@ -132,7 +184,22 @@ function WorkoutContent() {
     return () => clearInterval(interval);
   }, [session]);
 
-  const updateSession = useCallback(
+  // Persist session to backend
+  const persistSession = useCallback(
+    async (updated: SessionLog) => {
+      try {
+        await apiUpdateSession(updated.id, {
+          exercises: updated.exercises,
+          totalWeightLbs: updated.totalWeightLbs,
+        });
+      } catch (err) {
+        console.error('Failed to sync session:', err);
+      }
+    },
+    []
+  );
+
+  const updateSessionLocal = useCallback(
     (updater: (prev: SessionLog) => SessionLog) => {
       setSession((prev) => {
         if (!prev) return prev;
@@ -146,16 +213,16 @@ function WorkoutContent() {
           0
         );
         const withTotal = { ...updated, totalWeightLbs: totalWeight };
-        saveActiveSession(withTotal);
+        persistSession(withTotal);
         return withTotal;
       });
     },
-    []
+    [persistSession]
   );
 
   const handleSetComplete = useCallback(
     (exerciseIndex: number, setIndex: number, weight: number, reps: number) => {
-      updateSession((prev) => {
+      updateSessionLocal((prev) => {
         const exercises = [...prev.exercises];
         const exercise = { ...exercises[exerciseIndex] };
         const sets = [...exercise.sets];
@@ -177,12 +244,12 @@ function WorkoutContent() {
       timer.start(restTime);
       setShowTimer(true);
     },
-    [updateSession, effectiveExercises, timer]
+    [updateSessionLocal, effectiveExercises, timer]
   );
 
   const handleUpdateSet = useCallback(
     (exerciseIndex: number, setIndex: number, updates: Partial<SetLog>) => {
-      updateSession((prev) => {
+      updateSessionLocal((prev) => {
         const exercises = [...prev.exercises];
         const exercise = { ...exercises[exerciseIndex] };
         const sets = [...exercise.sets];
@@ -192,12 +259,12 @@ function WorkoutContent() {
         return { ...prev, exercises };
       });
     },
-    [updateSession]
+    [updateSessionLocal]
   );
 
   const handleAddSet = useCallback(
     (exerciseIndex: number) => {
-      updateSession((prev) => {
+      updateSessionLocal((prev) => {
         const exercises = [...prev.exercises];
         const exercise = { ...exercises[exerciseIndex] };
         exercise.sets = [
@@ -213,12 +280,12 @@ function WorkoutContent() {
         return { ...prev, exercises };
       });
     },
-    [updateSession]
+    [updateSessionLocal]
   );
 
   const handleRemoveSet = useCallback(
     (exerciseIndex: number, setIndex: number) => {
-      updateSession((prev) => {
+      updateSessionLocal((prev) => {
         const exercises = [...prev.exercises];
         const exercise = { ...exercises[exerciseIndex] };
         exercise.sets = exercise.sets.filter((_, i) => i !== setIndex);
@@ -230,12 +297,12 @@ function WorkoutContent() {
         return { ...prev, exercises };
       });
     },
-    [updateSession]
+    [updateSessionLocal]
   );
 
   const handleMoveExercise = useCallback(
     (fromIndex: number, toIndex: number) => {
-      updateSession((prev) => {
+      updateSessionLocal((prev) => {
         const exercises = [...prev.exercises];
         const [moved] = exercises.splice(fromIndex, 1);
         exercises.splice(toIndex, 0, moved);
@@ -255,10 +322,10 @@ function WorkoutContent() {
         return prev;
       });
     },
-    [updateSession]
+    [updateSessionLocal]
   );
 
-  const handleFinishWorkout = useCallback(() => {
+  const handleFinishWorkout = useCallback(async () => {
     if (!session) return;
 
     const endTime = new Date().toISOString();
@@ -267,15 +334,18 @@ function WorkoutContent() {
         1000
     );
 
-    const completedSession: SessionLog = {
-      ...session,
-      endTime,
-      duration,
-      completed: true,
-    };
+    try {
+      await apiUpdateSession(session.id, {
+        endTime,
+        duration,
+        completed: true,
+        exercises: session.exercises,
+        totalWeightLbs: session.totalWeightLbs,
+      });
+    } catch (err) {
+      console.error('Failed to finish workout:', err);
+    }
 
-    saveSession(completedSession);
-    saveActiveSession(null);
     router.push(`/summary?sessionId=${session.id}`);
   }, [session, router]);
 
@@ -368,6 +438,8 @@ function WorkoutContent() {
               isActive={activeExerciseIndex === index}
               canMoveUp={index > 0}
               canMoveDown={index < session.exercises.length - 1}
+              lastPerformance={lastPerfMap[exerciseLog.exerciseId] ?? null}
+              recommendedSets={recSetsMap[exerciseLog.exerciseId] ?? []}
               onSetComplete={(setIdx, weight, reps) =>
                 handleSetComplete(index, setIdx, weight, reps)
               }

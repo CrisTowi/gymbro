@@ -3,12 +3,12 @@
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { SessionLog } from '@/types';
-import { getSessions, getPersonalRecords } from '@/utils/storage';
 import { getExerciseById } from '@/data/exercises';
 import { getRoutineById } from '@/data/routines';
 import { formatDuration } from '@/utils/time';
 import { formatWeight, lbsToKg } from '@/utils/weight';
 import { getMotivationalMessage, getSessionGrade } from '@/utils/motivation';
+import { fetchSessionById, fetchPersonalRecords } from '@/lib/api';
 import styles from './page.module.css';
 
 function SummaryContent() {
@@ -17,13 +17,25 @@ function SummaryContent() {
   const sessionId = searchParams.get('sessionId');
 
   const [session, setSession] = useState<SessionLog | null>(null);
+  const [personalRecords, setPersonalRecords] = useState<Record<string, { maxWeight: number; maxVolume: number; date: string }>>({});
   const [message] = useState(getMotivationalMessage());
 
   useEffect(() => {
     if (!sessionId) return;
-    const sessions = getSessions();
-    const found = sessions.find((s) => s.id === sessionId);
-    if (found) setSession(found);
+
+    async function load() {
+      try {
+        const [sess, records] = await Promise.all([
+          fetchSessionById(sessionId!),
+          fetchPersonalRecords(),
+        ]);
+        setSession(sess);
+        setPersonalRecords(records);
+      } catch (err) {
+        console.error('Failed to load summary:', err);
+      }
+    }
+    load();
   }, [sessionId]);
 
   if (!session) {
@@ -52,13 +64,12 @@ function SummaryContent() {
     totalSets
   );
 
-  const records = getPersonalRecords();
   const newPRs: { exerciseName: string; weight: number }[] = [];
   for (const ex of session.exercises) {
     const completedSets = ex.sets.filter((s) => s.completed);
     if (completedSets.length === 0) continue;
     const maxWeight = Math.max(...completedSets.map((s) => s.weightLbs));
-    const record = records[ex.exerciseId];
+    const record = personalRecords[ex.exerciseId];
     if (record && maxWeight >= record.maxWeight) {
       const exercise = getExerciseById(ex.exerciseId);
       if (exercise) {

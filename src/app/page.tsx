@@ -5,9 +5,9 @@ import Link from 'next/link';
 import WeeklyPlan from '@/components/WeeklyPlan/WeeklyPlan';
 import LastSessionCard from '@/components/SessionSummary/LastSessionCard';
 import { WeeklyPlan as WeeklyPlanType, RoutineType, SessionLog, DEFAULT_WEEKLY_PLAN } from '@/types';
-import { getWeeklyPlan, saveWeeklyPlan, getLastSession } from '@/utils/storage';
 import { routines } from '@/data/routines';
 import { getDayOfWeek } from '@/utils/time';
+import { fetchWeeklyPlan, updateWeeklyPlan, fetchLastSession } from '@/lib/api';
 import styles from './page.module.css';
 
 export default function Home() {
@@ -16,14 +16,29 @@ export default function Home() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setWeeklyPlan(getWeeklyPlan());
-    setLastSession(getLastSession());
-    setMounted(true);
+    async function load() {
+      try {
+        const [plan, session] = await Promise.all([
+          fetchWeeklyPlan(),
+          fetchLastSession(),
+        ]);
+        setWeeklyPlan(plan);
+        setLastSession(session);
+      } catch (err) {
+        console.error('Failed to load home data:', err);
+      }
+      setMounted(true);
+    }
+    load();
   }, []);
 
-  const handlePlanChange = (plan: WeeklyPlanType) => {
+  const handlePlanChange = async (plan: WeeklyPlanType) => {
     setWeeklyPlan(plan);
-    saveWeeklyPlan(plan);
+    try {
+      await updateWeeklyPlan(plan);
+    } catch (err) {
+      console.error('Failed to save weekly plan:', err);
+    }
   };
 
   const todayRoutineId = weeklyPlan[getDayOfWeek()] as RoutineType | null;

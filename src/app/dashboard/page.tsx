@@ -3,8 +3,15 @@
 import { useState, useEffect, useMemo } from 'react';
 import { MuscleGroup, TimeRange } from '@/types';
 import { exercises, getAllCategories } from '@/data/exercises';
-import { getExerciseHistory, getCompletedSessions, getPersonalRecords } from '@/utils/storage';
 import { lbsToKg } from '@/utils/weight';
+import {
+  fetchOverview,
+  fetchPersonalRecords,
+  fetchExerciseHistory,
+  OverviewStats,
+  PersonalRecords,
+  ExerciseHistoryPoint,
+} from '@/lib/api';
 import FilterBar from '@/components/FilterBar/FilterBar';
 import ProgressChart from '@/components/ProgressChart/ProgressChart';
 import styles from './page.module.css';
@@ -15,9 +22,14 @@ export default function DashboardPage() {
   const [selectedTimeRange, setSelectedTimeRange] = useState<TimeRange>('all-time');
   const [selectedExerciseId, setSelectedExerciseId] = useState<string | null>(null);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const [overallStats, setOverallStats] = useState<OverviewStats>({
+    totalSessions: 0,
+    totalWeight: 0,
+    totalExercises: 0,
+    personalRecordCount: 0,
+  });
+  const [personalRecords, setPersonalRecords] = useState<PersonalRecords>({});
+  const [historyMap, setHistoryMap] = useState<Record<string, ExerciseHistoryPoint[]>>({});
 
   const muscleGroups = getAllCategories() as MuscleGroup[];
 
@@ -37,8 +49,51 @@ export default function DashboardPage() {
     return filteredExercises.map((ex) => ex.id);
   }, [selectedExerciseId, filteredExercises]);
 
+  // Load overview + personal records once on mount
+  useEffect(() => {
+    async function load() {
+      try {
+        const [stats, records] = await Promise.all([
+          fetchOverview(),
+          fetchPersonalRecords(),
+        ]);
+        setOverallStats(stats);
+        setPersonalRecords(records);
+      } catch (err) {
+        console.error('Failed to load dashboard data:', err);
+      }
+      setMounted(true);
+    }
+    load();
+  }, []);
+
+  // Load exercise histories when the displayed exercises change
+  useEffect(() => {
+    if (!mounted) return;
+
+    async function loadHistories() {
+      const newMap: Record<string, ExerciseHistoryPoint[]> = {};
+      await Promise.all(
+        exercisesToDisplay.map(async (id) => {
+          if (historyMap[id]) {
+            newMap[id] = historyMap[id];
+          } else {
+            try {
+              newMap[id] = await fetchExerciseHistory(id);
+            } catch {
+              newMap[id] = [];
+            }
+          }
+        })
+      );
+      setHistoryMap((prev) => ({ ...prev, ...newMap }));
+    }
+    loadHistories();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mounted, exercisesToDisplay]);
+
   const filterByTimeRange = (
-    data: { date: string; maxWeight: number; totalVolume: number }[]
+    data: ExerciseHistoryPoint[]
   ) => {
     const now = new Date();
     return data.filter((d) => {
@@ -57,25 +112,6 @@ export default function DashboardPage() {
       }
     });
   };
-
-  const completedSessions = mounted ? getCompletedSessions() : [];
-  const personalRecords = mounted ? getPersonalRecords() : {};
-
-  const overallStats = useMemo(() => {
-    if (!mounted) return { totalSessions: 0, totalWeight: 0, totalExercises: 0 };
-    return {
-      totalSessions: completedSessions.length,
-      totalWeight: completedSessions.reduce(
-        (sum, s) => sum + s.totalWeightLbs,
-        0
-      ),
-      totalExercises: new Set(
-        completedSessions.flatMap((s) =>
-          s.exercises.map((e) => e.exerciseId)
-        )
-      ).size,
-    };
-  }, [mounted, completedSessions]);
 
   if (!mounted) {
     return (
@@ -119,7 +155,7 @@ export default function DashboardPage() {
           </div>
           <div className={styles.overviewCard}>
             <span className={styles.overviewValue}>
-              {Object.keys(personalRecords).length}
+              {overallStats.personalRecordCount}
             </span>
             <span className={styles.overviewLabel}>Personal Records</span>
           </div>
@@ -141,7 +177,7 @@ export default function DashboardPage() {
             const exercise = exercises.find((ex) => ex.id === exerciseId);
             if (!exercise) return null;
 
-            const rawHistory = getExerciseHistory(exerciseId);
+            const rawHistory = historyMap[exerciseId] || [];
             const history = filterByTimeRange(rawHistory);
 
             if (rawHistory.length === 0) return null;
@@ -167,7 +203,7 @@ export default function DashboardPage() {
             );
           })}
 
-          {completedSessions.length === 0 && (
+          {overallStats.totalSessions === 0 && (
             <div className={styles.emptyState}>
               <span className={styles.emptyIcon}>📊</span>
               <h3 className={styles.emptyTitle}>No Data Yet</h3>

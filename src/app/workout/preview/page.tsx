@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useMemo, useCallback, Suspense } from 'react';
+import { useState, useMemo, useCallback, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { RoutineType, Exercise } from '@/types';
 import { getRoutineById } from '@/data/routines';
 import { getExerciseById, getAlternativeExercises } from '@/data/exercises';
-import { getLastSessionForExercise } from '@/utils/storage';
 import { formatWeight } from '@/utils/weight';
 import { formatTime } from '@/utils/time';
+import { fetchLastExercisePerformance, LastExercisePerformance } from '@/lib/api';
 import styles from './page.module.css';
 
 interface ExerciseOverride {
@@ -53,6 +53,30 @@ function PreviewContent() {
   });
 
   const [swapIndex, setSwapIndex] = useState<number | null>(null);
+  const [lastPerfMap, setLastPerfMap] = useState<Record<string, LastExercisePerformance | null>>({});
+
+  // Fetch last performance for all exercises in the routine
+  useEffect(() => {
+    async function loadLastPerformances() {
+      const ids = overrides.map((o) => o.exerciseId);
+      const results = await Promise.all(
+        ids.map(async (id) => {
+          try {
+            const perf = await fetchLastExercisePerformance(id);
+            return [id, perf] as const;
+          } catch {
+            return [id, null] as const;
+          }
+        })
+      );
+      const map: Record<string, LastExercisePerformance | null> = {};
+      for (const [id, perf] of results) {
+        map[id] = perf;
+      }
+      setLastPerfMap(map);
+    }
+    if (overrides.length > 0) loadLastPerformances();
+  }, [overrides]);
 
   const estimatedSeconds = useMemo(() => estimateTime(overrides), [overrides]);
 
@@ -196,7 +220,7 @@ function PreviewContent() {
           {overrides.map((override, index) => {
             const exercise = getExerciseById(override.exerciseId);
             const defaultEx = routine.exercises[index];
-            const lastPerf = getLastSessionForExercise(override.exerciseId);
+            const lastPerf = lastPerfMap[override.exerciseId] ?? null;
             const isSwapped = defaultEx && override.exerciseId !== defaultEx.exerciseId;
             const isModified =
               isSwapped ||
