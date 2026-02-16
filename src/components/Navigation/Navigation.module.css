@@ -15,7 +15,7 @@
   gap: var(--space-xl);
   max-width: var(--max-width);
   margin: 0 auto;
-  padding: var(--space-sm) var(--space-md);
+  padding: var(--space-md) var(--space-md);
 }
 
 .navItem {
