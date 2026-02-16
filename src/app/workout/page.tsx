@@ -72,7 +72,17 @@ function WorkoutContent() {
     const existingSession = getActiveSession();
     if (existingSession && existingSession.routineId === routineId) {
       setSession(existingSession);
-      setEffectiveExercises(routine.exercises);
+      const resumedConfig: RoutineExercise[] = existingSession.exercises.map((ex, i) => {
+        const routineEx = routine.exercises[i];
+        return {
+          exerciseId: ex.exerciseId,
+          sets: routineEx?.sets ?? ex.sets.length,
+          reps: routineEx?.reps ?? 12,
+          restTimeSeconds: routineEx?.restTimeSeconds ?? 120,
+          notes: routineEx?.notes,
+        };
+      });
+      setEffectiveExercises(resumedConfig);
       return;
     }
 

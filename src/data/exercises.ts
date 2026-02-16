@@ -1,7 +1,9 @@
 import { Exercise } from '@/types';
 
 export const exercises: Exercise[] = [
+  // ═══════════════════════════════════════
   // CHEST
+  // ═══════════════════════════════════════
   {
     id: 'bench-press',
     name: 'Bench Press',
@@ -66,8 +68,74 @@ export const exercises: Exercise[] = [
     tags: ['push', 'compound', 'chest'],
     referenceUrl: 'https://exrx.net/WeightExercises/PectoralSternal/DBBenchPress',
   },
+  {
+    id: 'dumbbell-flyes',
+    name: 'Dumbbell Flyes',
+    category: 'chest',
+    secondaryMuscles: ['shoulders'],
+    equipment: 'dumbbell',
+    description: 'Isolation movement for chest stretch and contraction.',
+    instructions: [
+      'Lie flat on bench with dumbbells above chest',
+      'Lower arms out to the sides in a wide arc',
+      'Keep slight bend in elbows throughout',
+      'Squeeze chest to bring dumbbells back together',
+    ],
+    tags: ['push', 'isolation', 'chest'],
+    referenceUrl: 'https://exrx.net/WeightExercises/PectoralSternal/DBFly',
+  },
+  {
+    id: 'push-ups',
+    name: 'Push-Ups',
+    category: 'chest',
+    secondaryMuscles: ['triceps', 'shoulders', 'core'],
+    equipment: 'bodyweight',
+    description: 'Fundamental bodyweight exercise for chest and pushing strength.',
+    instructions: [
+      'Start in plank position with hands shoulder-width apart',
+      'Lower body until chest nearly touches the floor',
+      'Push back up to full arm extension',
+      'Keep core tight and body in a straight line',
+    ],
+    tags: ['push', 'compound', 'chest', 'bodyweight'],
+    referenceUrl: 'https://exrx.net/WeightExercises/PectoralSternal/BWPushup',
+  },
+  {
+    id: 'machine-chest-press',
+    name: 'Machine Chest Press',
+    category: 'chest',
+    secondaryMuscles: ['triceps', 'shoulders'],
+    equipment: 'machine',
+    description: 'Machine-guided pressing for controlled chest work.',
+    instructions: [
+      'Adjust seat so handles are at chest level',
+      'Grip handles and press forward',
+      'Extend arms without locking elbows',
+      'Return slowly to starting position',
+    ],
+    tags: ['push', 'compound', 'chest'],
+    referenceUrl: 'https://exrx.net/WeightExercises/PectoralSternal/LVChestPress',
+  },
+  {
+    id: 'decline-bench-press',
+    name: 'Decline Bench Press',
+    category: 'chest',
+    secondaryMuscles: ['triceps', 'shoulders'],
+    equipment: 'barbell',
+    description: 'Bench press on decline targeting lower chest fibers.',
+    instructions: [
+      'Lie on decline bench and hook feet under pads',
+      'Grip the bar slightly wider than shoulder-width',
+      'Lower bar to lower chest',
+      'Press back up to lockout',
+    ],
+    tags: ['push', 'compound', 'chest'],
+    referenceUrl: 'https://exrx.net/WeightExercises/PectoralSternal/BBDeclineBenchPress',
+  },
 
+  // ═══════════════════════════════════════
   // SHOULDERS
+  // ═══════════════════════════════════════
   {
     id: 'overhead-press',
     name: 'Overhead Press',
@@ -132,8 +200,58 @@ export const exercises: Exercise[] = [
     tags: ['push', 'compound', 'shoulders'],
     referenceUrl: 'https://exrx.net/WeightExercises/DeltoidAnterior/DBArnoldPress',
   },
+  {
+    id: 'face-pulls',
+    name: 'Face Pulls',
+    category: 'shoulders',
+    secondaryMuscles: ['traps', 'back'],
+    equipment: 'cable',
+    description: 'Cable exercise targeting rear delts and upper back.',
+    instructions: [
+      'Set cable at face height with rope attachment',
+      'Pull rope toward face, separating hands',
+      'Squeeze rear delts and upper back',
+      'Return slowly to starting position',
+    ],
+    tags: ['pull', 'isolation', 'rear-delts', 'shoulders'],
+    referenceUrl: 'https://exrx.net/WeightExercises/DeltoidPosterior/CBStandingRearDeltRowRope',
+  },
+  {
+    id: 'dumbbell-shoulder-press',
+    name: 'Dumbbell Shoulder Press',
+    category: 'shoulders',
+    secondaryMuscles: ['triceps'],
+    equipment: 'dumbbell',
+    description: 'Seated or standing shoulder press with dumbbells for balanced development.',
+    instructions: [
+      'Hold dumbbells at shoulder height, palms forward',
+      'Press dumbbells overhead until arms are extended',
+      'Lower back to shoulder level with control',
+      'Keep core engaged throughout',
+    ],
+    tags: ['push', 'compound', 'shoulders'],
+    referenceUrl: 'https://exrx.net/WeightExercises/DeltoidAnterior/DBShoulderPress',
+  },
+  {
+    id: 'reverse-flyes',
+    name: 'Reverse Flyes',
+    category: 'shoulders',
+    secondaryMuscles: ['traps', 'back'],
+    equipment: 'dumbbell',
+    description: 'Dumbbell exercise targeting posterior deltoids.',
+    instructions: [
+      'Bend forward at the hips with slight knee bend',
+      'Hold dumbbells below chest with palms facing each other',
+      'Raise arms out to the sides squeezing rear delts',
+      'Lower with control to starting position',
+    ],
+    tags: ['pull', 'isolation', 'rear-delts', 'shoulders'],
+    referenceUrl: 'https://exrx.net/WeightExercises/DeltoidPosterior/DBSeatedRearLateralRaise',
+  },
 
+  // ═══════════════════════════════════════
   // TRICEPS
+  // ═══════════════════════════════════════
   {
     id: 'tricep-pushdowns',
     name: 'Tricep Pushdowns',
@@ -182,8 +300,42 @@ export const exercises: Exercise[] = [
     tags: ['push', 'isolation', 'triceps'],
     referenceUrl: 'https://exrx.net/WeightExercises/Triceps/DBOneArmTriExtBench',
   },
+  {
+    id: 'skull-crushers',
+    name: 'Skull Crushers',
+    category: 'triceps',
+    secondaryMuscles: [],
+    equipment: 'barbell',
+    description: 'Lying triceps extension with barbell for heavy tricep loading.',
+    instructions: [
+      'Lie on flat bench holding barbell with narrow grip',
+      'Lower bar toward forehead by bending elbows',
+      'Keep upper arms perpendicular to floor',
+      'Extend arms back to starting position',
+    ],
+    tags: ['push', 'isolation', 'triceps'],
+    referenceUrl: 'https://exrx.net/WeightExercises/Triceps/BBLyingTriExt',
+  },
+  {
+    id: 'tricep-kickbacks',
+    name: 'Tricep Kickbacks',
+    category: 'triceps',
+    secondaryMuscles: [],
+    equipment: 'dumbbell',
+    description: 'Dumbbell exercise isolating the triceps in a bent-over position.',
+    instructions: [
+      'Bend over with one hand on bench for support',
+      'Hold dumbbell with upper arm parallel to floor',
+      'Extend forearm back until arm is straight',
+      'Squeeze tricep at top, lower with control',
+    ],
+    tags: ['push', 'isolation', 'triceps'],
+    referenceUrl: 'https://exrx.net/WeightExercises/Triceps/DBKickback',
+  },
 
+  // ═══════════════════════════════════════
   // BACK
+  // ═══════════════════════════════════════
   {
     id: 'deadlift',
     name: 'Deadlift',
@@ -249,22 +401,6 @@ export const exercises: Exercise[] = [
     referenceUrl: 'https://exrx.net/WeightExercises/LatissimusDorsi/CBFrontPulldown',
   },
   {
-    id: 'face-pulls',
-    name: 'Face Pulls',
-    category: 'shoulders',
-    secondaryMuscles: ['traps', 'back'],
-    equipment: 'cable',
-    description: 'Cable exercise targeting rear delts and upper back.',
-    instructions: [
-      'Set cable at face height with rope attachment',
-      'Pull rope toward face, separating hands',
-      'Squeeze rear delts and upper back',
-      'Return slowly to starting position',
-    ],
-    tags: ['pull', 'isolation', 'rear-delts'],
-    referenceUrl: 'https://exrx.net/WeightExercises/DeltoidPosterior/CBStandingRearDeltRowRope',
-  },
-  {
     id: 'seated-cable-rows',
     name: 'Seated Cable Rows',
     category: 'back',
@@ -280,8 +416,42 @@ export const exercises: Exercise[] = [
     tags: ['pull', 'compound', 'back'],
     referenceUrl: 'https://exrx.net/WeightExercises/BackGeneral/CBSeatedRow',
   },
+  {
+    id: 'dumbbell-rows',
+    name: 'Dumbbell Rows',
+    category: 'back',
+    secondaryMuscles: ['biceps', 'forearms'],
+    equipment: 'dumbbell',
+    description: 'One-arm row for unilateral back development.',
+    instructions: [
+      'Place one hand and knee on bench for support',
+      'Hold dumbbell with free hand, arm extended',
+      'Pull dumbbell to hip, squeezing shoulder blade',
+      'Lower with control to full extension',
+    ],
+    tags: ['pull', 'compound', 'back'],
+    referenceUrl: 'https://exrx.net/WeightExercises/BackGeneral/DBBentOverRow',
+  },
+  {
+    id: 'chin-ups',
+    name: 'Chin-Ups',
+    category: 'back',
+    secondaryMuscles: ['biceps', 'forearms'],
+    equipment: 'bodyweight',
+    description: 'Underhand grip pull-up emphasizing biceps and lower lats.',
+    instructions: [
+      'Hang from bar with underhand (supinated) grip',
+      'Pull body up until chin clears the bar',
+      'Focus on squeezing lats and biceps',
+      'Lower with control to full extension',
+    ],
+    tags: ['pull', 'compound', 'back'],
+    referenceUrl: 'https://exrx.net/WeightExercises/LatissimusDorsi/BWUnderhandChinup',
+  },
 
+  // ═══════════════════════════════════════
   // BICEPS
+  // ═══════════════════════════════════════
   {
     id: 'bicep-curls',
     name: 'Bicep Curls',
@@ -330,8 +500,58 @@ export const exercises: Exercise[] = [
     tags: ['pull', 'isolation', 'biceps'],
     referenceUrl: 'https://exrx.net/WeightExercises/Biceps/BBCurl',
   },
+  {
+    id: 'incline-dumbbell-curls',
+    name: 'Incline Dumbbell Curls',
+    category: 'biceps',
+    secondaryMuscles: ['forearms'],
+    equipment: 'dumbbell',
+    description: 'Curl on incline bench for greater bicep stretch under load.',
+    instructions: [
+      'Sit on incline bench set to 45 degrees',
+      'Let arms hang straight down with dumbbells',
+      'Curl weights up while keeping upper arms stationary',
+      'Lower slowly to full stretch',
+    ],
+    tags: ['pull', 'isolation', 'biceps'],
+    referenceUrl: 'https://exrx.net/WeightExercises/Biceps/DBInclineCurl',
+  },
+  {
+    id: 'cable-curls',
+    name: 'Cable Curls',
+    category: 'biceps',
+    secondaryMuscles: ['forearms'],
+    equipment: 'cable',
+    description: 'Cable curl providing constant tension throughout the range of motion.',
+    instructions: [
+      'Stand facing cable machine with bar attachment at low position',
+      'Grip bar with underhand grip at shoulder width',
+      'Curl bar up toward shoulders',
+      'Lower with control, maintaining tension',
+    ],
+    tags: ['pull', 'isolation', 'biceps'],
+    referenceUrl: 'https://exrx.net/WeightExercises/Biceps/CBCurl',
+  },
+  {
+    id: 'concentration-curls',
+    name: 'Concentration Curls',
+    category: 'biceps',
+    secondaryMuscles: [],
+    equipment: 'dumbbell',
+    description: 'Seated single-arm curl for peak bicep contraction.',
+    instructions: [
+      'Sit on bench with legs apart',
+      'Rest elbow against inner thigh',
+      'Curl dumbbell up squeezing bicep at top',
+      'Lower slowly with full control',
+    ],
+    tags: ['pull', 'isolation', 'biceps'],
+    referenceUrl: 'https://exrx.net/WeightExercises/Brachialis/DBConcentrationCurl',
+  },
 
+  // ═══════════════════════════════════════
   // QUADRICEPS
+  // ═══════════════════════════════════════
   {
     id: 'squats',
     name: 'Squats',
@@ -396,8 +616,58 @@ export const exercises: Exercise[] = [
     tags: ['legs', 'isolation', 'quadriceps'],
     referenceUrl: 'https://exrx.net/WeightExercises/Quadriceps/LVLegExtension',
   },
+  {
+    id: 'front-squats',
+    name: 'Front Squats',
+    category: 'quadriceps',
+    secondaryMuscles: ['glutes', 'core'],
+    equipment: 'barbell',
+    description: 'Front-loaded squat emphasizing quads and upright torso.',
+    instructions: [
+      'Rest barbell across front deltoids with crossed arms or clean grip',
+      'Keep elbows high and chest up throughout',
+      'Squat down until thighs are parallel or below',
+      'Drive through feet to stand, maintaining upright torso',
+    ],
+    tags: ['legs', 'compound', 'quadriceps'],
+    referenceUrl: 'https://exrx.net/WeightExercises/Quadriceps/BBFrontSquat',
+  },
+  {
+    id: 'lunges',
+    name: 'Lunges',
+    category: 'quadriceps',
+    secondaryMuscles: ['glutes', 'hamstrings'],
+    equipment: 'dumbbell',
+    description: 'Walking or stationary lunge for unilateral leg strength.',
+    instructions: [
+      'Hold dumbbells at sides, stand tall',
+      'Step forward into a lunge position',
+      'Lower back knee toward floor',
+      'Push through front foot to return or step forward',
+    ],
+    tags: ['legs', 'compound', 'quadriceps'],
+    referenceUrl: 'https://exrx.net/WeightExercises/Quadriceps/DBLunge',
+  },
+  {
+    id: 'hack-squats',
+    name: 'Hack Squats',
+    category: 'quadriceps',
+    secondaryMuscles: ['glutes'],
+    equipment: 'machine',
+    description: 'Machine squat variation for focused quad development.',
+    instructions: [
+      'Position shoulders under pads, feet shoulder-width on platform',
+      'Release safety handles',
+      'Lower by bending knees to 90 degrees',
+      'Press back up through feet',
+    ],
+    tags: ['legs', 'compound', 'quadriceps'],
+    referenceUrl: 'https://exrx.net/WeightExercises/Quadriceps/SLHackSquat',
+  },
 
+  // ═══════════════════════════════════════
   // HAMSTRINGS
+  // ═══════════════════════════════════════
   {
     id: 'romanian-deadlift',
     name: 'Romanian Deadlift',
@@ -430,8 +700,42 @@ export const exercises: Exercise[] = [
     tags: ['legs', 'isolation', 'hamstrings'],
     referenceUrl: 'https://exrx.net/WeightExercises/Hamstrings/LVLyingLegCurl',
   },
+  {
+    id: 'seated-leg-curls',
+    name: 'Seated Leg Curls',
+    category: 'hamstrings',
+    secondaryMuscles: [],
+    equipment: 'machine',
+    description: 'Seated machine curl for hamstring isolation.',
+    instructions: [
+      'Sit in machine with back against pad',
+      'Position pad above heels, legs extended',
+      'Curl legs down by bending knees',
+      'Return slowly to starting position',
+    ],
+    tags: ['legs', 'isolation', 'hamstrings'],
+    referenceUrl: 'https://exrx.net/WeightExercises/Hamstrings/LVSeatedLegCurl',
+  },
+  {
+    id: 'dumbbell-romanian-deadlift',
+    name: 'Dumbbell Romanian Deadlift',
+    category: 'hamstrings',
+    secondaryMuscles: ['glutes', 'back'],
+    equipment: 'dumbbell',
+    description: 'Dumbbell variation of the RDL for hamstring and glute work.',
+    instructions: [
+      'Hold dumbbells at thighs with neutral grip',
+      'Hinge at hips pushing them backward',
+      'Lower dumbbells along legs keeping back flat',
+      'Drive hips forward to return to standing',
+    ],
+    tags: ['legs', 'compound', 'hamstrings'],
+    referenceUrl: 'https://exrx.net/WeightExercises/Hamstrings/DBStrBackStrLegDeadlift',
+  },
 
+  // ═══════════════════════════════════════
   // CALVES
+  // ═══════════════════════════════════════
   {
     id: 'calf-raises',
     name: 'Calf Raises',
@@ -448,8 +752,42 @@ export const exercises: Exercise[] = [
     tags: ['legs', 'isolation', 'calves'],
     referenceUrl: 'https://exrx.net/WeightExercises/Gastrocnemius/LVStandingCalfRaise',
   },
+  {
+    id: 'seated-calf-raises',
+    name: 'Seated Calf Raises',
+    category: 'calves',
+    secondaryMuscles: [],
+    equipment: 'machine',
+    description: 'Seated calf raise targeting the soleus muscle.',
+    instructions: [
+      'Sit in seated calf raise machine with knees under pad',
+      'Place balls of feet on platform edge',
+      'Lower heels for full stretch',
+      'Push up through toes and squeeze at top',
+    ],
+    tags: ['legs', 'isolation', 'calves'],
+    referenceUrl: 'https://exrx.net/WeightExercises/Soleus/LVSeatedCalfRaise',
+  },
+  {
+    id: 'leg-press-calf-raises',
+    name: 'Leg Press Calf Raises',
+    category: 'calves',
+    secondaryMuscles: [],
+    equipment: 'machine',
+    description: 'Calf raise performed on the leg press machine for heavy loading.',
+    instructions: [
+      'Sit in leg press with balls of feet on lower edge of platform',
+      'Keep legs nearly straight',
+      'Push through toes extending ankles',
+      'Lower heels back for full stretch',
+    ],
+    tags: ['legs', 'isolation', 'calves'],
+    referenceUrl: 'https://exrx.net/WeightExercises/Gastrocnemius/SL45CalfPress',
+  },
 
+  // ═══════════════════════════════════════
   // GLUTES
+  // ═══════════════════════════════════════
   {
     id: 'hip-thrusts',
     name: 'Hip Thrusts',
@@ -466,8 +804,26 @@ export const exercises: Exercise[] = [
     tags: ['legs', 'compound', 'glutes'],
     referenceUrl: 'https://exrx.net/WeightExercises/GluteusMaximus/BBHipThrust',
   },
+  {
+    id: 'cable-kickbacks',
+    name: 'Cable Kickbacks',
+    category: 'glutes',
+    secondaryMuscles: ['hamstrings'],
+    equipment: 'cable',
+    description: 'Cable hip extension for targeted glute isolation.',
+    instructions: [
+      'Attach ankle cuff to low cable',
+      'Face the machine holding frame for support',
+      'Kick leg backward squeezing glute at top',
+      'Return slowly to starting position',
+    ],
+    tags: ['legs', 'isolation', 'glutes'],
+    referenceUrl: 'https://exrx.net/WeightExercises/GluteusMaximus/CBStandingHipExtension',
+  },
 
+  // ═══════════════════════════════════════
   // CORE
+  // ═══════════════════════════════════════
   {
     id: 'plank',
     name: 'Plank',
@@ -500,6 +856,22 @@ export const exercises: Exercise[] = [
     tags: ['core', 'isolation', 'abs'],
     referenceUrl: 'https://exrx.net/WeightExercises/RectusAbdominis/CBKneelingCrunch',
   },
+  {
+    id: 'stability-ball-crunches',
+    name: 'Stability Ball Crunches',
+    category: 'core',
+    secondaryMuscles: [],
+    equipment: 'bodyweight',
+    description: 'Crunches on a stability ball for increased range of motion.',
+    instructions: [
+      'Lie back on stability ball with feet flat on floor',
+      'Place hands behind head or across chest',
+      'Crunch up contracting abs',
+      'Lower back over ball for full stretch',
+    ],
+    tags: ['core', 'isolation', 'abs'],
+    referenceUrl: 'https://exrx.net/WeightExercises/RectusAbdominis/BWBallCrunch',
+  },
 ];
 
 export const getExerciseById = (id: string): Exercise | undefined => {
@@ -516,4 +888,22 @@ export const getExercisesByTag = (tag: string): Exercise[] => {
 
 export const getAllCategories = (): string[] => {
   return [...new Set(exercises.map((ex) => ex.category))];
+};
+
+export const getAlternativeExercises = (
+  exerciseId: string,
+  excludeIds: string[] = []
+): Exercise[] => {
+  const exercise = getExerciseById(exerciseId);
+  if (!exercise) return [];
+
+  const excluded = new Set([exerciseId, ...excludeIds]);
+
+  return exercises
+    .filter((ex) => !excluded.has(ex.id) && ex.category === exercise.category)
+    .sort((a, b) => {
+      const aSharedTags = a.tags.filter((t) => exercise.tags.includes(t)).length;
+      const bSharedTags = b.tags.filter((t) => exercise.tags.includes(t)).length;
+      return bSharedTags - aSharedTags;
+    });
 };
