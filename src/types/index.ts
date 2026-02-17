@@ -35,6 +35,7 @@ export type Equipment =
   | 'smith-machine'
   | 'resistance-band';
 
+/** @deprecated Use string routine id; kept for session log routineId compatibility */
 export type RoutineType = 'push' | 'pull' | 'legs' | 'full-body';
 
 export interface RoutineExercise {
@@ -46,7 +47,8 @@ export interface RoutineExercise {
 }
 
 export interface Routine {
-  id: RoutineType;
+  id: string;
+  routineId?: string; // API returns routineId
   name: string;
   description: string;
   color: string;
@@ -64,7 +66,7 @@ export type DayOfWeek =
   | 'sunday';
 
 export interface WeeklyPlan {
-  [key: string]: RoutineType | null;
+  [key: string]: string | null;
 }
 
 export const DEFAULT_WEEKLY_PLAN: WeeklyPlan = {

@@ -2,8 +2,9 @@
 
 import { useState, useMemo, useCallback, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { RoutineType, Exercise } from '@/types';
-import { getRoutineById } from '@/data/routines';
+import { Exercise } from '@/types';
+import { fetchRoutineById } from '@/lib/api';
+import type { Routine } from '@/types';
 import { getExerciseById, getAlternativeExercises } from '@/data/exercises';
 import { formatWeight } from '@/utils/weight';
 import { formatTime } from '@/utils/time';
@@ -39,18 +40,44 @@ function formatEstimate(seconds: number): string {
 function PreviewContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const routineId = searchParams.get('routine') as RoutineType | null;
-  const routine = routineId ? getRoutineById(routineId) : null;
+  const routineId = searchParams.get('routine');
+  const [routine, setRoutine] = useState<Routine | null>(null);
+  const [routineLoading, setRoutineLoading] = useState(!!routineId);
 
-  const [overrides, setOverrides] = useState<ExerciseOverride[]>(() => {
-    if (!routine) return [];
-    return routine.exercises.map((ex) => ({
-      exerciseId: ex.exerciseId,
-      sets: ex.sets,
-      reps: ex.reps,
-      restTimeSeconds: ex.restTimeSeconds,
-    }));
-  });
+  useEffect(() => {
+    if (!routineId) {
+      setRoutineLoading(false);
+      return;
+    }
+    let cancelled = false;
+    fetchRoutineById(routineId)
+      .then((r) => {
+        if (!cancelled) setRoutine(r);
+      })
+      .catch(() => {
+        if (!cancelled) setRoutine(null);
+      })
+      .finally(() => {
+        if (!cancelled) setRoutineLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [routineId]);
+
+  const [overrides, setOverrides] = useState<ExerciseOverride[]>([]);
+  useEffect(() => {
+    if (routine?.exercises?.length) {
+      setOverrides(
+        routine.exercises.map((ex) => ({
+          exerciseId: ex.exerciseId,
+          sets: ex.sets,
+          reps: ex.reps,
+          restTimeSeconds: ex.restTimeSeconds,
+        }))
+      );
+    }
+  }, [routine]);
 
   const [swapIndex, setSwapIndex] = useState<number | null>(null);
   const [lastPerfMap, setLastPerfMap] = useState<Record<string, LastExercisePerformance | null>>({});
@@ -150,6 +177,14 @@ function PreviewContent() {
     );
     router.push(`/workout?routine=${routineId}`);
   }, [routineId, overrides, router]);
+
+  if (routineLoading) {
+    return (
+      <div className={styles.page}>
+        <div className={styles.loading}>Loading routine…</div>
+      </div>
+    );
+  }
 
   if (!routine || !routineId) {
     return (

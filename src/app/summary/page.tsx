@@ -2,13 +2,12 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { SessionLog } from '@/types';
+import { SessionLog, Routine } from '@/types';
 import { getExerciseById } from '@/data/exercises';
-import { getRoutineById } from '@/data/routines';
 import { formatDuration } from '@/utils/time';
 import { formatWeight, lbsToKg } from '@/utils/weight';
 import { getMotivationalMessage, getSessionGrade } from '@/utils/motivation';
-import { fetchSessionById, fetchPersonalRecords } from '@/lib/api';
+import { fetchSessionById, fetchPersonalRecords, fetchRoutineById } from '@/lib/api';
 import styles from './page.module.css';
 
 function SummaryContent() {
@@ -17,6 +16,7 @@ function SummaryContent() {
   const sessionId = searchParams.get('sessionId');
 
   const [session, setSession] = useState<SessionLog | null>(null);
+  const [routine, setRoutine] = useState<Routine | null>(null);
   const [personalRecords, setPersonalRecords] = useState<Record<string, { maxWeight: number; maxVolume: number; date: string }>>({});
   const [message] = useState(getMotivationalMessage());
 
@@ -31,6 +31,14 @@ function SummaryContent() {
         ]);
         setSession(sess);
         setPersonalRecords(records);
+        if (sess.routineId) {
+          try {
+            const r = await fetchRoutineById(sess.routineId);
+            setRoutine(r);
+          } catch {
+            setRoutine(null);
+          }
+        }
       } catch (err) {
         console.error('Failed to load summary:', err);
       }
@@ -45,8 +53,6 @@ function SummaryContent() {
       </div>
     );
   }
-
-  const routine = getRoutineById(session.routineId);
   const totalCompletedSets = session.exercises.reduce(
     (sum, ex) => sum + ex.sets.filter((s) => s.completed).length,
     0
@@ -97,7 +103,7 @@ function SummaryContent() {
             color: routine?.color,
           }}
         >
-          {routine?.icon} {routine?.name}
+          {routine ? `${routine.icon} ${routine.name}` : session.routineId}
         </div>
 
         <div className={styles.statsGrid}>

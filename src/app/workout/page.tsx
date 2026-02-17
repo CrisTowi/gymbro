@@ -3,8 +3,9 @@
 import { useEffect, useState, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { v4 as uuidv4 } from 'uuid';
-import { SessionLog, ExerciseLog, SetLog, RoutineType, RoutineExercise } from '@/types';
-import { getRoutineById } from '@/data/routines';
+import { SessionLog, ExerciseLog, SetLog, RoutineExercise } from '@/types';
+import type { Routine } from '@/types';
+import { fetchRoutineById } from '@/lib/api';
 import { getExerciseById } from '@/data/exercises';
 import { useTimer } from '@/hooks/useTimer';
 import { useNotification } from '@/hooks/useNotification';
@@ -45,8 +46,30 @@ function readOverrides(): ExerciseOverride[] | null {
 function WorkoutContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const routineId = searchParams.get('routine') as RoutineType | null;
-  const routine = routineId ? getRoutineById(routineId) : null;
+  const routineId = searchParams.get('routine');
+  const [routine, setRoutine] = useState<Routine | null>(null);
+  const [routineLoading, setRoutineLoading] = useState(!!routineId);
+
+  useEffect(() => {
+    if (!routineId) {
+      setRoutineLoading(false);
+      return;
+    }
+    let cancelled = false;
+    fetchRoutineById(routineId)
+      .then((r) => {
+        if (!cancelled) setRoutine(r);
+      })
+      .catch(() => {
+        if (!cancelled) setRoutine(null);
+      })
+      .finally(() => {
+        if (!cancelled) setRoutineLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [routineId]);
 
   const [session, setSession] = useState<SessionLog | null>(null);
   const [effectiveExercises, setEffectiveExercises] = useState<RoutineExercise[]>([]);
@@ -371,15 +394,25 @@ function WorkoutContent() {
     setNextExercisePreview(null);
   }, [timer]);
 
-  if (!routine || !session) {
+  if (routineLoading || !routine) {
     return (
       <div className={styles.page}>
-        <div className={styles.error}>
-          <h2>No routine selected</h2>
-          <button onClick={() => router.push('/')} className={styles.backButton}>
-            Go Home
-          </button>
+        <div className={styles.loading}>
+          {routineLoading ? 'Loading routine…' : 'No routine selected'}
+          {!routineLoading && (
+            <button onClick={() => router.push('/')} className={styles.backButton}>
+              Go Home
+            </button>
+          )}
         </div>
+      </div>
+    );
+  }
+
+  if (!session) {
+    return (
+      <div className={styles.page}>
+        <div className={styles.loading}>Starting workout…</div>
       </div>
     );
   }

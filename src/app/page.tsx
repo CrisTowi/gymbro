@@ -1,36 +1,46 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import WeeklyPlan from '@/components/WeeklyPlan/WeeklyPlan';
 import LastSessionCard from '@/components/SessionSummary/LastSessionCard';
-import { WeeklyPlan as WeeklyPlanType, RoutineType, SessionLog, DEFAULT_WEEKLY_PLAN } from '@/types';
-import { routines } from '@/data/routines';
+import { WeeklyPlan as WeeklyPlanType, Routine, SessionLog, DEFAULT_WEEKLY_PLAN } from '@/types';
 import { getDayOfWeek } from '@/utils/time';
-import { fetchWeeklyPlan, updateWeeklyPlan, fetchLastSession } from '@/lib/api';
+import {
+  fetchWeeklyPlan,
+  updateWeeklyPlan,
+  fetchLastSession,
+  fetchRoutines,
+  seedDefaultRoutines,
+} from '@/lib/api';
 import styles from './page.module.css';
 
 export default function Home() {
   const [weeklyPlan, setWeeklyPlan] = useState<WeeklyPlanType>(DEFAULT_WEEKLY_PLAN);
+  const [routines, setRoutines] = useState<Routine[]>([]);
   const [lastSession, setLastSession] = useState<SessionLog | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [seeding, setSeeding] = useState(false);
+
+  const loadData = useCallback(async () => {
+    try {
+      const [plan, routineList, session] = await Promise.all([
+        fetchWeeklyPlan(),
+        fetchRoutines(),
+        fetchLastSession(),
+      ]);
+      setWeeklyPlan(plan);
+      setRoutines(routineList);
+      setLastSession(session);
+    } catch (err) {
+      console.error('Failed to load home data:', err);
+    }
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
-    async function load() {
-      try {
-        const [plan, session] = await Promise.all([
-          fetchWeeklyPlan(),
-          fetchLastSession(),
-        ]);
-        setWeeklyPlan(plan);
-        setLastSession(session);
-      } catch (err) {
-        console.error('Failed to load home data:', err);
-      }
-      setMounted(true);
-    }
-    load();
-  }, []);
+    loadData();
+  }, [loadData]);
 
   const handlePlanChange = async (plan: WeeklyPlanType) => {
     setWeeklyPlan(plan);
@@ -41,7 +51,19 @@ export default function Home() {
     }
   };
 
-  const todayRoutineId = weeklyPlan[getDayOfWeek()] as RoutineType | null;
+  const handleSeedDefaults = async () => {
+    setSeeding(true);
+    try {
+      const created = await seedDefaultRoutines();
+      setRoutines(created);
+    } catch (err) {
+      console.error('Failed to create default routines:', err);
+    } finally {
+      setSeeding(false);
+    }
+  };
+
+  const todayRoutineId = weeklyPlan[getDayOfWeek()] ?? null;
   const todayRoutine = todayRoutineId
     ? routines.find((r) => r.id === todayRoutineId)
     : null;
@@ -51,6 +73,46 @@ export default function Home() {
       <div className={styles.page}>
         <div className={styles.loading}>
           <div className={styles.loadingSpinner} />
+        </div>
+      </div>
+    );
+  }
+
+  // No routines yet: show create/customize your routine with option to start from push/pull/legs/full-body
+  if (routines.length === 0) {
+    return (
+      <div className={styles.page}>
+        <header className={styles.header}>
+          <div className={styles.headerContent}>
+            <h1 className={styles.logo}>
+              <span className={styles.logoIcon}>⚡</span>
+              GymTrack
+            </h1>
+            <p className={styles.greeting}>Set up your routine</p>
+          </div>
+        </header>
+
+        <div className={styles.content}>
+          <div className={styles.emptyRoutineCard}>
+            <span className={styles.emptyRoutineIcon}>📋</span>
+            <h2 className={styles.emptyRoutineTitle}>Create and customize your routine</h2>
+            <p className={styles.emptyRoutineDesc}>
+              Your plan is unique. Start with our suggested Push, Pull, Legs & Full Body split to hit the ground running, or build your own from scratch.
+            </p>
+            <div className={styles.emptyRoutineActions}>
+              <button
+                type="button"
+                className={styles.emptyRoutinePrimary}
+                onClick={handleSeedDefaults}
+                disabled={seeding}
+              >
+                {seeding ? 'Creating…' : 'Start with Push, Pull, Legs & Full Body'}
+              </button>
+              <Link href="/routines/new" className={styles.emptyRoutineSecondary}>
+                Build from scratch
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -120,9 +182,24 @@ export default function Home() {
           </div>
         )}
 
-        <WeeklyPlan plan={weeklyPlan} onPlanChange={handlePlanChange} />
+        <WeeklyPlan
+          plan={weeklyPlan}
+          onPlanChange={handlePlanChange}
+          routines={routines}
+        />
 
-        <LastSessionCard session={lastSession} />
+        <div className={styles.manageRoutines}>
+          <Link href="/routines" className={styles.manageRoutinesLink}>
+            Manage routines
+          </Link>
+        </div>
+
+        <LastSessionCard
+          session={lastSession}
+          routine={
+            lastSession ? routines.find((r) => r.id === lastSession.routineId) ?? null : null
+          }
+        />
       </div>
     </div>
   );

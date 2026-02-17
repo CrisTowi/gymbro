@@ -3,6 +3,8 @@ import {
   SessionLog,
   WeeklyPlan,
   ExerciseLog,
+  Routine,
+  RoutineExercise,
 } from '@/types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
@@ -62,31 +64,73 @@ export async function fetchAlternatives(
   return request<Exercise[]>(`/api/exercises/${id}/alternatives${qs}`);
 }
 
-// ─── Routines ────────────────────────────────────────────────
+// ─── Routines (user-scoped) ───────────────────────────────────
 
 interface RoutineResponse {
   routineId: string;
   name: string;
-  description: string;
+  description?: string;
   color: string;
   icon: string;
-  exercises: {
-    exerciseId: string;
-    sets: number;
-    reps: number;
-    restTimeSeconds: number;
-    notes?: string;
-  }[];
+  exercises: RoutineExercise[];
 }
 
-export async function fetchRoutines(): Promise<RoutineResponse[]> {
-  return request<RoutineResponse[]>('/api/routines');
+function normalizeRoutine(r: RoutineResponse): Routine {
+  return {
+    id: r.routineId,
+    name: r.name,
+    description: r.description ?? '',
+    color: r.color,
+    icon: r.icon,
+    exercises: r.exercises ?? [],
+  };
 }
 
-export async function fetchRoutineById(
-  id: string
-): Promise<RoutineResponse> {
-  return request<RoutineResponse>(`/api/routines/${id}`);
+export async function fetchRoutines(): Promise<Routine[]> {
+  const data = await request<RoutineResponse[]>('/api/routines');
+  return data.map(normalizeRoutine);
+}
+
+export async function fetchRoutineById(id: string): Promise<Routine> {
+  const data = await request<RoutineResponse>(`/api/routines/${id}`);
+  return normalizeRoutine(data);
+}
+
+export async function seedDefaultRoutines(): Promise<Routine[]> {
+  const data = await request<RoutineResponse[]>('/api/routines/seed-defaults', {
+    method: 'POST',
+  });
+  return data.map(normalizeRoutine);
+}
+
+export async function createRoutine(routine: {
+  routineId: string;
+  name: string;
+  description?: string;
+  color: string;
+  icon: string;
+  exercises?: RoutineExercise[];
+}): Promise<Routine> {
+  const data = await request<RoutineResponse>('/api/routines', {
+    method: 'POST',
+    body: JSON.stringify(routine),
+  });
+  return normalizeRoutine(data);
+}
+
+export async function updateRoutine(
+  id: string,
+  updates: Partial<Pick<Routine, 'name' | 'description' | 'color' | 'icon' | 'exercises'>>
+): Promise<Routine> {
+  const data = await request<RoutineResponse>(`/api/routines/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(updates),
+  });
+  return normalizeRoutine(data);
+}
+
+export async function deleteRoutine(id: string): Promise<void> {
+  await request(`/api/routines/${id}`, { method: 'DELETE' });
 }
 
 // ─── Weekly Plan ─────────────────────────────────────────────

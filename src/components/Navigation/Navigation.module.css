@@ -11,11 +11,11 @@
 
 .navInner {
   display: flex;
-  justify-content: center;
-  gap: var(--space-xl);
+  justify-content: space-between;
+  gap: var(--space-xs);
   max-width: var(--max-width);
   margin: 0 auto;
-  padding: var(--space-md) var(--space-md);
+  padding: var(--space-sm) var(--space-sm);
 }
 
 .navItem {
@@ -23,8 +23,10 @@
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  padding: var(--space-xs) var(--space-lg);
+  padding: var(--space-xs) var(--space-sm);
   border-radius: var(--radius-md);
+  flex: 1;
+  min-width: 0;
   color: var(--color-text-muted);
   text-decoration: none;
   transition: all var(--transition-fast);
@@ -66,6 +68,7 @@
   }
 
   .navItem {
+    flex: none;
     flex-direction: row;
     gap: var(--space-sm);
     font-size: var(--text-sm);

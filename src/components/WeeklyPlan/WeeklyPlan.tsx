@@ -1,8 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { WeeklyPlan as WeeklyPlanType, RoutineType, DayOfWeek } from '@/types';
-import { routines } from '@/data/routines';
+import { WeeklyPlan as WeeklyPlanType, Routine, DayOfWeek } from '@/types';
 import { getDayOfWeek } from '@/utils/time';
 import styles from './WeeklyPlan.module.css';
 
@@ -19,9 +18,10 @@ const DAYS: { key: DayOfWeek; short: string; label: string }[] = [
 interface WeeklyPlanProps {
   plan: WeeklyPlanType;
   onPlanChange: (plan: WeeklyPlanType) => void;
+  routines: Routine[];
 }
 
-export default function WeeklyPlan({ plan, onPlanChange }: WeeklyPlanProps) {
+export default function WeeklyPlan({ plan, onPlanChange, routines }: WeeklyPlanProps) {
   const [editingDay, setEditingDay] = useState<DayOfWeek | null>(null);
   const today = getDayOfWeek();
 
@@ -29,24 +29,24 @@ export default function WeeklyPlan({ plan, onPlanChange }: WeeklyPlanProps) {
     setEditingDay(editingDay === day ? null : day);
   };
 
-  const handleRoutineSelect = (day: DayOfWeek, routineId: RoutineType | null) => {
+  const handleRoutineSelect = (day: DayOfWeek, routineId: string | null) => {
     onPlanChange({ ...plan, [day]: routineId });
     setEditingDay(null);
   };
 
-  const getRoutineColor = (routineId: RoutineType | null): string => {
+  const getRoutineColor = (routineId: string | null): string => {
     if (!routineId) return 'transparent';
     const routine = routines.find((r) => r.id === routineId);
     return routine?.color || 'transparent';
   };
 
-  const getRoutineName = (routineId: RoutineType | null): string => {
+  const getRoutineName = (routineId: string | null): string => {
     if (!routineId) return 'Rest';
     const routine = routines.find((r) => r.id === routineId);
     return routine?.name || '';
   };
 
-  const getRoutineIcon = (routineId: RoutineType | null): string => {
+  const getRoutineIcon = (routineId: string | null): string => {
     if (!routineId) return '😴';
     const routine = routines.find((r) => r.id === routineId);
     return routine?.icon || '';
@@ -57,7 +57,7 @@ export default function WeeklyPlan({ plan, onPlanChange }: WeeklyPlanProps) {
       <h2 className={styles.title}>Weekly Plan</h2>
       <div className={styles.grid}>
         {DAYS.map(({ key, short }) => {
-          const routineId = plan[key] as RoutineType | null;
+          const routineId = plan[key] ?? null;
           const isToday = today === key;
           const isEditing = editingDay === key;
 
@@ -96,9 +96,7 @@ export default function WeeklyPlan({ plan, onPlanChange }: WeeklyPlanProps) {
                     <button
                       key={routine.id}
                       className={styles.dropdownItem}
-                      onClick={() =>
-                        handleRoutineSelect(key, routine.id as RoutineType)
-                      }
+                      onClick={() => handleRoutineSelect(key, routine.id)}
                       style={{ borderLeft: `3px solid ${routine.color}` }}
                     >
                       {routine.icon} {routine.name}

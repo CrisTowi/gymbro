@@ -1,17 +1,16 @@
 'use client';
 
-import { SessionLog } from '@/types';
+import { SessionLog, Routine } from '@/types';
 import { getExerciseById } from '@/data/exercises';
-import { getRoutineById } from '@/data/routines';
 import { formatDuration, getRelativeDate } from '@/utils/time';
-import { formatWeight } from '@/utils/weight';
 import styles from './LastSessionCard.module.css';
 
 interface LastSessionCardProps {
   session: SessionLog | null;
+  routine?: Routine | null;
 }
 
-export default function LastSessionCard({ session }: LastSessionCardProps) {
+export default function LastSessionCard({ session, routine }: LastSessionCardProps) {
   if (!session) {
     return (
       <div className={styles.card}>
@@ -23,8 +22,6 @@ export default function LastSessionCard({ session }: LastSessionCardProps) {
       </div>
     );
   }
-
-  const routine = getRoutineById(session.routineId);
   const completedSets = session.exercises.reduce(
     (sum, ex) => sum + ex.sets.filter((s) => s.completed).length,
     0
@@ -48,12 +45,14 @@ export default function LastSessionCard({ session }: LastSessionCardProps) {
         className={styles.routineBadge}
         style={{ backgroundColor: routine?.color ? `${routine.color}22` : undefined, color: routine?.color }}
       >
-        {routine?.icon} {routine?.name || session.routineId}
+        {routine ? `${routine.icon} ${routine.name}` : session.routineId}
       </div>
 
       <div className={styles.stats}>
         <div className={styles.stat}>
-          <span className={styles.statValue}>{formatWeight(session.totalWeightLbs, false)}</span>
+          <span className={styles.statValue}>
+            {session.totalWeightLbs.toLocaleString()} lbs
+          </span>
           <span className={styles.statLabel}>Total lifted</span>
         </div>
         <div className={styles.stat}>
