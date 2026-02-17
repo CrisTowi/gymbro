@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Suspense } from 'react';
+import { AuthProvider } from '@/context/AuthContext';
+import AuthGuard from '@/components/AuthGuard/AuthGuard';
 import Navigation from '@/components/Navigation/Navigation';
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
 import DevTools from '@/components/DevTools/DevTools';
@@ -38,8 +40,12 @@ export default function RootLayout({
       </head>
       <body suppressHydrationWarning>
         <ServiceWorkerRegister />
-        <main>{children}</main>
-        <Navigation />
+        <AuthProvider>
+          <AuthGuard>
+            <main>{children}</main>
+            <Navigation />
+          </AuthGuard>
+        </AuthProvider>
         <Suspense fallback={null}>
           <DevTools />
         </Suspense>

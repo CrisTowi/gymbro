@@ -7,9 +7,23 @@ import {
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
 
+let authToken: string | null = null;
+
+export function setAuthToken(token: string | null) {
+  authToken = token;
+}
+
+export function getAuthToken(): string | null {
+  return authToken;
+}
+
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
+  const headers: HeadersInit = { 'Content-Type': 'application/json' };
+  if (authToken) {
+    (headers as Record<string, string>)['Authorization'] = `Bearer ${authToken}`;
+  }
   const res = await fetch(`${API_URL}${path}`, {
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     ...options,
   });
   if (!res.ok) {
@@ -230,4 +244,48 @@ export async function fetchRecommendedSets(
 export async function fetchLastSession(): Promise<SessionLog | null> {
   const data = await request<SessionResponse | null>('/api/stats/last-session');
   return data ? normalizeSession(data) : null;
+}
+
+// ─── Auth ─────────────────────────────────────────────────────
+
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  height: number | null;
+  weight: number | null;
+  goal: string | null;
+}
+
+export async function validateInvitation(token: string): Promise<{ valid: boolean }> {
+  const res = await request<{ valid: boolean; invitationId?: string }>(
+    `/api/auth/invitation/${encodeURIComponent(token)}`
+  );
+  return res;
+}
+
+export async function register(params: {
+  invitationToken: string;
+  name: string;
+  email: string;
+  password: string;
+  height?: number | null;
+  weight?: number | null;
+  goal?: string | null;
+}): Promise<{ user: User; token: string }> {
+  return request<{ user: User; token: string }>('/api/auth/register', {
+    method: 'POST',
+    body: JSON.stringify(params),
+  });
+}
+
+export async function login(email: string, password: string): Promise<{ user: User; token: string }> {
+  return request<{ user: User; token: string }>('/api/auth/login', {
+    method: 'POST',
+    body: JSON.stringify({ email, password }),
+  });
+}
+
+export async function fetchMe(): Promise<User> {
+  return request<User>('/api/auth/me');
 }

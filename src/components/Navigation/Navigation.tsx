@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 import styles from './Navigation.module.css';
 
 const navItems = [
@@ -33,8 +34,14 @@ function NavIcon({ icon }: { icon: string }) {
 
 export default function Navigation() {
   const pathname = usePathname();
+  const { logout } = useAuth();
 
-  if (pathname.startsWith('/workout') || pathname.startsWith('/summary')) {
+  if (
+    pathname.startsWith('/workout') ||
+    pathname.startsWith('/summary') ||
+    pathname === '/login' ||
+    pathname === '/register'
+  ) {
     return null;
   }
 
@@ -54,6 +61,19 @@ export default function Navigation() {
             </Link>
           );
         })}
+        <button
+          type="button"
+          onClick={() => logout()}
+          className={styles.navItem}
+          aria-label="Log out"
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
+          </svg>
+          <span className={styles.label}>Log out</span>
+        </button>
       </div>
     </nav>
   );
