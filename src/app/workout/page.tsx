@@ -52,6 +52,10 @@ function WorkoutContent() {
   const [effectiveExercises, setEffectiveExercises] = useState<RoutineExercise[]>([]);
   const [activeExerciseIndex, setActiveExerciseIndex] = useState(0);
   const [showTimer, setShowTimer] = useState(false);
+  const [nextExercisePreview, setNextExercisePreview] = useState<{
+    name: string;
+    instructions: string[];
+  } | null>(null);
   const [currentRestTime, setCurrentRestTime] = useState(120);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [showConfirmEnd, setShowConfirmEnd] = useState(false);
@@ -64,6 +68,7 @@ function WorkoutContent() {
 
   const handleTimerComplete = useCallback(() => {
     setShowTimer(false);
+    setNextExercisePreview(null);
     sendNotification('Rest Complete!', {
       body: 'Time to start your next set. Let\'s go!',
       tag: 'rest-timer',
@@ -240,6 +245,17 @@ function WorkoutContent() {
 
       const exerciseConfig = effectiveExercises[exerciseIndex];
       const restTime = exerciseConfig?.restTimeSeconds || 120;
+      const hasMoreSetsInExercise = setIndex + 1 < (exerciseConfig?.sets ?? 0);
+      const nextExerciseId = hasMoreSetsInExercise
+        ? exerciseConfig?.exerciseId
+        : effectiveExercises[exerciseIndex + 1]?.exerciseId;
+      const nextExercise = nextExerciseId ? getExerciseById(nextExerciseId) : null;
+      setNextExercisePreview(
+        nextExercise
+          ? { name: nextExercise.name, instructions: nextExercise.instructions }
+          : null
+      );
+      (document.activeElement as HTMLElement)?.blur?.();
       setCurrentRestTime(restTime);
       timer.start(restTime);
       setShowTimer(true);
@@ -352,6 +368,7 @@ function WorkoutContent() {
   const handleSkipTimer = useCallback(() => {
     timer.reset();
     setShowTimer(false);
+    setNextExercisePreview(null);
   }, [timer]);
 
   if (!routine || !session) {
@@ -479,6 +496,7 @@ function WorkoutContent() {
           onSkip={handleSkipTimer}
           onPause={timer.pause}
           onResume={timer.resume}
+          nextExercise={nextExercisePreview}
         />
       )}
 

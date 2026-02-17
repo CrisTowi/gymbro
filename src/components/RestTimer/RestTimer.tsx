@@ -1,7 +1,13 @@
 'use client';
 
+import { useEffect } from 'react';
 import { formatTime } from '@/utils/time';
 import styles from './RestTimer.module.css';
+
+export interface NextExercisePreview {
+  name: string;
+  instructions: string[];
+}
 
 interface RestTimerProps {
   remainingSeconds: number;
@@ -13,6 +19,7 @@ interface RestTimerProps {
   onSkip: () => void;
   onPause: () => void;
   onResume: () => void;
+  nextExercise?: NextExercisePreview | null;
 }
 
 export default function RestTimer({
@@ -25,7 +32,46 @@ export default function RestTimer({
   onSkip,
   onPause,
   onResume,
+  nextExercise,
 }: RestTimerProps) {
+  // Remove focus from any input when timer opens to avoid iOS "Undo typing" prompt when moving the phone
+  useEffect(() => {
+    (document.activeElement as HTMLElement)?.blur?.();
+  }, []);
+
+  // Keep screen on while rest timer is visible (e.g. avoid iPhone auto-lock). Supported in Safari iOS 16.4+.
+  useEffect(() => {
+    let sentinel: WakeLockSentinel | null = null;
+    const nav = typeof navigator !== 'undefined' ? navigator : null;
+    const wakeLock = nav && 'wakeLock' in nav ? (nav as Navigator & { wakeLock: { request(type: 'screen'): Promise<WakeLockSentinel> } }).wakeLock : null;
+
+    async function requestWakeLock() {
+      if (wakeLock) {
+        try {
+          sentinel = await wakeLock.request('screen');
+        } catch {
+          // Ignore (e.g. low battery, or already active)
+        }
+      }
+    }
+
+    function handleVisibilityChange() {
+      if (document.visibilityState === 'hidden') {
+        sentinel = null; // Browser releases automatically when hidden
+      } else {
+        requestWakeLock();
+      }
+    }
+
+    requestWakeLock();
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      sentinel?.release().catch(() => {});
+    };
+  }, []);
+
   if (totalSeconds === 0) return null;
 
   const circumference = 2 * Math.PI * 54;
@@ -97,6 +143,20 @@ export default function RestTimer({
             +15s
           </button>
         </div>
+
+        {nextExercise && (
+          <div className={styles.nextExercise}>
+            <h4 className={styles.nextExerciseTitle}>Next up</h4>
+            <p className={styles.nextExerciseName}>{nextExercise.name}</p>
+            {nextExercise.instructions.length > 0 && (
+              <ol className={styles.nextExerciseInstructions}>
+                {nextExercise.instructions.map((step, i) => (
+                  <li key={i}>{step}</li>
+                ))}
+              </ol>
+            )}
+          </div>
+        )}
 
         <button className={styles.skipButton} onClick={onSkip}>
           Skip Rest
