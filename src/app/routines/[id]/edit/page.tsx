@@ -30,6 +30,8 @@ export default function EditRoutinePage() {
   const [routine, setRoutine] = useState<Routine | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [saveErrorMessage, setSaveErrorMessage] = useState('');
   const [name, setName] = useState('');
   const [icon, setIcon] = useState('');
   const [color, setColor] = useState('');
@@ -71,6 +73,8 @@ export default function EditRoutinePage() {
   const handleSave = async () => {
     if (!id || id === 'new') return;
     setSaving(true);
+    setSaveStatus('idle');
+    setSaveErrorMessage('');
     try {
       await updateRoutine(id, {
         name,
@@ -79,8 +83,11 @@ export default function EditRoutinePage() {
         description,
         exercises,
       });
-      router.push('/routines');
+      setSaveStatus('success');
+      setTimeout(() => router.push('/routines'), 800);
     } catch (err) {
+      setSaveStatus('error');
+      setSaveErrorMessage(err instanceof Error ? err.message : 'Failed to save routine');
       console.error('Failed to save:', err);
     } finally {
       setSaving(false);
@@ -233,6 +240,22 @@ export default function EditRoutinePage() {
                     <span className={styles.exerciseName}>
                       {meta?.name ?? ex.exerciseId}
                     </span>
+                    {meta?.referenceUrl && (
+                      <a
+                        href={meta.referenceUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.howToLink}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        How to perform
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                          <polyline points="15 3 21 3 21 9" />
+                          <line x1="10" y1="14" x2="21" y2="3" />
+                        </svg>
+                      </a>
+                    )}
                     <div className={styles.exerciseControls}>
                       <div className={styles.miniControl}>
                         <label>Sets</label>
@@ -311,6 +334,14 @@ export default function EditRoutinePage() {
         </section>
 
         <div className={styles.footer}>
+          {saveStatus === 'success' && (
+            <p className={styles.saveStatusSuccess} role="status">Routine saved!</p>
+          )}
+          {saveStatus === 'error' && (
+            <p className={styles.saveStatusError} role="alert">
+              {saveErrorMessage}
+            </p>
+          )}
           <button
             type="button"
             className={styles.saveBtn}
