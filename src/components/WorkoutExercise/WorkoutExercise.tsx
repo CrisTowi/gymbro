@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Exercise, SetLog } from '@/types';
 import { formatWeight, lbsToKg } from '@/utils/weight';
 import { RecommendedSet } from '@/lib/api';
@@ -218,8 +218,13 @@ function SetRow({
     ?? 0;
   const suggestedReps = recommendation?.reps ?? targetReps;
 
-  const [weight, setWeight] = useState(set.weightLbs || suggestedWeight);
-  const [reps, setReps] = useState(set.reps || suggestedReps);
+  const [weight, setWeight] = useState(set.weightLbs ?? suggestedWeight);
+  const [reps, setReps] = useState(set.reps ?? suggestedReps);
+
+  useEffect(() => {
+    setWeight(set.weightLbs ?? suggestedWeight);
+    setReps(set.reps ?? suggestedReps);
+  }, [set.weightLbs, set.reps]);
 
   const isUsingRecommendation = hasRecommendations && !set.completed && weight === suggestedWeight && suggestedWeight > 0;
 
@@ -241,12 +246,12 @@ function SetRow({
             const val = Number(e.target.value);
             if (!isNaN(val)) {
               setWeight(val);
-              if (set.completed) onUpdate({ weightLbs: val });
+              onUpdate({ weightLbs: val });
             }
           }}
           placeholder={suggestedWeight > 0 ? String(suggestedWeight) : '0'}
           className={`${styles.input} ${isUsingRecommendation ? styles.inputRecommended : ''}`}
-          disabled={set.completed}
+          aria-label={`Set ${index + 1} weight`}
         />
         {isUsingRecommendation && (
           <span className={styles.recommendedHint}>rec</span>
@@ -263,27 +268,40 @@ function SetRow({
             const val = Number(e.target.value);
             if (!isNaN(val)) {
               setReps(val);
-              if (set.completed) onUpdate({ reps: val });
+              onUpdate({ reps: val });
             }
           }}
           placeholder={String(suggestedReps)}
           className={styles.input}
-          disabled={set.completed}
+          aria-label={`Set ${index + 1} reps`}
         />
       </div>
 
       <div className={styles.setActions}>
         {!set.completed ? (
-          <button
-            className={styles.completeButton}
-            onClick={handleComplete}
-            disabled={weight <= 0 || reps <= 0}
-            aria-label={`Complete set ${index + 1}`}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
-          </button>
+          <>
+            <button
+              className={styles.completeButton}
+              onClick={handleComplete}
+              disabled={weight <= 0 || reps <= 0}
+              aria-label={`Complete set ${index + 1}`}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </button>
+            <button
+              className={styles.removeButton}
+              onClick={onRemove}
+              aria-label={`Remove set ${index + 1} (skip)`}
+              title="Remove this set"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          </>
         ) : (
           <button
             className={styles.removeButton}
