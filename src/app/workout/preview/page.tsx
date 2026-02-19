@@ -1,7 +1,22 @@
 'use client';
 
-import { useState, useMemo, useCallback, useEffect, Suspense } from 'react';
+import { useState, useMemo, useCallback, useEffect, Suspense, type ReactNode } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import {
+  DndContext,
+  DragEndEvent,
+  PointerSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+  arrayMove,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { Exercise } from '@/types';
 import { fetchRoutineById } from '@/lib/api';
 import type { Routine } from '@/types';
@@ -10,6 +25,9 @@ import { formatWeight } from '@/utils/weight';
 import { formatTime } from '@/utils/time';
 import { fetchLastExercisePerformance, LastExercisePerformance } from '@/lib/api';
 import styles from './page.module.css';
+
+const touchActivation = { delay: 250, tolerance: 8 };
+const pointerActivation = { distance: 8 };
 
 interface ExerciseOverride {
   exerciseId: string;
@@ -35,6 +53,33 @@ function formatEstimate(seconds: number): string {
   const hours = Math.floor(mins / 60);
   const remainMins = mins % 60;
   return `~${hours}h ${remainMins}m`;
+}
+
+function SortableRow({
+  id,
+  children,
+}: {
+  id: string;
+  children: (props: {
+    setNodeRef: (node: HTMLElement | null) => void;
+    setActivatorNodeRef: (node: HTMLElement | null) => void;
+    listeners: Record<string, unknown> | undefined;
+    transform: { x: number; y: number; scaleX: number; scaleY: number } | null;
+    transition: string | undefined;
+    isDragging: boolean;
+  }) => ReactNode;
+}) {
+  const {
+    setNodeRef,
+    setActivatorNodeRef,
+    listeners,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id });
+  return (
+    <>{children({ setNodeRef, setActivatorNodeRef, listeners, transform, transition, isDragging })}</>
+  );
 }
 
 function PreviewContent() {
@@ -162,36 +207,18 @@ function PreviewContent() {
     setSwapIndex((current) => (current === index ? null : current != null && current > index ? current - 1 : current));
   }, []);
 
-  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
-  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  const sensors = useSensors(
+    useSensor(TouchSensor, { activationConstraint: touchActivation }),
+    useSensor(PointerSensor, { activationConstraint: pointerActivation })
+  );
 
-  const handleDragStart = useCallback((index: number) => (e: React.DragEvent) => {
-    setDraggedIndex(index);
-    e.dataTransfer.setData('text/plain', String(index));
-    e.dataTransfer.effectAllowed = 'move';
-  }, []);
-
-  const handleDragOver = useCallback((index: number) => (e: React.DragEvent) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-    setDragOverIndex(index);
-  }, []);
-
-  const handleDragLeave = useCallback(() => {
-    setDragOverIndex(null);
-  }, []);
-
-  const handleDrop = useCallback((toIndex: number) => (e: React.DragEvent) => {
-    e.preventDefault();
-    setDragOverIndex(null);
-    const fromIndex = parseInt(e.dataTransfer.getData('text/plain'), 10);
-    if (Number.isNaN(fromIndex) || fromIndex === toIndex) return;
-    setOverrides((prev) => {
-      const next = [...prev];
-      const [item] = next.splice(fromIndex, 1);
-      next.splice(toIndex, 0, item);
-      return next;
-    });
+  const handleDragEnd = useCallback((event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const fromIndex = Number(active.id);
+    const toIndex = Number(over.id);
+    if (Number.isNaN(fromIndex) || Number.isNaN(toIndex)) return;
+    setOverrides((prev) => arrayMove(prev, fromIndex, toIndex));
     setSwapIndex((current) => {
       if (current === null) return null;
       if (current === fromIndex) return toIndex;
@@ -199,11 +226,6 @@ function PreviewContent() {
       if (fromIndex > current && toIndex <= current) return current + 1;
       return current;
     });
-  }, []);
-
-  const handleDragEnd = useCallback(() => {
-    setDraggedIndex(null);
-    setDragOverIndex(null);
   }, []);
 
   const resetToDefaults = useCallback(() => {
@@ -301,104 +323,105 @@ function PreviewContent() {
             <span className={styles.listHeaderControl}>Rest</span>
           </div>
 
-          {overrides.map((override, index) => {
-            const exercise = getExerciseById(override.exerciseId);
-            const defaultEx = routine.exercises[index];
-            const lastPerf = lastPerfMap[override.exerciseId] ?? null;
-            const isSwapped = defaultEx && override.exerciseId !== defaultEx.exerciseId;
-            const isModified =
-              isSwapped ||
-              (defaultEx && (
-                override.sets !== defaultEx.sets ||
-                override.reps !== defaultEx.reps ||
-                override.restTimeSeconds !== defaultEx.restTimeSeconds
-              ));
+          <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+            <SortableContext
+              items={overrides.map((_, i) => String(i))}
+              strategy={verticalListSortingStrategy}
+            >
+              {overrides.map((override, index) => {
+                const exercise = getExerciseById(override.exerciseId);
+                const defaultEx = routine.exercises[index];
+                const lastPerf = lastPerfMap[override.exerciseId] ?? null;
+                const isSwapped = defaultEx && override.exerciseId !== defaultEx.exerciseId;
+                const isModified =
+                  isSwapped ||
+                  (defaultEx && (
+                    override.sets !== defaultEx.sets ||
+                    override.reps !== defaultEx.reps ||
+                    override.restTimeSeconds !== defaultEx.restTimeSeconds
+                  ));
 
-            return (
-              <div
-                key={`${override.exerciseId}-${index}`}
-                className={`${styles.exerciseRow} ${isModified ? styles.modified : ''} ${isSwapped ? styles.swapped : ''} ${draggedIndex === index ? styles.dragging : ''} ${dragOverIndex === index ? styles.dragOver : ''}`}
-                onDragOver={handleDragOver(index)}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop(index)}
-              >
-                <div className={styles.exerciseInfo}>
-                  <span className={styles.exerciseIndex}>{index + 1}</span>
-                  <div className={styles.exerciseDetails}>
-                    <div className={styles.exerciseNameRow}>
-                      <span className={styles.exerciseName}>
-                        {exercise?.name || override.exerciseId}
-                      </span>
-                    </div>
-                    <span className={styles.exerciseMeta}>
-                      {exercise?.category} · {exercise?.equipment}
-                      {isSwapped && defaultEx && (
-                        <span className={styles.swappedNote}>
-                          {' '}· replaces {getExerciseById(defaultEx.exerciseId)?.name}
-                        </span>
-                      )}
-                      {!isSwapped && defaultEx?.notes && (
-                        <span className={styles.exerciseNote}> · {defaultEx.notes}</span>
-                      )}
-                    </span>
-                    {lastPerf && (
-                      <span className={styles.lastWeight}>
-                        Last: {formatWeight(lastPerf.weightLbs, false)} x {lastPerf.reps}
-                      </span>
-                    )}
-                    {exercise?.referenceUrl && (
-                      <a
-                        href={exercise.referenceUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={styles.howToLink}
-                        onClick={(e) => e.stopPropagation()}
+                return (
+                  <SortableRow key={`${override.exerciseId}-${index}`} id={String(index)}>
+                    {({ setNodeRef, setActivatorNodeRef, listeners, transform, transition, isDragging }) => (
+                      <div
+                        ref={setNodeRef}
+                        style={{
+                          transform: CSS.Transform.toString(transform),
+                          transition,
+                        }}
+                        className={`${styles.exerciseRow} ${isModified ? styles.modified : ''} ${isSwapped ? styles.swapped : ''} ${isDragging ? styles.dragging : ''}`}
                       >
-                        How to perform
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                          <polyline points="15 3 21 3 21 9" />
-                          <line x1="10" y1="14" x2="21" y2="3" />
-                        </svg>
-                      </a>
-                    )}
-                  </div>
-                </div>
+                        <div className={styles.exerciseInfo}>
+                          <span className={styles.exerciseIndex}>{index + 1}</span>
+                          <div className={styles.exerciseDetails}>
+                            <div className={styles.exerciseNameRow}>
+                              <span className={styles.exerciseName}>
+                                {exercise?.name || override.exerciseId}
+                              </span>
+                            </div>
+                            <span className={styles.exerciseMeta}>
+                              {exercise?.category} · {exercise?.equipment}
+                              {isSwapped && defaultEx && (
+                                <span className={styles.swappedNote}>
+                                  {' '}· replaces {getExerciseById(defaultEx.exerciseId)?.name}
+                                </span>
+                              )}
+                              {!isSwapped && defaultEx?.notes && (
+                                <span className={styles.exerciseNote}> · {defaultEx.notes}</span>
+                              )}
+                            </span>
+                            {lastPerf && (
+                              <span className={styles.lastWeight}>
+                                Last: {formatWeight(lastPerf.weightLbs, false)} x {lastPerf.reps}
+                              </span>
+                            )}
+                            {exercise?.referenceUrl && (
+                              <a
+                                href={exercise.referenceUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={styles.howToLink}
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                How to perform
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                                  <polyline points="15 3 21 3 21 9" />
+                                  <line x1="10" y1="14" x2="21" y2="3" />
+                                </svg>
+                              </a>
+                            )}
+                          </div>
+                        </div>
 
-                {swapIndex === index && (
-                  <SwapPicker
-                    alternatives={swapAlternatives}
-                    onSelect={(id) => handleSwapExercise(index, id)}
-                    onClose={() => setSwapIndex(null)}
-                  />
-                )}
+                        {swapIndex === index && (
+                          <SwapPicker
+                            alternatives={swapAlternatives}
+                            onSelect={(id) => handleSwapExercise(index, id)}
+                            onClose={() => setSwapIndex(null)}
+                          />
+                        )}
 
-                <div className={styles.rowActions}>
-                  <div
-                    className={styles.dragHandle}
-                    draggable
-                    onDragStart={handleDragStart(index)}
-                    onDragEnd={handleDragEnd}
-                    role="button"
-                    tabIndex={0}
-                    aria-label="Drag to reorder"
-                    title="Drag to reorder"
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        e.currentTarget.focus();
-                      }
-                    }}
-                  >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="9" cy="5" r="1" />
-                      <circle cx="9" cy="12" r="1" />
-                      <circle cx="9" cy="19" r="1" />
-                      <circle cx="15" cy="5" r="1" />
-                      <circle cx="15" cy="12" r="1" />
-                      <circle cx="15" cy="19" r="1" />
-                    </svg>
-                  </div>
+                        <div className={styles.rowActions}>
+                          <div
+                            ref={setActivatorNodeRef}
+                            className={styles.dragHandle}
+                            role="button"
+                            tabIndex={0}
+                            aria-label="Drag to reorder"
+                            title="Drag to reorder"
+                            {...listeners}
+                          >
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <circle cx="9" cy="5" r="1" />
+                              <circle cx="9" cy="12" r="1" />
+                              <circle cx="9" cy="19" r="1" />
+                              <circle cx="15" cy="5" r="1" />
+                              <circle cx="15" cy="12" r="1" />
+                              <circle cx="15" cy="19" r="1" />
+                            </svg>
+                          </div>
                   <button
                     type="button"
                     className={styles.actionBtn}
@@ -493,9 +516,13 @@ function PreviewContent() {
                     </button>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+                      </div>
+                    )}
+                  </SortableRow>
+                );
+              })}
+            </SortableContext>
+          </DndContext>
         </div>
       </div>
 

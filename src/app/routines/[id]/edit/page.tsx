@@ -1,8 +1,23 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, type ReactNode } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import {
+  DndContext,
+  DragEndEvent,
+  PointerSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+  arrayMove,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { Routine, RoutineExercise } from '@/types';
 import { Exercise } from '@/types';
 import {
@@ -11,7 +26,38 @@ import {
   fetchExercises,
 } from '@/lib/api';
 import { getExerciseById, getAlternativeExercises } from '@/data/exercises';
+import { formatTime } from '@/utils/time';
 import styles from './page.module.css';
+
+const touchActivation = { delay: 250, tolerance: 8 };
+const pointerActivation = { distance: 8 };
+
+function SortableRow({
+  id,
+  children,
+}: {
+  id: string;
+  children: (props: {
+    setNodeRef: (node: HTMLElement | null) => void;
+    setActivatorNodeRef: (node: HTMLElement | null) => void;
+    listeners: Record<string, unknown> | undefined;
+    transform: { x: number; y: number; scaleX: number; scaleY: number } | null;
+    transition: string | undefined;
+    isDragging: boolean;
+  }) => ReactNode;
+}) {
+  const {
+    setNodeRef,
+    setActivatorNodeRef,
+    listeners,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id });
+  return (
+    <>{children({ setNodeRef, setActivatorNodeRef, listeners, transform, transition, isDragging })}</>
+  );
+}
 
 const DEFAULT_EXERCISE: Omit<RoutineExercise, 'exerciseId'> = {
   sets: 3,
@@ -187,40 +233,19 @@ export default function EditRoutinePage() {
     });
   };
 
-  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
-  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  const sensors = useSensors(
+    useSensor(TouchSensor, { activationConstraint: touchActivation }),
+    useSensor(PointerSensor, { activationConstraint: pointerActivation })
+  );
 
-  const handleDragStart = (index: number) => (e: React.DragEvent) => {
-    setDraggedIndex(index);
-    e.dataTransfer.setData('text/plain', String(index));
-    e.dataTransfer.effectAllowed = 'move';
-  };
-
-  const handleDragOver = (index: number) => (e: React.DragEvent) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-    setDragOverIndex(index);
-  };
-
-  const handleDragLeave = () => setDragOverIndex(null);
-
-  const handleDrop = (toIndex: number) => (e: React.DragEvent) => {
-    e.preventDefault();
-    setDragOverIndex(null);
-    const fromIndex = parseInt(e.dataTransfer.getData('text/plain'), 10);
-    if (Number.isNaN(fromIndex) || fromIndex === toIndex) return;
-    setExercises((prev) => {
-      const next = [...prev];
-      const [item] = next.splice(fromIndex, 1);
-      next.splice(toIndex, 0, item);
-      return next;
-    });
-  };
-
-  const handleDragEnd = () => {
-    setDraggedIndex(null);
-    setDragOverIndex(null);
-  };
+  const handleDragEnd = useCallback((event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const fromIndex = Number(active.id);
+    const toIndex = Number(over.id);
+    if (Number.isNaN(fromIndex) || Number.isNaN(toIndex)) return;
+    setExercises((prev) => arrayMove(prev, fromIndex, toIndex));
+  }, []);
 
   const handleSwapExercise = (index: number, newExerciseId: string) => {
     setExercises((prev) => {
@@ -346,112 +371,81 @@ export default function EditRoutinePage() {
           </div>
 
           <ul className={styles.exerciseList}>
-            {exercises.map((ex, index) => {
-              const meta = getExerciseById(ex.exerciseId);
-              return (
-                <li
-                  key={`${ex.exerciseId}-${index}`}
-                  className={`${styles.exerciseRow} ${draggedIndex === index ? styles.dragging : ''} ${dragOverIndex === index ? styles.dragOver : ''}`}
-                  onDragOver={handleDragOver(index)}
-                  onDragLeave={handleDragLeave}
-                  onDrop={handleDrop(index)}
-                >
-                  <span className={styles.exerciseIndex}>{index + 1}</span>
-                  <div className={styles.exerciseInfo}>
-                    <div className={styles.exerciseNameRow}>
-                      <span className={styles.exerciseName}>
-                        {meta?.name ?? ex.exerciseId}
-                      </span>
-                    </div>
-                    {meta?.referenceUrl && (
-                      <a
-                        href={meta.referenceUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={styles.howToLink}
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        How to perform
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                          <polyline points="15 3 21 3 21 9" />
-                          <line x1="10" y1="14" x2="21" y2="3" />
-                        </svg>
-                      </a>
-                    )}
-                    {swapIndex === index && (
-                      <SwapPicker
-                        alternatives={swapAlternatives}
-                        onSelect={(id) => handleSwapExercise(index, id)}
-                        onClose={() => setSwapIndex(null)}
-                      />
-                    )}
-                    <div className={styles.exerciseControls}>
-                      <div className={styles.miniControl}>
-                        <label>Sets</label>
-                        <input
-                          type="number"
-                          min={1}
-                          value={ex.sets}
-                          onChange={(e) =>
-                            updateExercise(index, 'sets', parseInt(e.target.value, 10) || 1)
-                          }
-                          className={styles.miniInput}
-                        />
-                      </div>
-                      <div className={styles.miniControl}>
-                        <label>Reps</label>
-                        <input
-                          type="number"
-                          min={1}
-                          value={ex.reps}
-                          onChange={(e) =>
-                            updateExercise(index, 'reps', parseInt(e.target.value, 10) || 1)
-                          }
-                          className={styles.miniInput}
-                        />
-                      </div>
-                      <div className={styles.miniControl}>
-                        <label>Rest (s)</label>
-                        <input
-                          type="number"
-                          min={0}
-                          value={ex.restTimeSeconds}
-                          onChange={(e) =>
-                            updateExercise(
-                              index,
-                              'restTimeSeconds',
-                              parseInt(e.target.value, 10) || 0
-                            )
-                          }
-                          className={styles.miniInput}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div className={styles.rowActions}>
-                    <div
-                      className={styles.dragHandle}
-                      draggable
-                      onDragStart={handleDragStart(index)}
-                      onDragEnd={handleDragEnd}
-                      role="button"
-                      tabIndex={0}
-                      aria-label="Drag to reorder"
-                      title="Drag to reorder"
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') e.preventDefault();
-                      }}
-                    >
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <circle cx="9" cy="5" r="1" />
-                        <circle cx="9" cy="12" r="1" />
-                        <circle cx="9" cy="19" r="1" />
-                        <circle cx="15" cy="5" r="1" />
-                        <circle cx="15" cy="12" r="1" />
-                        <circle cx="15" cy="19" r="1" />
-                      </svg>
-                    </div>
+            <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+              <SortableContext
+                items={exercises.map((_, i) => String(i))}
+                strategy={verticalListSortingStrategy}
+              >
+                {exercises.map((ex, index) => {
+                  const meta = getExerciseById(ex.exerciseId);
+                  return (
+                    <SortableRow key={`${ex.exerciseId}-${index}`} id={String(index)}>
+                      {({ setNodeRef, setActivatorNodeRef, listeners, transform, transition, isDragging }) => (
+                        <li
+                          ref={setNodeRef}
+                          style={{
+                            transform: CSS.Transform.toString(transform),
+                            transition,
+                          }}
+                          className={`${styles.exerciseRow} ${isDragging ? styles.dragging : ''}`}
+                        >
+                          <div className={styles.exerciseInfo}>
+                            <span className={styles.exerciseIndex}>{index + 1}</span>
+                            <div className={styles.exerciseDetails}>
+                              <div className={styles.exerciseNameRow}>
+                                <span className={styles.exerciseName}>
+                                  {meta?.name ?? ex.exerciseId}
+                                </span>
+                              </div>
+                              <span className={styles.exerciseMeta}>
+                                {meta?.category} · {meta?.equipment}
+                              </span>
+                              {meta?.referenceUrl && (
+                                <a
+                                  href={meta.referenceUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className={styles.howToLink}
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  How to perform
+                                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                                    <polyline points="15 3 21 3 21 9" />
+                                    <line x1="10" y1="14" x2="21" y2="3" />
+                                  </svg>
+                                </a>
+                              )}
+                            </div>
+                          </div>
+
+                          {swapIndex === index && (
+                            <SwapPicker
+                              alternatives={swapAlternatives}
+                              onSelect={(id) => handleSwapExercise(index, id)}
+                              onClose={() => setSwapIndex(null)}
+                            />
+                          )}
+
+                          <div className={styles.rowActions}>
+                            <div
+                              ref={setActivatorNodeRef}
+                              className={styles.dragHandle}
+                              role="button"
+                              tabIndex={0}
+                              aria-label="Drag to reorder"
+                              title="Drag to reorder"
+                              {...listeners}
+                            >
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="9" cy="5" r="1" />
+                                <circle cx="9" cy="12" r="1" />
+                                <circle cx="9" cy="19" r="1" />
+                                <circle cx="15" cy="5" r="1" />
+                                <circle cx="15" cy="12" r="1" />
+                                <circle cx="15" cy="19" r="1" />
+                              </svg>
+                            </div>
                     <button
                       type="button"
                       className={styles.actionBtn}
@@ -480,10 +474,83 @@ export default function EditRoutinePage() {
                         <line x1="14" y1="11" x2="14" y2="17" />
                       </svg>
                     </button>
-                  </div>
-                </li>
-              );
-            })}
+                          </div>
+
+                          <div className={styles.controls}>
+                            <div className={styles.control}>
+                              <button
+                                type="button"
+                                className={styles.controlBtn}
+                                onClick={() => updateExercise(index, 'sets', ex.sets - 1)}
+                                disabled={ex.sets <= 1}
+                                aria-label="Decrease sets"
+                              >
+                                −
+                              </button>
+                              <span className={styles.controlValue}>{ex.sets}</span>
+                              <button
+                                type="button"
+                                className={styles.controlBtn}
+                                onClick={() => updateExercise(index, 'sets', ex.sets + 1)}
+                                aria-label="Increase sets"
+                              >
+                                +
+                              </button>
+                            </div>
+                            <div className={styles.control}>
+                              <button
+                                type="button"
+                                className={styles.controlBtn}
+                                onClick={() => updateExercise(index, 'reps', ex.reps - 1)}
+                                disabled={ex.reps <= 1}
+                                aria-label="Decrease reps"
+                              >
+                                −
+                              </button>
+                              <span className={styles.controlValue}>{ex.reps}</span>
+                              <button
+                                type="button"
+                                className={styles.controlBtn}
+                                onClick={() => updateExercise(index, 'reps', ex.reps + 1)}
+                                aria-label="Increase reps"
+                              >
+                                +
+                              </button>
+                            </div>
+                            <div className={styles.control}>
+                              <button
+                                type="button"
+                                className={styles.controlBtn}
+                                onClick={() =>
+                                  updateExercise(index, 'restTimeSeconds', Math.max(0, ex.restTimeSeconds - 15))
+                                }
+                                disabled={ex.restTimeSeconds < 15}
+                                aria-label="Decrease rest"
+                              >
+                                −
+                              </button>
+                              <span className={styles.controlValue}>
+                                {formatTime(ex.restTimeSeconds)}
+                              </span>
+                              <button
+                                type="button"
+                                className={styles.controlBtn}
+                                onClick={() =>
+                                  updateExercise(index, 'restTimeSeconds', ex.restTimeSeconds + 15)
+                                }
+                                aria-label="Increase rest"
+                              >
+                                +
+                              </button>
+                            </div>
+                          </div>
+                        </li>
+                      )}
+                    </SortableRow>
+                  );
+                })}
+              </SortableContext>
+            </DndContext>
           </ul>
         </section>
 
