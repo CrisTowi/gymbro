@@ -352,14 +352,33 @@ function PreviewContent() {
                         }}
                         className={`${styles.exerciseRow} ${isModified ? styles.modified : ''} ${isSwapped ? styles.swapped : ''} ${isDragging ? styles.dragging : ''}`}
                       >
-                        <div className={styles.exerciseInfo}>
-                          <span className={styles.exerciseIndex}>{index + 1}</span>
-                          <div className={styles.exerciseDetails}>
-                            <div className={styles.exerciseNameRow}>
-                              <span className={styles.exerciseName}>
-                                {exercise?.name || override.exerciseId}
-                              </span>
-                            </div>
+                        <div className={styles.cardHeader}>
+                          <div className={styles.exerciseInfo}>
+                            <span className={styles.exerciseIndex}>{index + 1}</span>
+                            <span className={styles.exerciseName}>
+                              {exercise?.name || override.exerciseId}
+                            </span>
+                          </div>
+                          <div
+                            ref={setActivatorNodeRef}
+                            className={styles.dragHandle}
+                            role="button"
+                            tabIndex={0}
+                            aria-label="Drag to reorder"
+                            title="Drag to reorder"
+                            {...listeners}
+                          >
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <circle cx="9" cy="5" r="1" />
+                              <circle cx="9" cy="12" r="1" />
+                              <circle cx="9" cy="19" r="1" />
+                              <circle cx="15" cy="5" r="1" />
+                              <circle cx="15" cy="12" r="1" />
+                              <circle cx="15" cy="19" r="1" />
+                            </svg>
+                          </div>
+                        </div>
+                        <div className={styles.exerciseDetails}>
                             <span className={styles.exerciseMeta}>
                               {exercise?.category} · {exercise?.equipment}
                               {isSwapped && defaultEx && (
@@ -392,7 +411,6 @@ function PreviewContent() {
                                 </svg>
                               </a>
                             )}
-                          </div>
                         </div>
 
                         {swapIndex === index && (
@@ -404,24 +422,6 @@ function PreviewContent() {
                         )}
 
                         <div className={styles.rowActions}>
-                          <div
-                            ref={setActivatorNodeRef}
-                            className={styles.dragHandle}
-                            role="button"
-                            tabIndex={0}
-                            aria-label="Drag to reorder"
-                            title="Drag to reorder"
-                            {...listeners}
-                          >
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <circle cx="9" cy="5" r="1" />
-                              <circle cx="9" cy="12" r="1" />
-                              <circle cx="9" cy="19" r="1" />
-                              <circle cx="15" cy="5" r="1" />
-                              <circle cx="15" cy="12" r="1" />
-                              <circle cx="15" cy="19" r="1" />
-                            </svg>
-                          </div>
                   <button
                     type="button"
                     className={styles.actionBtn}

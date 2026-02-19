@@ -169,6 +169,21 @@
   background: rgba(78, 205, 196, 0.03);
 }
 
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.cardHeader .exerciseInfo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  min-width: 0;
+  flex: 1;
+}
+
 .exerciseInfo {
   display: flex;
   align-items: flex-start;
@@ -207,6 +222,12 @@
   font-size: var(--text-base);
   font-weight: 600;
   color: var(--color-text-primary);
+}
+
+.cardHeader .exerciseName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Row actions: Drag handle, Swap, Delete */
@@ -578,6 +599,11 @@
     flex-wrap: wrap;
     align-items: center;
     gap: var(--space-sm);
+  }
+
+  .cardHeader {
+    flex: 1;
+    min-width: 0;
   }
 
   .exerciseInfo {

@@ -389,45 +389,13 @@ export default function EditRoutinePage() {
                           }}
                           className={`${styles.exerciseRow} ${isDragging ? styles.dragging : ''}`}
                         >
-                          <div className={styles.exerciseInfo}>
-                            <span className={styles.exerciseIndex}>{index + 1}</span>
-                            <div className={styles.exerciseDetails}>
-                              <div className={styles.exerciseNameRow}>
-                                <span className={styles.exerciseName}>
-                                  {meta?.name ?? ex.exerciseId}
-                                </span>
-                              </div>
-                              <span className={styles.exerciseMeta}>
-                                {meta?.category} · {meta?.equipment}
+                          <div className={styles.cardHeader}>
+                            <div className={styles.exerciseInfo}>
+                              <span className={styles.exerciseIndex}>{index + 1}</span>
+                              <span className={styles.exerciseName}>
+                                {meta?.name ?? ex.exerciseId}
                               </span>
-                              {meta?.referenceUrl && (
-                                <a
-                                  href={meta.referenceUrl}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className={styles.howToLink}
-                                  onClick={(e) => e.stopPropagation()}
-                                >
-                                  How to perform
-                                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                                    <polyline points="15 3 21 3 21 9" />
-                                    <line x1="10" y1="14" x2="21" y2="3" />
-                                  </svg>
-                                </a>
-                              )}
                             </div>
-                          </div>
-
-                          {swapIndex === index && (
-                            <SwapPicker
-                              alternatives={swapAlternatives}
-                              onSelect={(id) => handleSwapExercise(index, id)}
-                              onClose={() => setSwapIndex(null)}
-                            />
-                          )}
-
-                          <div className={styles.rowActions}>
                             <div
                               ref={setActivatorNodeRef}
                               className={styles.dragHandle}
@@ -446,6 +414,38 @@ export default function EditRoutinePage() {
                                 <circle cx="15" cy="19" r="1" />
                               </svg>
                             </div>
+                          </div>
+                          <div className={styles.exerciseDetails}>
+                            <span className={styles.exerciseMeta}>
+                              {meta?.category} · {meta?.equipment}
+                            </span>
+                            {meta?.referenceUrl && (
+                              <a
+                                href={meta.referenceUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={styles.howToLink}
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                How to perform
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                                  <polyline points="15 3 21 3 21 9" />
+                                  <line x1="10" y1="14" x2="21" y2="3" />
+                                </svg>
+                              </a>
+                            )}
+                          </div>
+
+                          {swapIndex === index && (
+                            <SwapPicker
+                              alternatives={swapAlternatives}
+                              onSelect={(id) => handleSwapExercise(index, id)}
+                              onClose={() => setSwapIndex(null)}
+                            />
+                          )}
+
+                          <div className={styles.rowActions}>
                     <button
                       type="button"
                       className={styles.actionBtn}
