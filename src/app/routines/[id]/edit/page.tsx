@@ -1,15 +1,17 @@
 'use client';
 
-import { useEffect, useState, useCallback, type ReactNode } from 'react';
+import { useEffect, useState, useCallback, useRef, type ReactNode } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   DndContext,
   DragEndEvent,
+  DragOverEvent,
   PointerSensor,
   TouchSensor,
   useSensor,
   useSensors,
+  closestCenter,
 } from '@dnd-kit/core';
 import {
   SortableContext,
@@ -238,11 +240,19 @@ export default function EditRoutinePage() {
     useSensor(PointerSensor, { activationConstraint: pointerActivation })
   );
 
+  const lastOverIdRef = useRef<string | number | null>(null);
+
+  const handleDragOver = useCallback((event: DragOverEvent) => {
+    if (event.over) lastOverIdRef.current = event.over.id;
+  }, []);
+
   const handleDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event;
-    if (!over || active.id === over.id) return;
+    const overId = over?.id ?? lastOverIdRef.current;
+    lastOverIdRef.current = null;
+    if (overId == null || String(overId) === String(active.id)) return;
     const fromIndex = Number(active.id);
-    const toIndex = Number(over.id);
+    const toIndex = Number(overId);
     if (Number.isNaN(fromIndex) || Number.isNaN(toIndex)) return;
     setExercises((prev) => arrayMove(prev, fromIndex, toIndex));
   }, []);
@@ -371,7 +381,12 @@ export default function EditRoutinePage() {
           </div>
 
           <ul className={styles.exerciseList}>
-            <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragOver={handleDragOver}
+              onDragEnd={handleDragEnd}
+            >
               <SortableContext
                 items={exercises.map((_, i) => String(i))}
                 strategy={verticalListSortingStrategy}

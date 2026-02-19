@@ -1,14 +1,16 @@
 'use client';
 
-import { useState, useMemo, useCallback, useEffect, Suspense, type ReactNode } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef, Suspense, type ReactNode } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import {
   DndContext,
   DragEndEvent,
+  DragOverEvent,
   PointerSensor,
   TouchSensor,
   useSensor,
   useSensors,
+  closestCenter,
 } from '@dnd-kit/core';
 import {
   SortableContext,
@@ -212,11 +214,19 @@ function PreviewContent() {
     useSensor(PointerSensor, { activationConstraint: pointerActivation })
   );
 
+  const lastOverIdRef = useRef<string | number | null>(null);
+
+  const handleDragOver = useCallback((event: DragOverEvent) => {
+    if (event.over) lastOverIdRef.current = event.over.id;
+  }, []);
+
   const handleDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event;
-    if (!over || active.id === over.id) return;
+    const overId = over?.id ?? lastOverIdRef.current;
+    lastOverIdRef.current = null;
+    if (overId == null || String(overId) === String(active.id)) return;
     const fromIndex = Number(active.id);
-    const toIndex = Number(over.id);
+    const toIndex = Number(overId);
     if (Number.isNaN(fromIndex) || Number.isNaN(toIndex)) return;
     setOverrides((prev) => arrayMove(prev, fromIndex, toIndex));
     setSwapIndex((current) => {
@@ -323,7 +333,12 @@ function PreviewContent() {
             <span className={styles.listHeaderControl}>Rest</span>
           </div>
 
-          <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragOver={handleDragOver}
+            onDragEnd={handleDragEnd}
+          >
             <SortableContext
               items={overrides.map((_, i) => String(i))}
               strategy={verticalListSortingStrategy}
