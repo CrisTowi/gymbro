@@ -210,25 +210,92 @@
   min-width: 0;
 }
 
-.swapBtn {
+/* Row actions: Drag handle, Swap, Delete */
+.rowActions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-xs);
   flex-shrink: 0;
+}
+
+.dragHandle {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  min-width: 40px;
+  min-height: 40px;
+  width: 40px;
+  height: 40px;
   padding: 0;
   border: none;
   border-radius: var(--radius-sm);
   background: var(--color-bg);
   color: var(--color-text-muted);
-  cursor: pointer;
+  cursor: grab;
   transition: all var(--transition-fast);
 }
 
-.swapBtn:hover {
+.dragHandle:active {
+  cursor: grabbing;
+}
+
+.dragHandle:hover {
+  background: var(--color-bg-card-hover);
+  color: var(--color-text-secondary);
+}
+
+.exerciseRow.dragging {
+  opacity: 0.6;
+}
+
+.exerciseRow.dragOver {
+  box-shadow: inset 0 0 0 2px var(--color-accent);
+  border-radius: var(--radius-md);
+}
+
+.actionBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  min-height: 40px;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  color: var(--color-text-muted);
+  font-size: var(--text-base);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.actionBtn:hover:not(:disabled) {
   background: var(--color-bg-card-hover);
   color: var(--color-accent);
+}
+
+.actionBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.actionBtnDelete:hover:not(:disabled) {
+  background: rgba(220, 38, 38, 0.12);
+  color: #dc2626;
+}
+
+/* Larger touch targets for mobile */
+@media (max-width: 768px) {
+  .actionBtn,
+  .dragHandle {
+    min-width: 44px;
+    min-height: 44px;
+    width: 44px;
+    height: 44px;
+  }
 }
 
 /* Swap picker (alternatives) */
@@ -371,51 +438,6 @@
   color: var(--color-text-primary);
 }
 
-.rowActions {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  align-items: flex-end;
-}
-
-.iconBtn {
-  width: 32px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: var(--text-sm);
-  border: none;
-  background: var(--color-bg);
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  color: var(--color-text-secondary);
-  transition: all var(--transition-fast);
-}
-
-.iconBtn:hover:not(:disabled) {
-  background: var(--color-bg-card-hover);
-  color: var(--color-accent);
-}
-
-.iconBtn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.removeBtn {
-  padding: 2px 8px;
-  font-size: var(--text-xs);
-  color: var(--color-text-muted);
-  background: none;
-  border: none;
-  cursor: pointer;
-  transition: color var(--transition-fast);
-}
-
-.removeBtn:hover {
-  color: #dc2626;
-}
 
 .footer {
   margin-top: var(--space-xl);

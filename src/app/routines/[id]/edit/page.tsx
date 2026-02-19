@@ -187,15 +187,39 @@ export default function EditRoutinePage() {
     });
   };
 
-  const moveExercise = (index: number, dir: 'up' | 'down') => {
-    const to = dir === 'up' ? index - 1 : index + 1;
-    if (to < 0 || to >= exercises.length) return;
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+
+  const handleDragStart = (index: number) => (e: React.DragEvent) => {
+    setDraggedIndex(index);
+    e.dataTransfer.setData('text/plain', String(index));
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (index: number) => (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    setDragOverIndex(index);
+  };
+
+  const handleDragLeave = () => setDragOverIndex(null);
+
+  const handleDrop = (toIndex: number) => (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOverIndex(null);
+    const fromIndex = parseInt(e.dataTransfer.getData('text/plain'), 10);
+    if (Number.isNaN(fromIndex) || fromIndex === toIndex) return;
     setExercises((prev) => {
       const next = [...prev];
-      const [removed] = next.splice(index, 1);
-      next.splice(to, 0, removed);
+      const [item] = next.splice(fromIndex, 1);
+      next.splice(toIndex, 0, item);
       return next;
     });
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
+    setDragOverIndex(null);
   };
 
   const handleSwapExercise = (index: number, newExerciseId: string) => {
@@ -325,27 +349,19 @@ export default function EditRoutinePage() {
             {exercises.map((ex, index) => {
               const meta = getExerciseById(ex.exerciseId);
               return (
-                <li key={`${ex.exerciseId}-${index}`} className={styles.exerciseRow}>
+                <li
+                  key={`${ex.exerciseId}-${index}`}
+                  className={`${styles.exerciseRow} ${draggedIndex === index ? styles.dragging : ''} ${dragOverIndex === index ? styles.dragOver : ''}`}
+                  onDragOver={handleDragOver(index)}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop(index)}
+                >
                   <span className={styles.exerciseIndex}>{index + 1}</span>
                   <div className={styles.exerciseInfo}>
                     <div className={styles.exerciseNameRow}>
                       <span className={styles.exerciseName}>
                         {meta?.name ?? ex.exerciseId}
                       </span>
-                      <button
-                        type="button"
-                        className={styles.swapBtn}
-                        onClick={() => setSwapIndex(swapIndex === index ? null : index)}
-                        aria-label="Replace with alternative"
-                        title="Replace with alternative"
-                      >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <polyline points="17 1 21 5 17 9" />
-                          <path d="M3 11V9a4 4 0 0 1 4-4h14" />
-                          <polyline points="7 23 3 19 7 15" />
-                          <path d="M21 13v2a4 4 0 0 1-4 4H3" />
-                        </svg>
-                      </button>
                     </div>
                     {meta?.referenceUrl && (
                       <a
@@ -414,31 +430,55 @@ export default function EditRoutinePage() {
                     </div>
                   </div>
                   <div className={styles.rowActions}>
+                    <div
+                      className={styles.dragHandle}
+                      draggable
+                      onDragStart={handleDragStart(index)}
+                      onDragEnd={handleDragEnd}
+                      role="button"
+                      tabIndex={0}
+                      aria-label="Drag to reorder"
+                      title="Drag to reorder"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') e.preventDefault();
+                      }}
+                    >
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="9" cy="5" r="1" />
+                        <circle cx="9" cy="12" r="1" />
+                        <circle cx="9" cy="19" r="1" />
+                        <circle cx="15" cy="5" r="1" />
+                        <circle cx="15" cy="12" r="1" />
+                        <circle cx="15" cy="19" r="1" />
+                      </svg>
+                    </div>
                     <button
                       type="button"
-                      className={styles.iconBtn}
-                      onClick={() => moveExercise(index, 'up')}
-                      disabled={index === 0}
-                      aria-label="Move up"
+                      className={styles.actionBtn}
+                      onClick={() => setSwapIndex(swapIndex === index ? null : index)}
+                      aria-label="Replace with alternative"
+                      title="Replace with alternative"
                     >
-                      ↑
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="17 1 21 5 17 9" />
+                        <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+                        <polyline points="7 23 3 19 7 15" />
+                        <path d="M21 13v2a4 4 0 0 1-4 4H3" />
+                      </svg>
                     </button>
                     <button
                       type="button"
-                      className={styles.iconBtn}
-                      onClick={() => moveExercise(index, 'down')}
-                      disabled={index === exercises.length - 1}
-                      aria-label="Move down"
-                    >
-                      ↓
-                    </button>
-                    <button
-                      type="button"
-                      className={styles.removeBtn}
+                      className={`${styles.actionBtn} ${styles.actionBtnDelete}`}
                       onClick={() => removeExercise(index)}
-                      aria-label="Remove"
+                      aria-label="Remove exercise"
+                      title="Remove exercise"
                     >
-                      Remove
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                        <line x1="10" y1="11" x2="10" y2="17" />
+                        <line x1="14" y1="11" x2="14" y2="17" />
+                      </svg>
                     </button>
                   </div>
                 </li>
