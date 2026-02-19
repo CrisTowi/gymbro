@@ -49,6 +49,17 @@ export default function DashboardPage() {
     return filteredExercises.map((ex) => ex.id);
   }, [selectedExerciseId, filteredExercises]);
 
+  // Only fetch chart data when user has applied a filter (muscle group or specific exercise)
+  const shouldLoadCharts = selectedMuscleGroup !== 'all' || selectedExerciseId !== null;
+  const exercisesToFetch = useMemo(() => {
+    if (!shouldLoadCharts) return [];
+    if (selectedExerciseId) return [selectedExerciseId];
+    if (selectedMuscleGroup !== 'all') {
+      return exercisesToDisplay;
+    }
+    return [];
+  }, [shouldLoadCharts, selectedExerciseId, selectedMuscleGroup, exercisesToDisplay]);
+
   // Load overview + personal records once on mount
   useEffect(() => {
     async function load() {
@@ -67,14 +78,14 @@ export default function DashboardPage() {
     load();
   }, []);
 
-  // Load exercise histories when the displayed exercises change
+  // Load exercise histories only when user has selected a filter (muscle group or exercise)
   useEffect(() => {
-    if (!mounted) return;
+    if (!mounted || exercisesToFetch.length === 0) return;
 
     async function loadHistories() {
       const newMap: Record<string, ExerciseHistoryPoint[]> = {};
       await Promise.all(
-        exercisesToDisplay.map(async (id) => {
+        exercisesToFetch.map(async (id) => {
           if (historyMap[id]) {
             newMap[id] = historyMap[id];
           } else {
@@ -90,7 +101,7 @@ export default function DashboardPage() {
     }
     loadHistories();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mounted, exercisesToDisplay]);
+  }, [mounted, exercisesToFetch]);
 
   const filterByTimeRange = (
     data: ExerciseHistoryPoint[]
@@ -172,37 +183,7 @@ export default function DashboardPage() {
           onExerciseChange={setSelectedExerciseId}
         />
 
-        <div className={`${styles.charts} ${exercisesToDisplay.length > 1 ? styles.chartsGrid : ''}`}>
-          {exercisesToDisplay.map((exerciseId) => {
-            const exercise = exercises.find((ex) => ex.id === exerciseId);
-            if (!exercise) return null;
-
-            const rawHistory = historyMap[exerciseId] || [];
-            const history = filterByTimeRange(rawHistory);
-
-            if (rawHistory.length === 0) return null;
-
-            return (
-              <div key={exerciseId} className={styles.chartSection}>
-                <div className={styles.chartHeader}>
-                  <h3 className={styles.chartTitle}>{exercise.name}</h3>
-                  <span className={styles.chartCategory}>{exercise.category}</span>
-                </div>
-                <ProgressChart
-                  data={history}
-                  exerciseName={exercise.name}
-                  showVolume={true}
-                />
-                {personalRecords[exerciseId] && (
-                  <div className={styles.prBadge}>
-                    PR: {personalRecords[exerciseId].maxWeight} lbs (
-                    {lbsToKg(personalRecords[exerciseId].maxWeight)} kg)
-                  </div>
-                )}
-              </div>
-            );
-          })}
-
+        <div className={`${styles.charts} ${exercisesToFetch.length > 1 ? styles.chartsGrid : ''}`}>
           {overallStats.totalSessions === 0 && (
             <div className={styles.emptyState}>
               <span className={styles.emptyIcon}>📊</span>
@@ -213,6 +194,61 @@ export default function DashboardPage() {
               </p>
             </div>
           )}
+
+          {overallStats.totalSessions > 0 && !shouldLoadCharts && (
+            <div className={styles.emptyState}>
+              <span className={styles.emptyIcon}>📊</span>
+              <h3 className={styles.emptyTitle}>Select filters to view progress</h3>
+              <p className={styles.emptyText}>
+                Choose a muscle group or an exercise above to load your progress charts.
+              </p>
+            </div>
+          )}
+
+          {overallStats.totalSessions > 0 &&
+            shouldLoadCharts &&
+            exercisesToFetch.map((exerciseId) => {
+              const exercise = exercises.find((ex) => ex.id === exerciseId);
+              if (!exercise) return null;
+
+              const rawHistory = historyMap[exerciseId] || [];
+              const history = filterByTimeRange(rawHistory);
+
+              if (rawHistory.length === 0) return null;
+
+              return (
+                <div key={exerciseId} className={styles.chartSection}>
+                  <div className={styles.chartHeader}>
+                    <h3 className={styles.chartTitle}>{exercise.name}</h3>
+                    <span className={styles.chartCategory}>{exercise.category}</span>
+                  </div>
+                  <ProgressChart
+                    data={history}
+                    exerciseName={exercise.name}
+                    showVolume={true}
+                  />
+                  {personalRecords[exerciseId] && (
+                    <div className={styles.prBadge}>
+                      PR: {personalRecords[exerciseId].maxWeight} lbs (
+                      {lbsToKg(personalRecords[exerciseId].maxWeight)} kg)
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+
+          {overallStats.totalSessions > 0 &&
+            shouldLoadCharts &&
+            exercisesToFetch.length > 0 &&
+            exercisesToFetch.every((id) => (historyMap[id] || []).length === 0) && (
+              <div className={styles.emptyState}>
+                <span className={styles.emptyIcon}>📈</span>
+                <h3 className={styles.emptyTitle}>No history yet</h3>
+                <p className={styles.emptyText}>
+                  Complete workouts with these exercises to see progress here.
+                </p>
+              </div>
+            )}
         </div>
       </div>
     </div>

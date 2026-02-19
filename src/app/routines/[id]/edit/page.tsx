@@ -10,7 +10,7 @@ import {
   updateRoutine,
   fetchExercises,
 } from '@/lib/api';
-import { getExerciseById } from '@/data/exercises';
+import { getExerciseById, getAlternativeExercises } from '@/data/exercises';
 import styles from './page.module.css';
 
 const DEFAULT_EXERCISE: Omit<RoutineExercise, 'exerciseId'> = {
@@ -21,6 +21,79 @@ const DEFAULT_EXERCISE: Omit<RoutineExercise, 'exerciseId'> = {
 
 const EMOJI_OPTIONS = ['💪', '🏋️', '🦵', '⚡', '🔥', '🎯', '💎', '🏃', '🧘', '👊', '🦾', '📋'];
 const COLOR_OPTIONS = ['#FF6B6B', '#4ECDC4', '#FFE66D', '#A78BFA', '#F97316', '#22C55E', '#3B82F6', '#EC4899'];
+
+function SwapPicker({
+  alternatives,
+  onSelect,
+  onClose,
+}: {
+  alternatives: Exercise[];
+  onSelect: (exerciseId: string) => void;
+  onClose: () => void;
+}) {
+  if (alternatives.length === 0) {
+    return (
+      <div className={styles.swapPicker}>
+        <div className={styles.swapPickerHeader}>
+          <span className={styles.swapPickerTitle}>No alternatives available</span>
+          <button type="button" className={styles.swapPickerClose} onClick={onClose} aria-label="Close">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    );
+  }
+  return (
+    <div className={styles.swapPicker}>
+      <div className={styles.swapPickerHeader}>
+        <span className={styles.swapPickerTitle}>Replace with alternative</span>
+        <button type="button" className={styles.swapPickerClose} onClick={onClose} aria-label="Close">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <div className={styles.swapPickerList}>
+        {alternatives.map((alt) => (
+          <button
+            key={alt.id}
+            type="button"
+            className={styles.swapOption}
+            onClick={() => onSelect(alt.id)}
+          >
+            <div className={styles.swapOptionInfo}>
+              <span className={styles.swapOptionName}>{alt.name}</span>
+              <span className={styles.swapOptionMeta}>
+                {alt.category} · {alt.equipment}
+                {alt.referenceUrl && (
+                  <>
+                    {' · '}
+                    <a
+                      href={alt.referenceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={styles.swapOptionLink}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      How to
+                    </a>
+                  </>
+                )}
+              </span>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function EditRoutinePage() {
   const params = useParams();
@@ -41,6 +114,7 @@ export default function EditRoutinePage() {
   const [showAddExercise, setShowAddExercise] = useState(false);
   const [exerciseCatalog, setExerciseCatalog] = useState<Exercise[]>([]);
   const [catalogSearch, setCatalogSearch] = useState('');
+  const [swapIndex, setSwapIndex] = useState<number | null>(null);
 
   useEffect(() => {
     async function load() {
@@ -123,6 +197,23 @@ export default function EditRoutinePage() {
       return next;
     });
   };
+
+  const handleSwapExercise = (index: number, newExerciseId: string) => {
+    setExercises((prev) => {
+      const next = [...prev];
+      next[index] = { ...next[index], exerciseId: newExerciseId };
+      return next;
+    });
+    setSwapIndex(null);
+  };
+
+  const swapAlternatives =
+    swapIndex !== null && exercises[swapIndex]
+      ? getAlternativeExercises(
+          exercises[swapIndex].exerciseId,
+          exercises.map((e) => e.exerciseId)
+        )
+      : [];
 
   const filteredCatalog = catalogSearch.trim()
     ? exerciseCatalog.filter(
@@ -237,9 +328,25 @@ export default function EditRoutinePage() {
                 <li key={`${ex.exerciseId}-${index}`} className={styles.exerciseRow}>
                   <span className={styles.exerciseIndex}>{index + 1}</span>
                   <div className={styles.exerciseInfo}>
-                    <span className={styles.exerciseName}>
-                      {meta?.name ?? ex.exerciseId}
-                    </span>
+                    <div className={styles.exerciseNameRow}>
+                      <span className={styles.exerciseName}>
+                        {meta?.name ?? ex.exerciseId}
+                      </span>
+                      <button
+                        type="button"
+                        className={styles.swapBtn}
+                        onClick={() => setSwapIndex(swapIndex === index ? null : index)}
+                        aria-label="Replace with alternative"
+                        title="Replace with alternative"
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="17 1 21 5 17 9" />
+                          <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+                          <polyline points="7 23 3 19 7 15" />
+                          <path d="M21 13v2a4 4 0 0 1-4 4H3" />
+                        </svg>
+                      </button>
+                    </div>
                     {meta?.referenceUrl && (
                       <a
                         href={meta.referenceUrl}
@@ -255,6 +362,13 @@ export default function EditRoutinePage() {
                           <line x1="10" y1="14" x2="21" y2="3" />
                         </svg>
                       </a>
+                    )}
+                    {swapIndex === index && (
+                      <SwapPicker
+                        alternatives={swapAlternatives}
+                        onSelect={(id) => handleSwapExercise(index, id)}
+                        onClose={() => setSwapIndex(null)}
+                      />
                     )}
                     <div className={styles.exerciseControls}>
                       <div className={styles.miniControl}>

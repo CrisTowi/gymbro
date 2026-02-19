@@ -2,6 +2,13 @@
   min-height: 100dvh;
   padding: var(--space-lg) var(--space-md);
   padding-top: calc(env(safe-area-inset-top, 0px) + var(--space-lg));
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 80px);
+}
+
+@media (min-width: 768px) {
+  .page {
+    padding-bottom: var(--space-lg);
+  }
 }
 
 .loading {

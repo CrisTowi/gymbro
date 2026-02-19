@@ -107,6 +107,44 @@ function WorkoutContent() {
     }
   }, [permission, requestPermission]);
 
+  // Keep screen on during the whole workout session (avoid auto-lock)
+  useEffect(() => {
+    if (!session) return;
+    let sentinel: WakeLockSentinel | null = null;
+    const nav = typeof navigator !== 'undefined' ? navigator : null;
+    const wakeLock =
+      nav && 'wakeLock' in nav
+        ? (nav as Navigator & { wakeLock: { request(type: 'screen'): Promise<WakeLockSentinel> } })
+            .wakeLock
+        : null;
+
+    async function requestWakeLock() {
+      if (wakeLock) {
+        try {
+          sentinel = await wakeLock.request('screen');
+        } catch {
+          // Ignore (e.g. low battery, or already active)
+        }
+      }
+    }
+
+    function handleVisibilityChange() {
+      if (document.visibilityState === 'hidden') {
+        sentinel = null;
+      } else {
+        requestWakeLock();
+      }
+    }
+
+    requestWakeLock();
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      sentinel?.release().catch(() => {});
+    };
+  }, [session]);
+
   // Load exercise recommendation data
   const loadExerciseData = useCallback(async (exerciseConfigs: RoutineExercise[]) => {
     const perfMap: Record<string, LastExercisePerformance | null> = {};
