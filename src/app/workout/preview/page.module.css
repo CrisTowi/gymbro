@@ -58,7 +58,7 @@
   max-width: var(--max-width-narrow);
   margin: 0 auto;
   padding: var(--space-lg) var(--space-md);
-  padding-bottom: 120px;
+  padding-bottom: 160px;
 }
 
 /* Routine header */
@@ -318,6 +318,30 @@
   }
 }
 
+.dontSaveLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-xs);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  user-select: none;
+}
+
+.dontSaveCheckbox {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-accent);
+}
+
+.dontSaveHint {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  margin: 0 0 var(--space-sm);
+  line-height: 1.3;
+}
+
 .noExercisesHint {
   font-size: var(--text-sm);
   color: var(--color-text-muted);
@@ -536,7 +560,8 @@
   left: 0;
   right: 0;
   padding: var(--space-md);
-  background: linear-gradient(0deg, var(--color-bg) 60%, transparent);
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--space-md));
+  background: linear-gradient(0deg, var(--color-bg) 85%, transparent);
   z-index: 40;
 }
 

@@ -39,6 +39,20 @@ export default function RestTimer({
     (document.activeElement as HTMLElement)?.blur?.();
   }, []);
 
+  // Lock background scroll while timer overlay is open (removes scrollbar behind modal)
+  useEffect(() => {
+    const html = document.documentElement;
+    const body = document.body;
+    const prevHtmlOverflow = html.style.overflow;
+    const prevBodyOverflow = body.style.overflow;
+    html.style.overflow = 'hidden';
+    body.style.overflow = 'hidden';
+    return () => {
+      html.style.overflow = prevHtmlOverflow;
+      body.style.overflow = prevBodyOverflow;
+    };
+  }, []);
+
   // Keep screen on while rest timer is visible (e.g. avoid iPhone auto-lock). Supported in Safari iOS 16.4+.
   useEffect(() => {
     let sentinel: WakeLockSentinel | null = null;

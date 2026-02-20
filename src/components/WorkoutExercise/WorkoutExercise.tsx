@@ -216,15 +216,22 @@ function SetRow({
   const suggestedWeight = recommendation?.weightLbs
     ?? previousCompletedSet?.weightLbs
     ?? 0;
-  const suggestedReps = recommendation?.reps ?? targetReps;
+  const suggestedReps = recommendation?.reps
+    ?? previousCompletedSet?.reps
+    ?? targetReps;
 
-  const [weight, setWeight] = useState(set.weightLbs ?? suggestedWeight);
-  const [reps, setReps] = useState(set.reps ?? suggestedReps);
+  const [weight, setWeight] = useState(
+    set.weightLbs > 0 ? set.weightLbs : suggestedWeight
+  );
+  const [reps, setReps] = useState(
+    set.reps > 0 ? set.reps : suggestedReps
+  );
 
+  // When the previous set is completed, default this set to those values (only if not yet edited)
   useEffect(() => {
-    setWeight(set.weightLbs ?? suggestedWeight);
-    setReps(set.reps ?? suggestedReps);
-  }, [set.weightLbs, set.reps]);
+    setWeight(set.weightLbs > 0 ? set.weightLbs : suggestedWeight);
+    setReps(set.reps > 0 ? set.reps : suggestedReps);
+  }, [suggestedWeight, suggestedReps]);
 
   const isUsingRecommendation = hasRecommendations && !set.completed && weight === suggestedWeight && suggestedWeight > 0;
 
@@ -243,12 +250,19 @@ function SetRow({
           pattern="[0-9]*"
           value={weight || ''}
           onChange={(e) => {
-            const val = Number(e.target.value);
+            const raw = e.target.value;
+            if (raw === '') {
+              setWeight(0);
+              onUpdate({ weightLbs: 0 });
+              return;
+            }
+            const val = Number(raw);
             if (!isNaN(val)) {
               setWeight(val);
               onUpdate({ weightLbs: val });
             }
           }}
+          onFocus={(e) => e.target.select()}
           placeholder={suggestedWeight > 0 ? String(suggestedWeight) : '0'}
           className={`${styles.input} ${isUsingRecommendation ? styles.inputRecommended : ''}`}
           aria-label={`Set ${index + 1} weight`}
@@ -265,12 +279,19 @@ function SetRow({
           pattern="[0-9]*"
           value={reps || ''}
           onChange={(e) => {
-            const val = Number(e.target.value);
+            const raw = e.target.value;
+            if (raw === '') {
+              setReps(0);
+              onUpdate({ reps: 0 });
+              return;
+            }
+            const val = Number(raw);
             if (!isNaN(val)) {
               setReps(val);
               onUpdate({ reps: val });
             }
           }}
+          onFocus={(e) => e.target.select()}
           placeholder={String(suggestedReps)}
           className={styles.input}
           aria-label={`Set ${index + 1} reps`}

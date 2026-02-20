@@ -43,6 +43,17 @@ function readOverrides(): ExerciseOverride[] | null {
   }
 }
 
+function readPracticeFlag(): boolean {
+  if (typeof window === 'undefined') return false;
+  try {
+    const flag = sessionStorage.getItem('gymtrack_practice_session') === '1';
+    sessionStorage.removeItem('gymtrack_practice_session');
+    return flag;
+  } catch {
+    return false;
+  }
+}
+
 function WorkoutContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -82,6 +93,8 @@ function WorkoutContent() {
   const [currentRestTime, setCurrentRestTime] = useState(120);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [showConfirmEnd, setShowConfirmEnd] = useState(false);
+  const [isPracticeMode, setIsPracticeMode] = useState(false);
+  const [showPracticeSummary, setShowPracticeSummary] = useState(false);
 
   // Pre-fetched data for each exercise
   const [lastPerfMap, setLastPerfMap] = useState<Record<string, LastExercisePerformance | null>>({});
@@ -173,24 +186,29 @@ function WorkoutContent() {
   useEffect(() => {
     if (!routine || !routineId) return;
 
+    const practice = readPracticeFlag();
+    setIsPracticeMode(practice);
+
     async function init() {
       try {
-        const existingSession = await fetchActiveSession();
-        if (existingSession && existingSession.routineId === routineId) {
-          setSession(existingSession);
-          const resumedConfig: RoutineExercise[] = existingSession.exercises.map((ex, i) => {
-            const routineEx = routine!.exercises[i];
-            return {
-              exerciseId: ex.exerciseId,
-              sets: routineEx?.sets ?? ex.sets.length,
-              reps: routineEx?.reps ?? 12,
-              restTimeSeconds: routineEx?.restTimeSeconds ?? 120,
-              notes: routineEx?.notes,
-            };
-          });
-          setEffectiveExercises(resumedConfig);
-          await loadExerciseData(resumedConfig);
-          return;
+        if (!practice) {
+          const existingSession = await fetchActiveSession();
+          if (existingSession && existingSession.routineId === routineId) {
+            setSession(existingSession);
+            const resumedConfig: RoutineExercise[] = existingSession.exercises.map((ex, i) => {
+              const routineEx = routine!.exercises[i];
+              return {
+                exerciseId: ex.exerciseId,
+                sets: routineEx?.sets ?? ex.sets.length,
+                reps: routineEx?.reps ?? 12,
+                restTimeSeconds: routineEx?.restTimeSeconds ?? 120,
+                notes: routineEx?.notes,
+              };
+            });
+            setEffectiveExercises(resumedConfig);
+            await loadExerciseData(resumedConfig);
+            return;
+          }
         }
 
         const overrides = readOverrides();
@@ -220,15 +238,28 @@ function WorkoutContent() {
           })),
         }));
 
-        const newSession = await createSession({
-          sessionId,
+        const sessionPayload: SessionLog = {
+          id: sessionId,
           date: now,
           routineId: routineId!,
           startTime: now,
           exercises: exerciseLogs,
-        });
+          totalWeightLbs: 0,
+          completed: false,
+        };
 
-        setSession(newSession);
+        if (practice) {
+          setSession(sessionPayload);
+        } else {
+          const newSession = await createSession({
+            sessionId,
+            date: now,
+            routineId: routineId!,
+            startTime: now,
+            exercises: exerciseLogs,
+          });
+          setSession(newSession);
+        }
         await loadExerciseData(exerciseConfig);
       } catch (err) {
         console.error('Failed to initialize workout:', err);
@@ -250,9 +281,10 @@ function WorkoutContent() {
     return () => clearInterval(interval);
   }, [session]);
 
-  // Persist session to backend
+  // Persist session to backend (no-op in practice mode)
   const persistSession = useCallback(
     async (updated: SessionLog) => {
+      if (isPracticeMode) return;
       try {
         await apiUpdateSession(updated.id, {
           exercises: updated.exercises,
@@ -262,7 +294,7 @@ function WorkoutContent() {
         console.error('Failed to sync session:', err);
       }
     },
-    []
+    [isPracticeMode]
   );
 
   const updateSessionLocal = useCallback(
@@ -405,6 +437,13 @@ function WorkoutContent() {
   const handleFinishWorkout = useCallback(async () => {
     if (!session) return;
 
+    setShowConfirmEnd(false);
+
+    if (isPracticeMode) {
+      setShowPracticeSummary(true);
+      return;
+    }
+
     const endTime = new Date().toISOString();
     const duration = Math.floor(
       (new Date(endTime).getTime() - new Date(session.startTime).getTime()) /
@@ -424,7 +463,7 @@ function WorkoutContent() {
     }
 
     router.push(`/summary?sessionId=${session.id}`);
-  }, [session, router]);
+  }, [session, router, isPracticeMode]);
 
   const handleSkipTimer = useCallback(() => {
     timer.reset();
@@ -481,6 +520,11 @@ function WorkoutContent() {
           <div className={styles.headerCenter}>
             <h1 className={styles.routineName} style={{ color: routine.color }}>
               {routine.icon} {routine.name}
+              {isPracticeMode && (
+                <span className={styles.practiceBadge} title="This workout will not be saved">
+                  Practice
+                </span>
+              )}
             </h1>
           </div>
 
@@ -594,6 +638,26 @@ function WorkoutContent() {
                 Finish
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {showPracticeSummary && session && (
+        <div className={styles.confirmOverlay}>
+          <div className={styles.confirmModal}>
+            <h3 className={styles.confirmTitle}>Workout complete</h3>
+            <p className={styles.practiceSummaryNote}>Not saved — for testing or unplanned sessions.</p>
+            <div className={styles.practiceSummaryStats}>
+              <span>{session.totalWeightLbs.toLocaleString()} lbs</span>
+              <span>{formatDuration(elapsedSeconds)}</span>
+              <span>{totalCompletedSets}/{totalSets} sets</span>
+            </div>
+            <button
+              className={styles.practiceHomeButton}
+              onClick={() => router.push('/')}
+            >
+              Back to Home
+            </button>
           </div>
         </div>
       )}

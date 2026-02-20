@@ -128,6 +128,7 @@ function PreviewContent() {
 
   const [swapIndex, setSwapIndex] = useState<number | null>(null);
   const [lastPerfMap, setLastPerfMap] = useState<Record<string, LastExercisePerformance | null>>({});
+  const [dontSave, setDontSave] = useState(false);
 
   // Fetch last performance for all exercises in the routine
   useEffect(() => {
@@ -256,8 +257,13 @@ function PreviewContent() {
       'gymtrack_workout_overrides',
       JSON.stringify(overrides)
     );
+    if (dontSave) {
+      sessionStorage.setItem('gymtrack_practice_session', '1');
+    } else {
+      sessionStorage.removeItem('gymtrack_practice_session');
+    }
     router.push(`/workout?routine=${routineId}`);
-  }, [routineId, overrides, router]);
+  }, [routineId, overrides, dontSave, router]);
 
   if (routineLoading) {
     return (
@@ -542,6 +548,18 @@ function PreviewContent() {
       </div>
 
       <div className={styles.footer}>
+        <label className={styles.dontSaveLabel}>
+          <input
+            type="checkbox"
+            checked={dontSave}
+            onChange={(e) => setDontSave(e.target.checked)}
+            className={styles.dontSaveCheckbox}
+          />
+          <span>Don&apos;t save this workout</span>
+        </label>
+        <p className={styles.dontSaveHint}>
+          Use for testing or unplanned sessions. No data is sent to the server.
+        </p>
         {overrides.length === 0 && (
           <p className={styles.noExercisesHint}>Add at least one exercise to start.</p>
         )}
