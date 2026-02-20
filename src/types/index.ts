@@ -97,7 +97,7 @@ export interface ExerciseLog {
 export interface SessionLog {
   id: string;
   date: string;
-  routineId: RoutineType;
+  routineId: string;
   startTime: string;
   endTime?: string;
   exercises: ExerciseLog[];
