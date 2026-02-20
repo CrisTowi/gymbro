@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback, useRef, type ReactNode } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import {
   DndContext,
   DragEndEvent,
@@ -74,17 +75,19 @@ function SwapPicker({
   alternatives,
   onSelect,
   onClose,
+  t,
 }: {
   alternatives: Exercise[];
   onSelect: (exerciseId: string) => void;
   onClose: () => void;
+  t: (key: string) => string;
 }) {
   if (alternatives.length === 0) {
     return (
       <div className={styles.swapPicker}>
         <div className={styles.swapPickerHeader}>
-          <span className={styles.swapPickerTitle}>No alternatives available</span>
-          <button type="button" className={styles.swapPickerClose} onClick={onClose} aria-label="Close">
+          <span className={styles.swapPickerTitle}>{t('noAlternatives')}</span>
+          <button type="button" className={styles.swapPickerClose} onClick={onClose} aria-label={t('close')}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
@@ -97,8 +100,8 @@ function SwapPicker({
   return (
     <div className={styles.swapPicker}>
       <div className={styles.swapPickerHeader}>
-        <span className={styles.swapPickerTitle}>Replace with alternative</span>
-        <button type="button" className={styles.swapPickerClose} onClick={onClose} aria-label="Close">
+        <span className={styles.swapPickerTitle}>{t('replaceWithAlternative')}</span>
+        <button type="button" className={styles.swapPickerClose} onClick={onClose} aria-label={t('close')}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="18" y1="6" x2="6" y2="18" />
             <line x1="6" y1="6" x2="18" y2="18" />
@@ -127,7 +130,7 @@ function SwapPicker({
                       className={styles.swapOptionLink}
                       onClick={(e) => e.stopPropagation()}
                     >
-                      How to
+                      {t('howToPerform')}
                     </a>
                   </>
                 )}
@@ -144,6 +147,7 @@ function SwapPicker({
 }
 
 export default function EditRoutinePage() {
+  const t = useTranslations('routineEdit');
   const params = useParams();
   const router = useRouter();
   const id = params.id as string;
@@ -285,7 +289,7 @@ export default function EditRoutinePage() {
   if (loading) {
     return (
       <div className={styles.page}>
-        <div className={styles.loading}>Loading…</div>
+        <div className={styles.loading}>{t('loading')}</div>
       </div>
     );
   }
@@ -294,8 +298,8 @@ export default function EditRoutinePage() {
     return (
       <div className={styles.page}>
         <div className={styles.error}>
-          <p>Routine not found.</p>
-          <Link href="/routines">Back to routines</Link>
+          <p>{t('routineNotFound')}</p>
+          <Link href="/routines">{t('backToRoutines')}</Link>
         </div>
       </div>
     );
@@ -305,26 +309,26 @@ export default function EditRoutinePage() {
     <div className={styles.page}>
       <header className={styles.header}>
         <Link href="/routines" className={styles.backLink}>
-          ← Back to routines
+          ← {t('backToRoutines')}
         </Link>
-        <h1 className={styles.title}>Edit routine</h1>
+        <h1 className={styles.title}>{t('editRoutine')}</h1>
       </header>
 
       <div className={styles.content}>
         <section className={styles.section}>
-          <h2 className={styles.sectionTitle}>Name & style</h2>
+          <h2 className={styles.sectionTitle}>{t('nameAndStyle')}</h2>
           <div className={styles.field}>
-            <label>Name</label>
+            <label>{t('name')}</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Upper Body"
+              placeholder={t('namePlaceholder')}
               className={styles.input}
             />
           </div>
           <div className={styles.field}>
-            <label>Emoji</label>
+            <label>{t('emoji')}</label>
             <div className={styles.emojiRow}>
               {EMOJI_OPTIONS.map((em) => (
                 <button
@@ -339,7 +343,7 @@ export default function EditRoutinePage() {
             </div>
           </div>
           <div className={styles.field}>
-            <label>Color</label>
+            <label>{t('color')}</label>
             <div className={styles.colorRow}>
               {COLOR_OPTIONS.map((c) => (
                 <button
@@ -354,12 +358,12 @@ export default function EditRoutinePage() {
             </div>
           </div>
           <div className={styles.field}>
-            <label>Description (optional)</label>
+            <label>{t('descriptionOptional')}</label>
             <input
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Short description"
+              placeholder={t('descriptionPlaceholder')}
               className={styles.input}
             />
           </div>
@@ -367,7 +371,7 @@ export default function EditRoutinePage() {
 
         <section className={styles.section}>
           <div className={styles.sectionHeader}>
-            <h2 className={styles.sectionTitle}>Exercises</h2>
+            <h2 className={styles.sectionTitle}>{t('exercises')}</h2>
             <button
               type="button"
               className={styles.addExBtn}
@@ -376,7 +380,7 @@ export default function EditRoutinePage() {
                 loadCatalog();
               }}
             >
-              + Add exercise
+              + {t('addExercise')}
             </button>
           </div>
 
@@ -416,8 +420,8 @@ export default function EditRoutinePage() {
                               className={styles.dragHandle}
                               role="button"
                               tabIndex={0}
-                              aria-label="Drag to reorder"
-                              title="Drag to reorder"
+                              aria-label={t('dragToReorder')}
+                              title={t('dragToReorder')}
                               {...listeners}
                             >
                               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -442,7 +446,7 @@ export default function EditRoutinePage() {
                                 className={styles.howToLink}
                                 onClick={(e) => e.stopPropagation()}
                               >
-                                How to perform
+                                {t('howToPerform')}
                                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                   <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
                                   <polyline points="15 3 21 3 21 9" />
@@ -457,6 +461,7 @@ export default function EditRoutinePage() {
                               alternatives={swapAlternatives}
                               onSelect={(id) => handleSwapExercise(index, id)}
                               onClose={() => setSwapIndex(null)}
+                              t={t}
                             />
                           )}
 
@@ -465,8 +470,8 @@ export default function EditRoutinePage() {
                       type="button"
                       className={styles.actionBtn}
                       onClick={() => setSwapIndex(swapIndex === index ? null : index)}
-                      aria-label="Replace with alternative"
-                      title="Replace with alternative"
+                      aria-label={t('replaceWithAlternative')}
+                      title={t('replaceWithAlternative')}
                     >
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <polyline points="17 1 21 5 17 9" />
@@ -479,8 +484,8 @@ export default function EditRoutinePage() {
                       type="button"
                       className={`${styles.actionBtn} ${styles.actionBtnDelete}`}
                       onClick={() => removeExercise(index)}
-                      aria-label="Remove exercise"
-                      title="Remove exercise"
+                      aria-label={t('removeExercise')}
+                      title={t('removeExercise')}
                     >
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <polyline points="3 6 5 6 21 6" />
@@ -498,7 +503,7 @@ export default function EditRoutinePage() {
                                 className={styles.controlBtn}
                                 onClick={() => updateExercise(index, 'sets', ex.sets - 1)}
                                 disabled={ex.sets <= 1}
-                                aria-label="Decrease sets"
+                                aria-label={t('decreaseSets')}
                               >
                                 −
                               </button>
@@ -507,7 +512,7 @@ export default function EditRoutinePage() {
                                 type="button"
                                 className={styles.controlBtn}
                                 onClick={() => updateExercise(index, 'sets', ex.sets + 1)}
-                                aria-label="Increase sets"
+                                aria-label={t('increaseSets')}
                               >
                                 +
                               </button>
@@ -518,7 +523,7 @@ export default function EditRoutinePage() {
                                 className={styles.controlBtn}
                                 onClick={() => updateExercise(index, 'reps', ex.reps - 1)}
                                 disabled={ex.reps <= 1}
-                                aria-label="Decrease reps"
+                                aria-label={t('decreaseReps')}
                               >
                                 −
                               </button>
@@ -527,7 +532,7 @@ export default function EditRoutinePage() {
                                 type="button"
                                 className={styles.controlBtn}
                                 onClick={() => updateExercise(index, 'reps', ex.reps + 1)}
-                                aria-label="Increase reps"
+                                aria-label={t('increaseReps')}
                               >
                                 +
                               </button>
@@ -540,7 +545,7 @@ export default function EditRoutinePage() {
                                   updateExercise(index, 'restTimeSeconds', Math.max(0, ex.restTimeSeconds - 15))
                                 }
                                 disabled={ex.restTimeSeconds < 15}
-                                aria-label="Decrease rest"
+                                aria-label={t('decreaseRest')}
                               >
                                 −
                               </button>
@@ -553,7 +558,7 @@ export default function EditRoutinePage() {
                                 onClick={() =>
                                   updateExercise(index, 'restTimeSeconds', ex.restTimeSeconds + 15)
                                 }
-                                aria-label="Increase rest"
+                                aria-label={t('increaseRest')}
                               >
                                 +
                               </button>
@@ -571,7 +576,7 @@ export default function EditRoutinePage() {
 
         <div className={styles.footer}>
           {saveStatus === 'success' && (
-            <p className={styles.saveStatusSuccess} role="status">Routine saved!</p>
+            <p className={styles.saveStatusSuccess} role="status">{t('routineSaved')}</p>
           )}
           {saveStatus === 'error' && (
             <p className={styles.saveStatusError} role="alert">
@@ -585,7 +590,7 @@ export default function EditRoutinePage() {
             disabled={saving}
             style={{ backgroundColor: color || 'var(--color-accent)' }}
           >
-            {saving ? 'Saving…' : 'Save changes'}
+            {saving ? t('saving') : t('saveChanges')}
           </button>
         </div>
       </div>
@@ -594,19 +599,19 @@ export default function EditRoutinePage() {
         <div className={styles.modalOverlay} onClick={() => setShowAddExercise(false)}>
           <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
             <div className={styles.modalHeader}>
-              <h3>Add exercise</h3>
+              <h3>{t('addExerciseTitle')}</h3>
               <button
                 type="button"
                 className={styles.modalClose}
                 onClick={() => setShowAddExercise(false)}
-                aria-label="Close"
+                aria-label={t('close')}
               >
                 ×
               </button>
             </div>
             <input
               type="search"
-              placeholder="Search by name or id…"
+              placeholder={t('searchPlaceholder')}
               value={catalogSearch}
               onChange={(e) => setCatalogSearch(e.target.value)}
               className={styles.searchInput}

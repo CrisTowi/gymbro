@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  transpilePackages: ["next-intl"],
+  experimental: {
+    optimizePackageImports: ["next-intl"],
+  },
 };
 
 export default nextConfig;

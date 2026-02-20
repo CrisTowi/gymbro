@@ -2,6 +2,7 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { SessionLog, Routine } from '@/types';
 import { getExerciseById } from '@/data/exercises';
 import { formatDuration } from '@/utils/time';
@@ -11,6 +12,7 @@ import { fetchSessionById, fetchPersonalRecords, fetchRoutineById } from '@/lib/
 import styles from './page.module.css';
 
 function SummaryContent() {
+  const t = useTranslations('summary');
   const searchParams = useSearchParams();
   const router = useRouter();
   const sessionId = searchParams.get('sessionId');
@@ -49,7 +51,7 @@ function SummaryContent() {
   if (!session) {
     return (
       <div className={styles.page}>
-        <div className={styles.loading}>Loading summary...</div>
+        <div className={styles.loading}>{t('loading')}</div>
       </div>
     );
   }
@@ -91,7 +93,7 @@ function SummaryContent() {
           <div className={styles.gradeCircle} style={{ borderColor: routine?.color }}>
             <span className={styles.grade}>{grade}</span>
           </div>
-          <h1 className={styles.title}>Workout Complete!</h1>
+          <h1 className={styles.title}>{t('workoutComplete')}</h1>
           <p className={styles.gradeMsg}>{gradeMessage}</p>
           <p className={styles.motivation}>{message}</p>
         </div>
@@ -111,7 +113,7 @@ function SummaryContent() {
             <span className={styles.statValue}>
               {session.totalWeightLbs.toLocaleString()}
             </span>
-            <span className={styles.statUnit}>lbs lifted</span>
+            <span className={styles.statUnit}>{t('lbsLifted')}</span>
             <span className={styles.statSub}>
               ({lbsToKg(session.totalWeightLbs).toLocaleString()} kg)
             </span>
@@ -121,25 +123,25 @@ function SummaryContent() {
             <span className={styles.statValue}>
               {session.duration ? formatDuration(session.duration) : '--'}
             </span>
-            <span className={styles.statUnit}>duration</span>
+            <span className={styles.statUnit}>{t('duration')}</span>
           </div>
 
           <div className={styles.statCard}>
             <span className={styles.statValue}>{exercisesCompleted}</span>
-            <span className={styles.statUnit}>exercises</span>
+            <span className={styles.statUnit}>{t('exercises')}</span>
           </div>
 
           <div className={styles.statCard}>
             <span className={styles.statValue}>
               {totalCompletedSets}/{totalSets}
             </span>
-            <span className={styles.statUnit}>sets completed</span>
+            <span className={styles.statUnit}>{t('setsCompleted')}</span>
           </div>
         </div>
 
         {newPRs.length > 0 && (
           <div className={styles.prSection}>
-            <h2 className={styles.sectionTitle}>Personal Records!</h2>
+            <h2 className={styles.sectionTitle}>{t('personalRecords')}</h2>
             {newPRs.map((pr, i) => (
               <div key={i} className={styles.prItem}>
                 <span className={styles.prIcon}>🏆</span>
@@ -153,7 +155,7 @@ function SummaryContent() {
         )}
 
         <div className={styles.exerciseBreakdown}>
-          <h2 className={styles.sectionTitle}>Exercise Breakdown</h2>
+          <h2 className={styles.sectionTitle}>{t('exerciseBreakdown')}</h2>
           {session.exercises.map((ex) => {
             const exercise = getExerciseById(ex.exerciseId);
             const completedSets = ex.sets.filter((s) => s.completed);
@@ -174,15 +176,15 @@ function SummaryContent() {
                     {exercise?.name || ex.exerciseId}
                   </span>
                   <span className={styles.exerciseSets}>
-                    {completedSets.length} sets completed
+                    {t('setsCompletedCount', { count: completedSets.length })}
                   </span>
                 </div>
                 <div className={styles.exerciseStats}>
                   <span className={styles.exerciseMax}>
-                    Max: {maxWeight} lbs
+                    {t('max')}: {maxWeight} lbs
                   </span>
                   <span className={styles.exerciseVol}>
-                    Vol: {volume.toLocaleString()} lbs
+                    {t('vol')}: {volume.toLocaleString()} lbs
                   </span>
                 </div>
               </div>
@@ -191,7 +193,7 @@ function SummaryContent() {
         </div>
 
         <button className={styles.homeButton} onClick={() => router.push('/')}>
-          Back to Home
+          {t('backToHome')}
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="5" y1="12" x2="19" y2="12" />
             <polyline points="12 5 19 12 12 19" />

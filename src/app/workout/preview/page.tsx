@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useCallback, useEffect, useRef, Suspense, type ReactNode } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import {
   DndContext,
   DragEndEvent,
@@ -49,12 +50,12 @@ function estimateTime(exercises: ExerciseOverride[]): number {
   return totalSeconds;
 }
 
-function formatEstimate(seconds: number): string {
+function formatEstimate(seconds: number, t: (key: string, values?: Record<string, number>) => string): string {
   const mins = Math.round(seconds / 60);
-  if (mins < 60) return `~${mins} min`;
+  if (mins < 60) return t('estTimeMin', { mins });
   const hours = Math.floor(mins / 60);
   const remainMins = mins % 60;
-  return `~${hours}h ${remainMins}m`;
+  return t('estTimeHours', { hours, remainMins });
 }
 
 function SortableRow({
@@ -85,6 +86,7 @@ function SortableRow({
 }
 
 function PreviewContent() {
+  const t = useTranslations('workoutPreview');
   const searchParams = useSearchParams();
   const router = useRouter();
   const routineId = searchParams.get('routine');
@@ -268,7 +270,7 @@ function PreviewContent() {
   if (routineLoading) {
     return (
       <div className={styles.page}>
-        <div className={styles.loading}>Loading routine…</div>
+        <div className={styles.loading}>{t('loadingRoutine')}</div>
       </div>
     );
   }
@@ -277,9 +279,9 @@ function PreviewContent() {
     return (
       <div className={styles.page}>
         <div className={styles.error}>
-          <h2>No routine selected</h2>
+          <h2>{t('noRoutineSelected')}</h2>
           <button onClick={() => router.push('/')} className={styles.backLink}>
-            Go Home
+            {t('goHome')}
           </button>
         </div>
       </div>
@@ -294,7 +296,7 @@ function PreviewContent() {
             <line x1="19" y1="12" x2="5" y2="12" />
             <polyline points="12 19 5 12 12 5" />
           </svg>
-          Back
+          {t('back')}
         </button>
       </header>
 
@@ -313,30 +315,30 @@ function PreviewContent() {
         <div className={styles.statsBar}>
           <div className={styles.stat}>
             <span className={styles.statValue}>{overrides.length}</span>
-            <span className={styles.statLabel}>Exercises</span>
+            <span className={styles.statLabel}>{t('exercises')}</span>
           </div>
           <div className={styles.stat}>
             <span className={styles.statValue}>{totalSets}</span>
-            <span className={styles.statLabel}>Total Sets</span>
+            <span className={styles.statLabel}>{t('totalSets')}</span>
           </div>
           <div className={styles.stat}>
-            <span className={styles.statValue}>{formatEstimate(estimatedSeconds)}</span>
-            <span className={styles.statLabel}>Est. Time</span>
+            <span className={styles.statValue}>{formatEstimate(estimatedSeconds, t)}</span>
+            <span className={styles.statLabel}>{t('estTime')}</span>
           </div>
         </div>
 
         {hasChanges && (
           <button className={styles.resetBtn} onClick={resetToDefaults}>
-            Reset to defaults
+            {t('resetToDefaults')}
           </button>
         )}
 
         <div className={styles.exerciseList}>
           <div className={styles.listHeader}>
-            <span className={styles.listHeaderName}>Exercise</span>
-            <span className={styles.listHeaderControl}>Sets</span>
-            <span className={styles.listHeaderControl}>Reps</span>
-            <span className={styles.listHeaderControl}>Rest</span>
+            <span className={styles.listHeaderName}>{t('exercise')}</span>
+            <span className={styles.listHeaderControl}>{t('sets')}</span>
+            <span className={styles.listHeaderControl}>{t('reps')}</span>
+            <span className={styles.listHeaderControl}>{t('rest')}</span>
           </div>
 
           <DndContext
@@ -385,8 +387,8 @@ function PreviewContent() {
                             className={styles.dragHandle}
                             role="button"
                             tabIndex={0}
-                            aria-label="Drag to reorder"
-                            title="Drag to reorder"
+                            aria-label={t('dragToReorder')}
+                            title={t('dragToReorder')}
                             {...listeners}
                           >
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -404,7 +406,7 @@ function PreviewContent() {
                               {exercise?.category} · {exercise?.equipment}
                               {isSwapped && defaultEx && (
                                 <span className={styles.swappedNote}>
-                                  {' '}· replaces {getExerciseById(defaultEx.exerciseId)?.name}
+                                  {' '}· {t('replacesExercise', { name: getExerciseById(defaultEx.exerciseId)?.name ?? defaultEx.exerciseId })}
                                 </span>
                               )}
                               {!isSwapped && defaultEx?.notes && (
@@ -413,7 +415,7 @@ function PreviewContent() {
                             </span>
                             {lastPerf && (
                               <span className={styles.lastWeight}>
-                                Last: {formatWeight(lastPerf.weightLbs, false)} x {lastPerf.reps}
+                                {t('lastWeight', { weight: formatWeight(lastPerf.weightLbs, false), reps: lastPerf.reps })}
                               </span>
                             )}
                             {exercise?.referenceUrl && (
@@ -424,7 +426,7 @@ function PreviewContent() {
                                 className={styles.howToLink}
                                 onClick={(e) => e.stopPropagation()}
                               >
-                                How to perform
+                                {t('howToPerform')}
                                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                   <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
                                   <polyline points="15 3 21 3 21 9" />
@@ -439,6 +441,7 @@ function PreviewContent() {
                             alternatives={swapAlternatives}
                             onSelect={(id) => handleSwapExercise(index, id)}
                             onClose={() => setSwapIndex(null)}
+                            t={t}
                           />
                         )}
 
@@ -447,8 +450,8 @@ function PreviewContent() {
                     type="button"
                     className={styles.actionBtn}
                     onClick={() => setSwapIndex(swapIndex === index ? null : index)}
-                    aria-label="Swap exercise"
-                    title="Swap exercise"
+                    aria-label={t('swapExercise')}
+                    title={t('swapExercise')}
                   >
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="17 1 21 5 17 9" />
@@ -461,8 +464,8 @@ function PreviewContent() {
                     type="button"
                     className={`${styles.actionBtn} ${styles.actionBtnDelete}`}
                     onClick={() => removeExercise(index)}
-                    aria-label="Remove exercise from session"
-                    title="Remove exercise"
+                    aria-label={t('removeExercise')}
+                    title={t('removeExercise')}
                   >
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="3 6 5 6 21 6" />
@@ -479,7 +482,7 @@ function PreviewContent() {
                       className={styles.controlBtn}
                       onClick={() => updateOverride(index, 'sets', override.sets - 1)}
                       disabled={override.sets <= 1}
-                      aria-label="Decrease sets"
+                      aria-label={t('decreaseSets')}
                     >
                       −
                     </button>
@@ -487,7 +490,7 @@ function PreviewContent() {
                     <button
                       className={styles.controlBtn}
                       onClick={() => updateOverride(index, 'sets', override.sets + 1)}
-                      aria-label="Increase sets"
+                      aria-label={t('increaseSets')}
                     >
                       +
                     </button>
@@ -498,7 +501,7 @@ function PreviewContent() {
                       className={styles.controlBtn}
                       onClick={() => updateOverride(index, 'reps', override.reps - 1)}
                       disabled={override.reps <= 1}
-                      aria-label="Decrease reps"
+                      aria-label={t('decreaseReps')}
                     >
                       −
                     </button>
@@ -506,7 +509,7 @@ function PreviewContent() {
                     <button
                       className={styles.controlBtn}
                       onClick={() => updateOverride(index, 'reps', override.reps + 1)}
-                      aria-label="Increase reps"
+                      aria-label={t('increaseReps')}
                     >
                       +
                     </button>
@@ -519,7 +522,7 @@ function PreviewContent() {
                         updateOverride(index, 'restTimeSeconds', override.restTimeSeconds - 15)
                       }
                       disabled={override.restTimeSeconds <= 15}
-                      aria-label="Decrease rest"
+                      aria-label={t('decreaseRest')}
                     >
                       −
                     </button>
@@ -531,7 +534,7 @@ function PreviewContent() {
                       onClick={() =>
                         updateOverride(index, 'restTimeSeconds', override.restTimeSeconds + 15)
                       }
-                      aria-label="Increase rest"
+                      aria-label={t('increaseRest')}
                     >
                       +
                     </button>
@@ -555,13 +558,13 @@ function PreviewContent() {
             onChange={(e) => setDontSave(e.target.checked)}
             className={styles.dontSaveCheckbox}
           />
-          <span>Don&apos;t save this workout</span>
+          <span>{t('dontSaveWorkout')}</span>
         </label>
         <p className={styles.dontSaveHint}>
-          Use for testing or unplanned sessions. No data is sent to the server.
+          {t('dontSaveHint')}
         </p>
         {overrides.length === 0 && (
-          <p className={styles.noExercisesHint}>Add at least one exercise to start.</p>
+          <p className={styles.noExercisesHint}>{t('addOneExercise')}</p>
         )}
         <button
           className={styles.startBtn}
@@ -569,7 +572,7 @@ function PreviewContent() {
           disabled={overrides.length === 0}
           style={{ backgroundColor: routine.color }}
         >
-          Start Workout
+          {t('startWorkout')}
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <line x1="5" y1="12" x2="19" y2="12" />
             <polyline points="12 5 19 12 12 19" />
@@ -584,17 +587,19 @@ function SwapPicker({
   alternatives,
   onSelect,
   onClose,
+  t,
 }: {
   alternatives: Exercise[];
   onSelect: (exerciseId: string) => void;
   onClose: () => void;
+  t: (key: string) => string;
 }) {
   if (alternatives.length === 0) {
     return (
       <div className={styles.swapPicker}>
         <div className={styles.swapPickerHeader}>
-          <span className={styles.swapPickerTitle}>No alternatives available</span>
-          <button className={styles.swapPickerClose} onClick={onClose}>
+          <span className={styles.swapPickerTitle}>{t('noAlternatives')}</span>
+          <button className={styles.swapPickerClose} onClick={onClose} aria-label={t('close')}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
@@ -608,8 +613,8 @@ function SwapPicker({
   return (
     <div className={styles.swapPicker}>
       <div className={styles.swapPickerHeader}>
-        <span className={styles.swapPickerTitle}>Swap with alternative</span>
-        <button className={styles.swapPickerClose} onClick={onClose}>
+        <span className={styles.swapPickerTitle}>{t('swapWithAlternative')}</span>
+        <button className={styles.swapPickerClose} onClick={onClose} aria-label={t('close')}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="18" y1="6" x2="6" y2="18" />
             <line x1="6" y1="6" x2="18" y2="18" />
@@ -637,7 +642,7 @@ function SwapPicker({
                       className={styles.swapOptionLink}
                       onClick={(e) => e.stopPropagation()}
                     >
-                      How to
+                      {t('howTo')}
                     </a>
                   </>
                 )}
@@ -653,15 +658,18 @@ function SwapPicker({
   );
 }
 
+function PreviewFallback() {
+  const t = useTranslations('workoutPreview');
+  return (
+    <div className={styles.page}>
+      <div className={styles.loading}>{t('loadingPreview')}</div>
+    </div>
+  );
+}
+
 export default function PreviewPage() {
   return (
-    <Suspense
-      fallback={
-        <div className={styles.page}>
-          <div className={styles.loading}>Loading preview...</div>
-        </div>
-      }
-    >
+    <Suspense fallback={<PreviewFallback />}>
       <PreviewContent />
     </Suspense>
   );

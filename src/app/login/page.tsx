@@ -2,10 +2,12 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { useAuth } from '@/context/AuthContext';
 import styles from './auth.module.css';
 
 export default function LoginPage() {
+  const t = useTranslations('auth');
   const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -19,7 +21,7 @@ export default function LoginPage() {
     try {
       await login(email, password);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed');
+      setError(err instanceof Error ? err.message : t('loginFailed'));
     } finally {
       setLoading(false);
     }
@@ -31,12 +33,12 @@ export default function LoginPage() {
         <h1 className={styles.title}>
           <span className={styles.logoIcon}>⚡</span> GymTrack
         </h1>
-        <p className={styles.subtitle}>Sign in to your account</p>
+        <p className={styles.subtitle}>{t('signInToAccount')}</p>
 
         <form onSubmit={handleSubmit} className={styles.form}>
           {error && <p className={styles.error}>{error}</p>}
           <label className={styles.label}>
-            Email
+            {t('email')}
             <input
               type="email"
               value={email}
@@ -47,7 +49,7 @@ export default function LoginPage() {
             />
           </label>
           <label className={styles.label}>
-            Password
+            {t('password')}
             <input
               type="password"
               value={password}
@@ -58,16 +60,16 @@ export default function LoginPage() {
             />
           </label>
           <button type="submit" className={styles.submit} disabled={loading}>
-            {loading ? 'Signing in…' : 'Sign in'}
+            {loading ? t('signingIn') : t('signIn')}
           </button>
         </form>
 
         <p className={styles.footer}>
-          Don&apos;t have an account? You need an{' '}
+          {t('noAccount')}{' '}
           <Link href="/register" className={styles.link}>
-            invitation link
+            {t('invitationLink')}
           </Link>{' '}
-          to register.
+          {t('toRegister')}
         </p>
       </div>
     </div>

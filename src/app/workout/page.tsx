@@ -10,11 +10,11 @@ import { getExerciseById } from '@/data/exercises';
 import { useTimer } from '@/hooks/useTimer';
 import { useNotification } from '@/hooks/useNotification';
 import { formatDuration } from '@/utils/time';
+import { useTranslations } from 'next-intl';
 import {
   fetchActiveSession,
   createSession,
   updateSession as apiUpdateSession,
-  clearActiveSession,
   fetchLastExercisePerformance,
   fetchRecommendedSets,
   LastExercisePerformance,
@@ -55,6 +55,7 @@ function readPracticeFlag(): boolean {
 }
 
 function WorkoutContent() {
+  const t = useTranslations('workout');
   const searchParams = useSearchParams();
   const router = useRouter();
   const routineId = searchParams.get('routine');
@@ -105,12 +106,12 @@ function WorkoutContent() {
   const handleTimerComplete = useCallback(() => {
     setShowTimer(false);
     setNextExercisePreview(null);
-    sendNotification('Rest Complete!', {
-      body: 'Time to start your next set. Let\'s go!',
+    sendNotification(t('restCompleteTitle'), {
+      body: t('restCompleteBody'),
       tag: 'rest-timer',
       requireInteraction: true,
     });
-  }, [sendNotification]);
+  }, [sendNotification, t]);
 
   const timer = useTimer(handleTimerComplete);
 
@@ -475,10 +476,10 @@ function WorkoutContent() {
     return (
       <div className={styles.page}>
         <div className={styles.loading}>
-          {routineLoading ? 'Loading routine…' : 'No routine selected'}
+          {routineLoading ? t('loadingRoutine') : t('noRoutineSelected')}
           {!routineLoading && (
             <button onClick={() => router.push('/')} className={styles.backButton}>
-              Go Home
+              {t('goHome')}
             </button>
           )}
         </div>
@@ -489,7 +490,7 @@ function WorkoutContent() {
   if (!session) {
     return (
       <div className={styles.page}>
-        <div className={styles.loading}>Starting workout…</div>
+        <div className={styles.loading}>{t('startingWorkout')}</div>
       </div>
     );
   }
@@ -521,8 +522,8 @@ function WorkoutContent() {
             <h1 className={styles.routineName} style={{ color: routine.color }}>
               {routine.icon} {routine.name}
               {isPracticeMode && (
-                <span className={styles.practiceBadge} title="This workout will not be saved">
-                  Practice
+                <span className={styles.practiceBadge} title={t('practiceBadgeTitle')}>
+                  {t('practiceBadge')}
                 </span>
               )}
             </h1>
@@ -545,10 +546,10 @@ function WorkoutContent() {
 
         <div className={styles.statsRow}>
           <span className={styles.statItem}>
-            {totalCompletedSets}/{totalSets} sets
+            {t('setsStat', { completed: totalCompletedSets, total: totalSets })}
           </span>
           <span className={styles.statItem}>
-            {session.totalWeightLbs.toLocaleString()} lbs total
+            {session.totalWeightLbs.toLocaleString()} {t('lbsTotal')}
           </span>
         </div>
       </header>
@@ -596,7 +597,7 @@ function WorkoutContent() {
           onClick={() => setShowConfirmEnd(true)}
           style={{ backgroundColor: routine.color }}
         >
-          Finish Workout
+          {t('finishWorkout')}
         </button>
       </div>
 
@@ -618,24 +619,24 @@ function WorkoutContent() {
       {showConfirmEnd && (
         <div className={styles.confirmOverlay}>
           <div className={styles.confirmModal}>
-            <h3 className={styles.confirmTitle}>End Workout?</h3>
+            <h3 className={styles.confirmTitle}>{t('endWorkout')}</h3>
             <p className={styles.confirmText}>
               {totalCompletedSets === 0
-                ? 'You haven\'t completed any sets yet. Are you sure?'
-                : `You've completed ${totalCompletedSets} of ${totalSets} sets. Finish now?`}
+                ? t('noSetsYet')
+                : t('setsComplete', { completed: totalCompletedSets, total: totalSets })}
             </p>
             <div className={styles.confirmButtons}>
               <button
                 className={styles.confirmCancel}
                 onClick={() => setShowConfirmEnd(false)}
               >
-                Keep Going
+                {t('keepGoing')}
               </button>
               <button
                 className={styles.confirmEnd}
                 onClick={handleFinishWorkout}
               >
-                Finish
+                {t('finish')}
               </button>
             </div>
           </div>
@@ -645,8 +646,8 @@ function WorkoutContent() {
       {showPracticeSummary && session && (
         <div className={styles.confirmOverlay}>
           <div className={styles.confirmModal}>
-            <h3 className={styles.confirmTitle}>Workout complete</h3>
-            <p className={styles.practiceSummaryNote}>Not saved — for testing or unplanned sessions.</p>
+            <h3 className={styles.confirmTitle}>{t('workoutComplete')}</h3>
+            <p className={styles.practiceSummaryNote}>{t('notSavedNote')}</p>
             <div className={styles.practiceSummaryStats}>
               <span>{session.totalWeightLbs.toLocaleString()} lbs</span>
               <span>{formatDuration(elapsedSeconds)}</span>
@@ -656,7 +657,7 @@ function WorkoutContent() {
               className={styles.practiceHomeButton}
               onClick={() => router.push('/')}
             >
-              Back to Home
+              {t('backToHome')}
             </button>
           </div>
         </div>
@@ -665,15 +666,18 @@ function WorkoutContent() {
   );
 }
 
+function WorkoutFallback() {
+  const t = useTranslations('workout');
+  return (
+    <div className={styles.page}>
+      <div className={styles.loading}>{t('loadingWorkout')}</div>
+    </div>
+  );
+}
+
 export default function WorkoutPage() {
   return (
-    <Suspense
-      fallback={
-        <div className={styles.page}>
-          <div className={styles.loading}>Loading workout...</div>
-        </div>
-      }
-    >
+    <Suspense fallback={<WorkoutFallback />}>
       <WorkoutContent />
     </Suspense>
   );

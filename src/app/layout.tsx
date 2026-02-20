@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Suspense } from 'react';
 import { AuthProvider } from '@/context/AuthContext';
+import { LocaleProvider } from '@/context/LocaleContext';
 import AuthGuard from '@/components/AuthGuard/AuthGuard';
 import Navigation from '@/components/Navigation/Navigation';
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
@@ -41,10 +42,12 @@ export default function RootLayout({
       <body suppressHydrationWarning>
         <ServiceWorkerRegister />
         <AuthProvider>
-          <AuthGuard>
-            <main>{children}</main>
-            <Navigation />
-          </AuthGuard>
+          <LocaleProvider>
+            <AuthGuard>
+              <main>{children}</main>
+              <Navigation />
+            </AuthGuard>
+          </LocaleProvider>
         </AuthProvider>
         <Suspense fallback={null}>
           <DevTools />

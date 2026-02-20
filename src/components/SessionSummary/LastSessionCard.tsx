@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { SessionLog, Routine } from '@/types';
 import { getExerciseById } from '@/data/exercises';
 import { formatDuration, getRelativeDate } from '@/utils/time';
@@ -11,13 +12,15 @@ interface LastSessionCardProps {
 }
 
 export default function LastSessionCard({ session, routine }: LastSessionCardProps) {
+  const t = useTranslations('lastSession');
+
   if (!session) {
     return (
       <div className={styles.card}>
         <div className={styles.empty}>
           <span className={styles.emptyIcon}>🏋️</span>
-          <p className={styles.emptyText}>No previous sessions yet</p>
-          <p className={styles.emptySubtext}>Start your first workout to see stats here!</p>
+          <p className={styles.emptyText}>{t('noSessionsYet')}</p>
+          <p className={styles.emptySubtext}>{t('noSessionsHint')}</p>
         </div>
       </div>
     );
@@ -37,7 +40,7 @@ export default function LastSessionCard({ session, routine }: LastSessionCardPro
   return (
     <div className={styles.card}>
       <div className={styles.header}>
-        <h3 className={styles.title}>Last Session</h3>
+        <h3 className={styles.title}>{t('title')}</h3>
         <span className={styles.date}>{getRelativeDate(session.date)}</span>
       </div>
 
@@ -53,22 +56,22 @@ export default function LastSessionCard({ session, routine }: LastSessionCardPro
           <span className={styles.statValue}>
             {session.totalWeightLbs.toLocaleString()} lbs
           </span>
-          <span className={styles.statLabel}>Total lifted</span>
+          <span className={styles.statLabel}>{t('totalLifted')}</span>
         </div>
         <div className={styles.stat}>
           <span className={styles.statValue}>{exerciseCount}</span>
-          <span className={styles.statLabel}>Exercises</span>
+          <span className={styles.statLabel}>{t('exercises')}</span>
         </div>
         <div className={styles.stat}>
           <span className={styles.statValue}>
             {completedSets}/{totalSets}
           </span>
-          <span className={styles.statLabel}>Sets</span>
+          <span className={styles.statLabel}>{t('sets')}</span>
         </div>
         {session.duration && (
           <div className={styles.stat}>
             <span className={styles.statValue}>{formatDuration(session.duration)}</span>
-            <span className={styles.statLabel}>Duration</span>
+            <span className={styles.statLabel}>{t('duration')}</span>
           </div>
         )}
       </div>
@@ -94,7 +97,7 @@ export default function LastSessionCard({ session, routine }: LastSessionCardPro
           })}
           {session.exercises.length > 3 && (
             <span className={styles.moreText}>
-              +{session.exercises.length - 3} more exercises
+              {t('moreExercises', { count: session.exercises.length - 3 })}
             </span>
           )}
         </div>

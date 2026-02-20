@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { MuscleGroup, TimeRange } from '@/types';
 import styles from './FilterBar.module.css';
 
@@ -14,26 +15,26 @@ interface FilterBarProps {
   onExerciseChange: (exerciseId: string | null) => void;
 }
 
-const TIME_RANGES: { value: TimeRange; label: string }[] = [
-  { value: 'this-month', label: 'This Month' },
-  { value: 'this-year', label: 'This Year' },
-  { value: 'all-time', label: 'All Time' },
+const TIME_RANGE_KEYS: { value: TimeRange; key: 'thisMonth' | 'thisYear' | 'allTime' }[] = [
+  { value: 'this-month', key: 'thisMonth' },
+  { value: 'this-year', key: 'thisYear' },
+  { value: 'all-time', key: 'allTime' },
 ];
 
-const MUSCLE_GROUP_LABELS: Record<string, string> = {
-  all: 'All',
-  chest: 'Chest',
-  back: 'Back',
-  shoulders: 'Shoulders',
-  biceps: 'Biceps',
-  triceps: 'Triceps',
-  quadriceps: 'Quads',
-  hamstrings: 'Hamstrings',
-  glutes: 'Glutes',
-  calves: 'Calves',
-  core: 'Core',
-  forearms: 'Forearms',
-  traps: 'Traps',
+const MUSCLE_GROUP_KEYS: Record<string, string> = {
+  all: 'filterAll',
+  chest: 'filterChest',
+  back: 'filterBack',
+  shoulders: 'filterShoulders',
+  biceps: 'filterBiceps',
+  triceps: 'filterTriceps',
+  quadriceps: 'filterQuads',
+  hamstrings: 'filterHamstrings',
+  glutes: 'filterGlutes',
+  calves: 'filterCalves',
+  core: 'filterCore',
+  forearms: 'filterForearms',
+  traps: 'filterTraps',
 };
 
 export default function FilterBar({
@@ -46,12 +47,14 @@ export default function FilterBar({
   onTimeRangeChange,
   onExerciseChange,
 }: FilterBarProps) {
+  const t = useTranslations('dashboard');
+
   return (
     <div className={styles.container}>
       <div className={styles.section}>
-        <label className={styles.label}>Time Range</label>
+        <label className={styles.label}>{t('timeRange')}</label>
         <div className={styles.chips}>
-          {TIME_RANGES.map(({ value, label }) => (
+          {TIME_RANGE_KEYS.map(({ value, key }) => (
             <button
               key={value}
               className={`${styles.chip} ${
@@ -59,14 +62,14 @@ export default function FilterBar({
               }`}
               onClick={() => onTimeRangeChange(value)}
             >
-              {label}
+              {t(key)}
             </button>
           ))}
         </div>
       </div>
 
       <div className={styles.section}>
-        <label className={styles.label}>Muscle Group</label>
+        <label className={styles.label}>{t('muscleGroup')}</label>
         <div className={styles.chips}>
           <button
             className={`${styles.chip} ${
@@ -77,7 +80,7 @@ export default function FilterBar({
               onExerciseChange(null);
             }}
           >
-            All
+            {t('filterAll')}
           </button>
           {muscleGroups.map((group) => (
             <button
@@ -90,7 +93,7 @@ export default function FilterBar({
                 onExerciseChange(null);
               }}
             >
-              {MUSCLE_GROUP_LABELS[group] || group}
+              {t(MUSCLE_GROUP_KEYS[group] || group)}
             </button>
           ))}
         </div>
@@ -98,7 +101,7 @@ export default function FilterBar({
 
       {exercises.length > 0 && (
         <div className={styles.section}>
-          <label className={styles.label}>Exercise</label>
+          <label className={styles.label}>{t('exerciseLabel')}</label>
           <select
             className={styles.select}
             value={selectedExerciseId || ''}
@@ -106,7 +109,7 @@ export default function FilterBar({
               onExerciseChange(e.target.value || null)
             }
           >
-            <option value="">All exercises</option>
+            <option value="">{t('allExercises')}</option>
             {exercises.map((ex) => (
               <option key={ex.id} value={ex.id}>
                 {ex.name}

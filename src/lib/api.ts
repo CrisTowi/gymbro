@@ -67,6 +67,7 @@ export async function fetchAlternatives(
 // ─── Routines (user-scoped) ───────────────────────────────────
 
 interface RoutineResponse {
+  _id?: string;
   routineId: string;
   name: string;
   description?: string;
@@ -77,7 +78,7 @@ interface RoutineResponse {
 
 function normalizeRoutine(r: RoutineResponse): Routine {
   return {
-    id: r.routineId,
+    id: r._id ?? r.routineId,
     name: r.name,
     description: r.description ?? '',
     color: r.color,
@@ -299,6 +300,7 @@ export interface User {
   height: number | null;
   weight: number | null;
   goal: string | null;
+  language?: 'en' | 'es';
 }
 
 export async function validateInvitation(token: string): Promise<{ valid: boolean }> {
@@ -332,4 +334,11 @@ export async function login(email: string, password: string): Promise<{ user: Us
 
 export async function fetchMe(): Promise<User> {
   return request<User>('/api/auth/me');
+}
+
+export async function updateMe(updates: Partial<Pick<User, 'name' | 'height' | 'weight' | 'goal' | 'language'>>): Promise<User> {
+  return request<User>('/api/auth/me', {
+    method: 'PATCH',
+    body: JSON.stringify(updates),
+  });
 }

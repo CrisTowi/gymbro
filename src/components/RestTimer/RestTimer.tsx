@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { formatTime } from '@/utils/time';
 import styles from './RestTimer.module.css';
 
@@ -88,6 +89,7 @@ export default function RestTimer({
 
   if (totalSeconds === 0) return null;
 
+  const t = useTranslations('restTimer');
   const circumference = 2 * Math.PI * 54;
   const strokeDashoffset = circumference * (1 - progress);
   const isAlmostDone = remainingSeconds <= 10 && remainingSeconds > 0;
@@ -95,7 +97,7 @@ export default function RestTimer({
   return (
     <div className={`${styles.overlay} ${isAlmostDone ? styles.almostDone : ''}`}>
       <div className={styles.container}>
-        <h3 className={styles.title}>Rest Time</h3>
+        <h3 className={styles.title}>{t('restTime')}</h3>
 
         <div className={styles.timerCircle}>
           <svg className={styles.svg} viewBox="0 0 120 120">
@@ -124,7 +126,7 @@ export default function RestTimer({
             <span className={`${styles.time} ${isAlmostDone ? styles.timePulse : ''}`}>
               {formatTime(remainingSeconds)}
             </span>
-            <span className={styles.totalTime}>of {formatTime(totalSeconds)}</span>
+            <span className={styles.totalTime}>{t('of')} {formatTime(totalSeconds)}</span>
           </div>
         </div>
 
@@ -133,34 +135,34 @@ export default function RestTimer({
             className={styles.adjustButton}
             onClick={onReduceTime}
             disabled={remainingSeconds <= 15}
-            aria-label="Reduce 15 seconds"
+            aria-label={t('reduce15')}
           >
-            -15s
+            {t('reduce15Short')}
           </button>
 
           {isRunning ? (
-            <button className={styles.pauseButton} onClick={onPause} aria-label="Pause timer">
+            <button className={styles.pauseButton} onClick={onPause} aria-label={t('pause')}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                 <rect x="6" y="4" width="4" height="16" rx="1" />
                 <rect x="14" y="4" width="4" height="16" rx="1" />
               </svg>
             </button>
           ) : (
-            <button className={styles.pauseButton} onClick={onResume} aria-label="Resume timer">
+            <button className={styles.pauseButton} onClick={onResume} aria-label={t('resume')}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                 <polygon points="5,3 19,12 5,21" />
               </svg>
             </button>
           )}
 
-          <button className={styles.adjustButton} onClick={onAddTime} aria-label="Add 15 seconds">
-            +15s
+          <button className={styles.adjustButton} onClick={onAddTime} aria-label={t('add15')}>
+            {t('add15Short')}
           </button>
         </div>
 
         {nextExercise && (
           <div className={styles.nextExercise}>
-            <h4 className={styles.nextExerciseTitle}>Next up</h4>
+            <h4 className={styles.nextExerciseTitle}>{t('nextUp')}</h4>
             <p className={styles.nextExerciseName}>{nextExercise.name}</p>
             {nextExercise.instructions.length > 0 && (
               <ol className={styles.nextExerciseInstructions}>
@@ -173,7 +175,7 @@ export default function RestTimer({
         )}
 
         <button className={styles.skipButton} onClick={onSkip}>
-          Skip Rest
+          {t('skipRest')}
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <polygon points="5,4 15,12 5,20" />
             <line x1="19" y1="5" x2="19" y2="19" />

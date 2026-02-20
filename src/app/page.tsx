@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import WeeklyPlan from '@/components/WeeklyPlan/WeeklyPlan';
 import LastSessionCard from '@/components/SessionSummary/LastSessionCard';
 import { WeeklyPlan as WeeklyPlanType, Routine, SessionLog, DEFAULT_WEEKLY_PLAN } from '@/types';
@@ -16,6 +17,7 @@ import {
 import styles from './page.module.css';
 
 export default function Home() {
+  const t = useTranslations('home');
   const [weeklyPlan, setWeeklyPlan] = useState<WeeklyPlanType>(DEFAULT_WEEKLY_PLAN);
   const [routines, setRoutines] = useState<Routine[]>([]);
   const [lastSession, setLastSession] = useState<SessionLog | null>(null);
@@ -86,19 +88,17 @@ export default function Home() {
           <div className={styles.headerContent}>
             <h1 className={styles.logo}>
               <span className={styles.logoIcon}>⚡</span>
-              GymTrack
+              {t('logo')}
             </h1>
-            <p className={styles.greeting}>Set up your routine</p>
+            <p className={styles.greeting}>{t('setUpRoutine')}</p>
           </div>
         </header>
 
         <div className={styles.content}>
           <div className={styles.emptyRoutineCard}>
             <span className={styles.emptyRoutineIcon}>📋</span>
-            <h2 className={styles.emptyRoutineTitle}>Create and customize your routine</h2>
-            <p className={styles.emptyRoutineDesc}>
-              Your plan is unique. Start with our suggested Push, Pull, Legs & Full Body split to hit the ground running, or build your own from scratch.
-            </p>
+            <h2 className={styles.emptyRoutineTitle}>{t('createCustomize')}</h2>
+            <p className={styles.emptyRoutineDesc}>{t('createCustomizeDesc')}</p>
             <div className={styles.emptyRoutineActions}>
               <button
                 type="button"
@@ -106,10 +106,10 @@ export default function Home() {
                 onClick={handleSeedDefaults}
                 disabled={seeding}
               >
-                {seeding ? 'Creating…' : 'Start with Push, Pull, Legs & Full Body'}
+                {seeding ? t('creating') : t('startWithPushPullLegs')}
               </button>
               <Link href="/routines/new" className={styles.emptyRoutineSecondary}>
-                Build from scratch
+                {t('buildFromScratch')}
               </Link>
             </div>
           </div>
@@ -124,9 +124,9 @@ export default function Home() {
         <div className={styles.headerContent}>
           <h1 className={styles.logo}>
             <span className={styles.logoIcon}>⚡</span>
-            GymTrack
+            {t('logo')}
           </h1>
-          <p className={styles.greeting}>Ready to crush it today?</p>
+          <p className={styles.greeting}>{t('readyToday')}</p>
         </div>
       </header>
 
@@ -140,17 +140,17 @@ export default function Home() {
             }}
           >
             <div className={styles.todayInfo}>
-              <span className={styles.todayLabel}>Today&apos;s Workout</span>
+              <span className={styles.todayLabel}>{t('todaysWorkout')}</span>
               <h2 className={styles.todayRoutine} style={{ color: todayRoutine.color }}>
                 {todayRoutine.icon} {todayRoutine.name}
               </h2>
               <p className={styles.todayDesc}>{todayRoutine.description}</p>
               <span className={styles.todayExercises}>
-                {todayRoutine.exercises.length} exercises
+                {t('exercisesCount', { count: todayRoutine.exercises.length })}
               </span>
             </div>
             <Link href={`/workout/preview?routine=${todayRoutineId}`} className={styles.startButton}>
-              Start Workout
+              {t('startWorkout')}
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12" />
                 <polyline points="12 5 19 12 12 19" />
@@ -160,10 +160,8 @@ export default function Home() {
         ) : (
           <div className={styles.restDayCard}>
             <span className={styles.restIcon}>😴</span>
-            <h2 className={styles.restTitle}>Rest Day</h2>
-            <p className={styles.restDesc}>
-              Recovery is part of the process. But if you&apos;re feeling energized...
-            </p>
+            <h2 className={styles.restTitle}>{t('restDay')}</h2>
+            <p className={styles.restDesc}>{t('restDayDesc')}</p>
             <div className={styles.quickStart}>
               {routines.map((routine) => (
                 <Link
@@ -190,7 +188,7 @@ export default function Home() {
 
         <div className={styles.manageRoutines}>
           <Link href="/routines" className={styles.manageRoutinesLink}>
-            Manage routines
+            {t('manageRoutines')}
           </Link>
         </div>
 

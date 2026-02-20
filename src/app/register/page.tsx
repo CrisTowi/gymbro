@@ -3,10 +3,12 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { useAuth } from '@/context/AuthContext';
 import styles from '../login/auth.module.css';
 
 function RegisterForm() {
+  const t = useTranslations('auth');
   const searchParams = useSearchParams();
   const invitationToken = searchParams.get('invitation') ?? '';
   const { register, validateInvitation } = useAuth();
@@ -47,7 +49,7 @@ function RegisterForm() {
         goal: goal.trim() || null,
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Registration failed');
+      setError(err instanceof Error ? err.message : t('registrationFailed'));
     } finally {
       setLoading(false);
     }
@@ -84,14 +86,14 @@ function RegisterForm() {
     <div className={styles.page}>
       <div className={styles.card}>
         <h1 className={styles.title}>
-          <span className={styles.logoIcon}>⚡</span> Create your account
+          <span className={styles.logoIcon}>⚡</span> {t('createAccount')}
         </h1>
-        <p className={styles.subtitle}>You’re invited to join GymTrack</p>
+        <p className={styles.subtitle}>{t('youreInvited')}</p>
 
         <form onSubmit={handleSubmit} className={styles.form}>
           {error && <p className={styles.error}>{error}</p>}
           <label className={styles.label}>
-            Name
+            {t('name')}
             <input
               type="text"
               value={name}
@@ -102,7 +104,7 @@ function RegisterForm() {
             />
           </label>
           <label className={styles.label}>
-            Email
+            {t('email')}
             <input
               type="email"
               value={email}
@@ -113,7 +115,7 @@ function RegisterForm() {
             />
           </label>
           <label className={styles.label}>
-            Password
+            {t('password')}
             <input
               type="password"
               value={password}
@@ -125,46 +127,46 @@ function RegisterForm() {
             />
           </label>
           <label className={styles.label}>
-            Height (optional)
+            {t('heightOptional')}
             <input
               type="number"
               value={height}
               onChange={(e) => setHeight(e.target.value)}
               className={styles.input}
-              placeholder="e.g. 170 (cm)"
+              placeholder={t('heightPlaceholder')}
               min={1}
               step={1}
             />
           </label>
           <label className={styles.label}>
-            Weight (optional)
+            {t('weightOptional')}
             <input
               type="number"
               value={weight}
               onChange={(e) => setWeight(e.target.value)}
               className={styles.input}
-              placeholder="e.g. 70 (kg)"
+              placeholder={t('weightPlaceholder')}
               min={1}
               step={0.1}
             />
           </label>
           <label className={styles.label}>
-            Goal (optional)
+            {t('goalOptional')}
             <input
               type="text"
               value={goal}
               onChange={(e) => setGoal(e.target.value)}
               className={styles.input}
-              placeholder="e.g. Build strength, lose fat"
+              placeholder={t('goalPlaceholder')}
             />
           </label>
           <button type="submit" className={styles.submit} disabled={loading}>
-            {loading ? 'Creating account…' : 'Create account'}
+            {loading ? t('creatingAccount') : t('createAccountBtn')}
           </button>
         </form>
 
         <p className={styles.footer}>
-          Already have an account? <Link href="/login" className={styles.link}>Sign in</Link>
+          {t('alreadyHaveAccount')} <Link href="/login" className={styles.link}>{t('signIn')}</Link>
         </p>
       </div>
     </div>

@@ -39,6 +39,7 @@ interface AuthContextValue extends AuthState {
     goal?: string | null;
   }) => Promise<void>;
   validateInvitation: (token: string) => Promise<{ valid: boolean }>;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -107,12 +108,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return validateInvitation(token);
   }, []);
 
+  const refreshUser = useCallback(async () => {
+    const currentToken = typeof window !== 'undefined' ? localStorage.getItem(STORAGE_KEY) : null;
+    if (!currentToken) return;
+    setAuthToken(currentToken);
+    try {
+      const user = await fetchMe();
+      setState((s) => (s.token ? { ...s, user } : s));
+    } catch {
+      // Token may be invalid; leave state unchanged, next navigation may trigger logout
+    }
+  }, []);
+
   const value: AuthContextValue = {
     ...state,
     login,
     logout,
     register,
     validateInvitation: validateInvitationToken,
+    refreshUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

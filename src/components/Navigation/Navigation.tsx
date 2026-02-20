@@ -2,14 +2,9 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useAuth } from '@/context/AuthContext';
 import styles from './Navigation.module.css';
-
-const navItems = [
-  { href: '/', label: 'Home', icon: 'home', exact: true },
-  { href: '/routines', label: 'Routines', icon: 'routines', exact: false },
-  { href: '/dashboard', label: 'Dashboard', icon: 'dashboard', exact: true },
-];
 
 function NavIcon({ icon }: { icon: string }) {
   switch (icon) {
@@ -38,14 +33,29 @@ function NavIcon({ icon }: { icon: string }) {
           <line x1="6" y1="20" x2="6" y2="14" />
         </svg>
       );
+    case 'profile':
+      return (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
+        </svg>
+      );
     default:
       return null;
   }
 }
 
+const navKeys = [
+  { href: '/', key: 'home', icon: 'home', exact: true },
+  { href: '/routines', key: 'routines', icon: 'routines', exact: false },
+  { href: '/dashboard', key: 'dashboard', icon: 'dashboard', exact: true },
+  { href: '/profile', key: 'profile', icon: 'profile', exact: true },
+] as const;
+
 export default function Navigation() {
   const pathname = usePathname();
   const { logout } = useAuth();
+  const t = useTranslations('nav');
 
   if (
     pathname.startsWith('/workout') ||
@@ -59,7 +69,7 @@ export default function Navigation() {
   return (
     <nav className={styles.nav}>
       <div className={styles.navInner}>
-        {navItems.map((item) => {
+        {navKeys.map((item) => {
           const isActive = item.exact
             ? pathname === item.href
             : pathname === item.href || pathname.startsWith(item.href + '/');
@@ -70,7 +80,7 @@ export default function Navigation() {
               className={`${styles.navItem} ${isActive ? styles.active : ''}`}
             >
               <NavIcon icon={item.icon} />
-              <span className={styles.label}>{item.label}</span>
+              <span className={styles.label}>{t(item.key)}</span>
             </Link>
           );
         })}
@@ -78,14 +88,14 @@ export default function Navigation() {
           type="button"
           onClick={() => logout()}
           className={styles.navItem}
-          aria-label="Log out"
+          aria-label={t('logOutAria')}
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
             <polyline points="16 17 21 12 16 7" />
             <line x1="21" y1="12" x2="9" y2="12" />
           </svg>
-          <span className={styles.label}>Log out</span>
+          <span className={styles.label}>{t('logOut')}</span>
         </button>
       </div>
     </nav>

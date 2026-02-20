@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { Exercise, SetLog } from '@/types';
 import { formatWeight, lbsToKg } from '@/utils/weight';
 import { RecommendedSet } from '@/lib/api';
@@ -51,6 +52,7 @@ export default function WorkoutExercise({
   onMoveUp,
   onMoveDown,
 }: WorkoutExerciseProps) {
+  const t = useTranslations('workoutExercise');
   const completedSets = sets.filter((s) => s.completed).length;
   const allComplete = completedSets === sets.length;
   const hasRecommendations = recommendedSets.length > 0;
@@ -213,6 +215,7 @@ function SetRow({
   onUpdate: (updates: Partial<SetLog>) => void;
   onRemove: () => void;
 }) {
+  const t = useTranslations('workoutExercise');
   const suggestedWeight = recommendation?.weightLbs
     ?? previousCompletedSet?.weightLbs
     ?? 0;
@@ -340,9 +343,13 @@ function SetRow({
       {!set.completed && suggestedWeight > 0 && (
         <div className={styles.setRecommendation}>
           {recommendation
-            ? `Last session: ${recommendation.weightLbs} lbs (${lbsToKg(recommendation.weightLbs)} kg) x ${recommendation.reps}`
+            ? t('lastSession', {
+                weight: recommendation.weightLbs,
+                weightKg: lbsToKg(recommendation.weightLbs),
+                reps: recommendation.reps,
+              })
             : previousCompletedSet
-              ? `Prev set: ${previousCompletedSet.weightLbs} lbs`
+              ? t('prevSet', { weight: previousCompletedSet.weightLbs })
               : ''}
         </div>
       )}

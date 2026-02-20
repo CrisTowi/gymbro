@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 import { MuscleGroup, TimeRange } from '@/types';
 import { exercises, getAllCategories } from '@/data/exercises';
 import { lbsToKg } from '@/utils/weight';
@@ -17,6 +18,7 @@ import ProgressChart from '@/components/ProgressChart/ProgressChart';
 import styles from './page.module.css';
 
 export default function DashboardPage() {
+  const t = useTranslations('dashboard');
   const [mounted, setMounted] = useState(false);
   const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<MuscleGroup | 'all'>('all');
   const [selectedTimeRange, setSelectedTimeRange] = useState<TimeRange>('all-time');
@@ -127,7 +129,7 @@ export default function DashboardPage() {
   if (!mounted) {
     return (
       <div className={styles.page}>
-        <div className={styles.loading}>Loading dashboard...</div>
+        <div className={styles.loading}>{t('loading')}</div>
       </div>
     );
   }
@@ -136,8 +138,8 @@ export default function DashboardPage() {
     <div className={styles.page}>
       <header className={styles.header}>
         <div className={styles.headerInner}>
-          <h1 className={styles.title}>Dashboard</h1>
-          <p className={styles.subtitle}>Track your progress over time</p>
+          <h1 className={styles.title}>{t('title')}</h1>
+          <p className={styles.subtitle}>{t('subtitle')}</p>
         </div>
       </header>
 
@@ -147,13 +149,13 @@ export default function DashboardPage() {
             <span className={styles.overviewValue}>
               {overallStats.totalSessions}
             </span>
-            <span className={styles.overviewLabel}>Total Sessions</span>
+            <span className={styles.overviewLabel}>{t('totalSessions')}</span>
           </div>
           <div className={styles.overviewCard}>
             <span className={styles.overviewValue}>
               {overallStats.totalWeight.toLocaleString()}
             </span>
-            <span className={styles.overviewLabel}>lbs Lifted</span>
+            <span className={styles.overviewLabel}>{t('lbsLifted')}</span>
             <span className={styles.overviewSub}>
               ({lbsToKg(overallStats.totalWeight).toLocaleString()} kg)
             </span>
@@ -162,13 +164,13 @@ export default function DashboardPage() {
             <span className={styles.overviewValue}>
               {overallStats.totalExercises}
             </span>
-            <span className={styles.overviewLabel}>Exercises Tracked</span>
+            <span className={styles.overviewLabel}>{t('exercisesTracked')}</span>
           </div>
           <div className={styles.overviewCard}>
             <span className={styles.overviewValue}>
               {overallStats.personalRecordCount}
             </span>
-            <span className={styles.overviewLabel}>Personal Records</span>
+            <span className={styles.overviewLabel}>{t('personalRecords')}</span>
           </div>
         </div>
 
@@ -187,21 +189,16 @@ export default function DashboardPage() {
           {overallStats.totalSessions === 0 && (
             <div className={styles.emptyState}>
               <span className={styles.emptyIcon}>📊</span>
-              <h3 className={styles.emptyTitle}>No Data Yet</h3>
-              <p className={styles.emptyText}>
-                Complete your first workout to start tracking progress. Your
-                charts and stats will appear here!
-              </p>
+              <h3 className={styles.emptyTitle}>{t('noDataYet')}</h3>
+              <p className={styles.emptyText}>{t('noDataYetText')}</p>
             </div>
           )}
 
           {overallStats.totalSessions > 0 && !shouldLoadCharts && (
             <div className={styles.emptyState}>
               <span className={styles.emptyIcon}>📊</span>
-              <h3 className={styles.emptyTitle}>Select filters to view progress</h3>
-              <p className={styles.emptyText}>
-                Choose a muscle group or an exercise above to load your progress charts.
-              </p>
+              <h3 className={styles.emptyTitle}>{t('selectFilters')}</h3>
+              <p className={styles.emptyText}>{t('selectFiltersText')}</p>
             </div>
           )}
 
@@ -229,7 +226,7 @@ export default function DashboardPage() {
                   />
                   {personalRecords[exerciseId] && (
                     <div className={styles.prBadge}>
-                      PR: {personalRecords[exerciseId].maxWeight} lbs (
+                      {t('pr')}: {personalRecords[exerciseId].maxWeight} lbs (
                       {lbsToKg(personalRecords[exerciseId].maxWeight)} kg)
                     </div>
                   )}
@@ -243,10 +240,8 @@ export default function DashboardPage() {
             exercisesToFetch.every((id) => (historyMap[id] || []).length === 0) && (
               <div className={styles.emptyState}>
                 <span className={styles.emptyIcon}>📈</span>
-                <h3 className={styles.emptyTitle}>No history yet</h3>
-                <p className={styles.emptyText}>
-                  Complete workouts with these exercises to see progress here.
-                </p>
+                <h3 className={styles.emptyTitle}>{t('noHistoryYet')}</h3>
+                <p className={styles.emptyText}>{t('noHistoryYetText')}</p>
               </div>
             )}
         </div>
