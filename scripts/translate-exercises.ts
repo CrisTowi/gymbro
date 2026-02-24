@@ -71,31 +71,33 @@ async function main(): Promise<void> {
     console.log('No exercises-es.json found; using placeholder for "es" fields.');
   }
 
-  console.log('Restructuring with lang keys (en, es)…');
+  console.log('Building i18n JSON (en/es)…');
   const result: ExerciseI18n[] = [];
 
   for (let i = 0; i < exercises.length; i++) {
     const ex = exercises[i];
     const es = esTranslations?.[ex.id];
 
-    const nameEs = es?.name ?? `[ES] ${ex.name}`;
-    const descEs = es?.description ?? `[ES] ${ex.description}`;
-    const instructionsEs =
-      es?.instructions?.length === ex.instructions.length
+    const nameEn = ex.name.en;
+    const nameEs = es?.name ?? ex.name.es ?? `[ES] ${ex.name.en}`;
+    const descEn = ex.description.en;
+    const descEs = es?.description ?? ex.description.es ?? `[ES] ${ex.description.en}`;
+    const instrEn = ex.instructions.en;
+    const instrEs =
+      es?.instructions && es.instructions.length === ex.instructions.en.length
         ? es.instructions
-        : ex.instructions.map((s) => `[ES] ${s}`);
+        : (ex.instructions.es?.length === ex.instructions.en.length
+            ? ex.instructions.es
+            : ex.instructions.en.map((s) => `[ES] ${s}`));
 
     const entry: ExerciseI18n = {
       id: ex.id,
-      name: { en: ex.name, es: nameEs },
+      name: { en: nameEn, es: nameEs },
       category: ex.category,
       secondaryMuscles: [...ex.secondaryMuscles],
       equipment: ex.equipment,
-      description: { en: ex.description, es: descEs },
-      instructions: {
-        en: [...ex.instructions],
-        es: instructionsEs,
-      },
+      description: { en: descEn, es: descEs },
+      instructions: { en: [...instrEn], es: instrEs },
       tags: [...ex.tags],
       ...(ex.referenceUrl != null && { referenceUrl: ex.referenceUrl }),
     };
