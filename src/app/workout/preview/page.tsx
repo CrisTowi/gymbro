@@ -20,10 +20,11 @@ import {
   arrayMove,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Exercise } from '@/types';
+import { Exercise, type Locale } from '@/types';
 import { fetchRoutineById } from '@/lib/api';
 import type { Routine } from '@/types';
-import { getExerciseById, getAlternativeExercises } from '@/data/exercises';
+import { getExerciseById, getAlternativeExercises, getExerciseLocalized } from '@/data/exercises';
+import { useLocale } from '@/context/LocaleContext';
 import { formatWeight } from '@/utils/weight';
 import { formatTime } from '@/utils/time';
 import { fetchLastExercisePerformance, LastExercisePerformance } from '@/lib/api';
@@ -87,6 +88,7 @@ function SortableRow({
 
 function PreviewContent() {
   const t = useTranslations('workoutPreview');
+  const { locale } = useLocale();
   const searchParams = useSearchParams();
   const router = useRouter();
   const routineId = searchParams.get('routine');
@@ -379,7 +381,7 @@ function PreviewContent() {
                           <div className={styles.exerciseInfo}>
                             <span className={styles.exerciseIndex}>{index + 1}</span>
                             <span className={styles.exerciseName}>
-                              {exercise?.name || override.exerciseId}
+                              {exercise ? getExerciseLocalized(exercise, locale).name : override.exerciseId}
                             </span>
                           </div>
                           <div
@@ -406,7 +408,7 @@ function PreviewContent() {
                               {exercise?.category} · {exercise?.equipment}
                               {isSwapped && defaultEx && (
                                 <span className={styles.swappedNote}>
-                                  {' '}· {t('replacesExercise', { name: getExerciseById(defaultEx.exerciseId)?.name ?? defaultEx.exerciseId })}
+                                  {' '}· {t('replacesExercise', { name: (() => { const ex = getExerciseById(defaultEx.exerciseId); return ex ? getExerciseLocalized(ex, locale).name : defaultEx.exerciseId; })() })}
                                 </span>
                               )}
                               {!isSwapped && defaultEx?.notes && (
@@ -439,6 +441,7 @@ function PreviewContent() {
                         {swapIndex === index && (
                           <SwapPicker
                             alternatives={swapAlternatives}
+                            locale={locale}
                             onSelect={(id) => handleSwapExercise(index, id)}
                             onClose={() => setSwapIndex(null)}
                             t={t}
@@ -585,11 +588,13 @@ function PreviewContent() {
 
 function SwapPicker({
   alternatives,
+  locale,
   onSelect,
   onClose,
   t,
 }: {
   alternatives: Exercise[];
+  locale: Locale;
   onSelect: (exerciseId: string) => void;
   onClose: () => void;
   t: (key: string) => string;
@@ -629,7 +634,7 @@ function SwapPicker({
             onClick={() => onSelect(alt.id)}
           >
             <div className={styles.swapOptionInfo}>
-              <span className={styles.swapOptionName}>{alt.name}</span>
+              <span className={styles.swapOptionName}>{getExerciseLocalized(alt, locale).name}</span>
               <span className={styles.swapOptionMeta}>
                 {alt.equipment}
                 {alt.referenceUrl && (

@@ -6,7 +6,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { SessionLog, ExerciseLog, SetLog, RoutineExercise } from '@/types';
 import type { Routine } from '@/types';
 import { fetchRoutineById } from '@/lib/api';
-import { getExerciseById } from '@/data/exercises';
+import { getExerciseById, getExerciseLocalized } from '@/data/exercises';
+import { useLocale } from '@/context/LocaleContext';
 import { useTimer } from '@/hooks/useTimer';
 import { useNotification } from '@/hooks/useNotification';
 import { formatDuration } from '@/utils/time';
@@ -56,6 +57,7 @@ function readPracticeFlag(): boolean {
 
 function WorkoutContent() {
   const t = useTranslations('workout');
+  const { locale } = useLocale();
   const searchParams = useSearchParams();
   const router = useRouter();
   const routineId = searchParams.get('routine');
@@ -344,17 +346,16 @@ function WorkoutContent() {
         ? exerciseConfig?.exerciseId
         : effectiveExercises[exerciseIndex + 1]?.exerciseId;
       const nextExercise = nextExerciseId ? getExerciseById(nextExerciseId) : null;
+      const localized = nextExercise ? getExerciseLocalized(nextExercise, locale) : null;
       setNextExercisePreview(
-        nextExercise
-          ? { name: nextExercise.name, instructions: nextExercise.instructions }
-          : null
+        localized ? { name: localized.name, instructions: localized.instructions } : null
       );
       (document.activeElement as HTMLElement)?.blur?.();
       setCurrentRestTime(restTime);
       timer.start(restTime);
       setShowTimer(true);
     },
-    [updateSessionLocal, effectiveExercises, timer]
+    [updateSessionLocal, effectiveExercises, timer, locale]
   );
 
   const handleUpdateSet = useCallback(

@@ -3,7 +3,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import { MuscleGroup, TimeRange } from '@/types';
-import { exercises, getAllCategories } from '@/data/exercises';
+import { exercises, getAllCategories, getExerciseLocalized } from '@/data/exercises';
+import { useLocale } from '@/context/LocaleContext';
 import { lbsToKg } from '@/utils/weight';
 import {
   fetchOverview,
@@ -19,6 +20,7 @@ import styles from './page.module.css';
 
 export default function DashboardPage() {
   const t = useTranslations('dashboard');
+  const { locale } = useLocale();
   const [mounted, setMounted] = useState(false);
   const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<MuscleGroup | 'all'>('all');
   const [selectedTimeRange, setSelectedTimeRange] = useState<TimeRange>('all-time');
@@ -37,12 +39,12 @@ export default function DashboardPage() {
 
   const filteredExercises = useMemo(() => {
     if (selectedMuscleGroup === 'all') {
-      return exercises.map((ex) => ({ id: ex.id, name: ex.name }));
+      return exercises.map((ex) => ({ id: ex.id, name: getExerciseLocalized(ex, locale).name }));
     }
     return exercises
       .filter((ex) => ex.category === selectedMuscleGroup)
-      .map((ex) => ({ id: ex.id, name: ex.name }));
-  }, [selectedMuscleGroup]);
+      .map((ex) => ({ id: ex.id, name: getExerciseLocalized(ex, locale).name }));
+  }, [selectedMuscleGroup, locale]);
 
   const exercisesToDisplay = useMemo(() => {
     if (selectedExerciseId) {
@@ -213,15 +215,16 @@ export default function DashboardPage() {
 
               if (rawHistory.length === 0) return null;
 
+              const exerciseName = getExerciseLocalized(exercise, locale).name;
               return (
                 <div key={exerciseId} className={styles.chartSection}>
                   <div className={styles.chartHeader}>
-                    <h3 className={styles.chartTitle}>{exercise.name}</h3>
+                    <h3 className={styles.chartTitle}>{exerciseName}</h3>
                     <span className={styles.chartCategory}>{exercise.category}</span>
                   </div>
                   <ProgressChart
                     data={history}
-                    exerciseName={exercise.name}
+                    exerciseName={exerciseName}
                     showVolume={true}
                   />
                   {personalRecords[exerciseId] && (

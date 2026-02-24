@@ -11,8 +11,9 @@ import {
 import { NextIntlClientProvider } from 'next-intl';
 import { useAuth } from '@/context/AuthContext';
 import { updateMe } from '@/lib/api';
+import type { Locale } from '@/types';
 
-export type Locale = 'en' | 'es';
+export type { Locale };
 
 function normalizeLocale(lang: string | null | undefined): Locale {
   if (lang === 'es' || lang === 'en') return lang;

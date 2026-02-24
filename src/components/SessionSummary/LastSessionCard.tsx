@@ -2,7 +2,8 @@
 
 import { useTranslations } from 'next-intl';
 import { SessionLog, Routine } from '@/types';
-import { getExerciseById } from '@/data/exercises';
+import { getExerciseById, getExerciseLocalized } from '@/data/exercises';
+import { useLocale } from '@/context/LocaleContext';
 import { formatDuration, getRelativeDate } from '@/utils/time';
 import styles from './LastSessionCard.module.css';
 
@@ -13,6 +14,7 @@ interface LastSessionCardProps {
 
 export default function LastSessionCard({ session, routine }: LastSessionCardProps) {
   const t = useTranslations('lastSession');
+  const { locale } = useLocale();
 
   if (!session) {
     return (
@@ -88,7 +90,7 @@ export default function LastSessionCard({ session, routine }: LastSessionCardPro
               );
             return (
               <div key={ex.exerciseId} className={styles.exerciseRow}>
-                <span className={styles.exerciseName}>{exercise?.name || ex.exerciseId}</span>
+                <span className={styles.exerciseName}>{exercise ? getExerciseLocalized(exercise, locale).name : ex.exerciseId}</span>
                 <span className={styles.exerciseDetail}>
                   {bestSet?.weightLbs || 0} lbs x {bestSet?.reps || 0}
                 </span>

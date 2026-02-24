@@ -1,6 +1,7 @@
 import {
   exercises,
   getExerciseById,
+  getExerciseLocalized,
   getExercisesByCategory,
   getExercisesByTag,
   getAllCategories,
@@ -15,11 +16,18 @@ describe('exercises data', () => {
     exercises.forEach((ex) => {
       expect(ex.id).toBeTruthy();
       expect(ex.name).toBeTruthy();
+      expect(ex.name.en).toBeTruthy();
+      expect(ex.name.es).toBeTruthy();
       expect(ex.category).toBeTruthy();
       expect(ex.equipment).toBeTruthy();
       expect(ex.description).toBeTruthy();
-      expect(Array.isArray(ex.instructions)).toBe(true);
-      expect(ex.instructions.length).toBeGreaterThan(0);
+      expect(ex.description.en).toBeTruthy();
+      expect(ex.description.es).toBeTruthy();
+      expect(ex.instructions).toBeTruthy();
+      expect(Array.isArray(ex.instructions.en)).toBe(true);
+      expect(Array.isArray(ex.instructions.es)).toBe(true);
+      expect(ex.instructions.en.length).toBeGreaterThan(0);
+      expect(ex.instructions.es.length).toBeGreaterThan(0);
       expect(Array.isArray(ex.tags)).toBe(true);
     });
   });
@@ -40,7 +48,8 @@ describe('exercises data', () => {
     it('returns exercise for valid ID', () => {
       const result = getExerciseById('bench-press');
       expect(result).toBeDefined();
-      expect(result?.name).toBe('Bench Press');
+      expect(getExerciseLocalized(result!, 'en').name).toBe('Bench Press');
+      expect(getExerciseLocalized(result!, 'es').name).toBe('Press de banca');
     });
 
     it('returns undefined for invalid ID', () => {

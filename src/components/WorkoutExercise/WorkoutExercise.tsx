@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { Exercise, SetLog } from '@/types';
+import { getExerciseLocalized } from '@/data/exercises';
+import { useLocale } from '@/context/LocaleContext';
 import { formatWeight, lbsToKg } from '@/utils/weight';
 import { RecommendedSet } from '@/lib/api';
 import styles from './WorkoutExercise.module.css';
@@ -53,6 +55,8 @@ export default function WorkoutExercise({
   onMoveDown,
 }: WorkoutExerciseProps) {
   const t = useTranslations('workoutExercise');
+  const { locale } = useLocale();
+  const { name, description, instructions } = getExerciseLocalized(exercise, locale);
   const completedSets = sets.filter((s) => s.completed).length;
   const allComplete = completedSets === sets.length;
   const hasRecommendations = recommendedSets.length > 0;
@@ -67,7 +71,7 @@ export default function WorkoutExercise({
         <button className={styles.headerToggle} onClick={onToggleActive}>
           <div className={styles.headerLeft}>
             <div className={styles.exerciseInfo}>
-              <h3 className={styles.name}>{exercise.name}</h3>
+              <h3 className={styles.name}>{name}</h3>
               <span className={styles.meta}>
                 {exercise.category} · {exercise.equipment}
               </span>

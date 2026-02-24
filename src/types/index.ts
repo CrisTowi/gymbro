@@ -1,11 +1,17 @@
+/** User-facing locale for exercise names, descriptions, and instructions */
+export type Locale = 'en' | 'es';
+
 export interface Exercise {
   id: string;
-  name: string;
+  /** Localized by locale key */
+  name: Record<Locale, string>;
   category: MuscleGroup;
   secondaryMuscles: MuscleGroup[];
   equipment: Equipment;
-  description: string;
-  instructions: string[];
+  /** Localized by locale key */
+  description: Record<Locale, string>;
+  /** Localized by locale key */
+  instructions: Record<Locale, string[]>;
   tags: string[];
   referenceUrl?: string;
 }

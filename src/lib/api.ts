@@ -1,11 +1,53 @@
 import {
   Exercise,
+  type Locale,
   SessionLog,
   WeeklyPlan,
   ExerciseLog,
   Routine,
   RoutineExercise,
 } from '@/types';
+
+/** Legacy API shape: name/description/instructions as plain string or string[] */
+type LegacyExercise = Omit<Exercise, 'name' | 'description' | 'instructions'> & {
+  name: string | Record<Locale, string>;
+  description: string | Record<Locale, string>;
+  instructions: string[] | Record<Locale, string[]>;
+};
+
+function isI18nName(name: string | Record<Locale, string>): name is Record<Locale, string> {
+  return typeof name === 'object' && name !== null && 'en' in name && 'es' in name;
+}
+
+function isI18nInstructions(
+  instructions: string[] | Record<Locale, string[]>
+): instructions is Record<Locale, string[]> {
+  return (
+    typeof instructions === 'object' &&
+    instructions !== null &&
+    'en' in instructions &&
+    'es' in instructions
+  );
+}
+
+/** Normalize API response so Exercise always has name/description/instructions keyed by locale. */
+function normalizeExercise(raw: LegacyExercise): Exercise {
+  const name = isI18nName(raw.name)
+    ? raw.name
+    : { en: raw.name, es: raw.name };
+  const description = isI18nName(raw.description)
+    ? raw.description
+    : { en: raw.description, es: raw.description };
+  const instructions = isI18nInstructions(raw.instructions)
+    ? raw.instructions
+    : { en: raw.instructions, es: raw.instructions };
+  return {
+    ...raw,
+    name,
+    description,
+    instructions,
+  };
+}
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
 
@@ -45,11 +87,13 @@ export async function fetchExercises(params?: {
   if (params?.category) query.set('category', params.category);
   if (params?.tag) query.set('tag', params.tag);
   const qs = query.toString();
-  return request<Exercise[]>(`/api/exercises${qs ? `?${qs}` : ''}`);
+  const raw = await request<LegacyExercise[]>(`/api/exercises${qs ? `?${qs}` : ''}`);
+  return raw.map(normalizeExercise);
 }
 
 export async function fetchExerciseById(id: string): Promise<Exercise> {
-  return request<Exercise>(`/api/exercises/${id}`);
+  const raw = await request<LegacyExercise>(`/api/exercises/${id}`);
+  return normalizeExercise(raw);
 }
 
 export async function fetchCategories(): Promise<string[]> {
@@ -61,7 +105,8 @@ export async function fetchAlternatives(
   exclude?: string[]
 ): Promise<Exercise[]> {
   const qs = exclude?.length ? `?exclude=${exclude.join(',')}` : '';
-  return request<Exercise[]>(`/api/exercises/${id}/alternatives${qs}`);
+  const raw = await request<LegacyExercise[]>(`/api/exercises/${id}/alternatives${qs}`);
+  return raw.map(normalizeExercise);
 }
 
 // ─── Routines (user-scoped) ───────────────────────────────────

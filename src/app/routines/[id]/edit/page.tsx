@@ -21,14 +21,14 @@ import {
   arrayMove,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Routine, RoutineExercise } from '@/types';
-import { Exercise } from '@/types';
+import { Routine, RoutineExercise, Exercise, type Locale } from '@/types';
 import {
   fetchRoutineById,
   updateRoutine,
   fetchExercises,
 } from '@/lib/api';
-import { getExerciseById, getAlternativeExercises } from '@/data/exercises';
+import { getExerciseById, getAlternativeExercises, getExerciseLocalized } from '@/data/exercises';
+import { useLocale } from '@/context/LocaleContext';
 import { formatTime } from '@/utils/time';
 import styles from './page.module.css';
 
@@ -73,11 +73,13 @@ const COLOR_OPTIONS = ['#FF6B6B', '#4ECDC4', '#FFE66D', '#A78BFA', '#F97316', '#
 
 function SwapPicker({
   alternatives,
+  locale,
   onSelect,
   onClose,
   t,
 }: {
   alternatives: Exercise[];
+  locale: Locale;
   onSelect: (exerciseId: string) => void;
   onClose: () => void;
   t: (key: string) => string;
@@ -117,7 +119,7 @@ function SwapPicker({
             onClick={() => onSelect(alt.id)}
           >
             <div className={styles.swapOptionInfo}>
-              <span className={styles.swapOptionName}>{alt.name}</span>
+              <span className={styles.swapOptionName}>{getExerciseLocalized(alt, locale).name}</span>
               <span className={styles.swapOptionMeta}>
                 {alt.category} · {alt.equipment}
                 {alt.referenceUrl && (
@@ -148,6 +150,7 @@ function SwapPicker({
 
 export default function EditRoutinePage() {
   const t = useTranslations('routineEdit');
+  const { locale } = useLocale();
   const params = useParams();
   const router = useRouter();
   const id = params.id as string;
@@ -281,7 +284,7 @@ export default function EditRoutinePage() {
   const filteredCatalog = catalogSearch.trim()
     ? exerciseCatalog.filter(
         (ex) =>
-          ex.name.toLowerCase().includes(catalogSearch.toLowerCase()) ||
+          getExerciseLocalized(ex, locale).name.toLowerCase().includes(catalogSearch.toLowerCase()) ||
           ex.id.toLowerCase().includes(catalogSearch.toLowerCase())
       )
     : exerciseCatalog.slice(0, 50);
@@ -412,7 +415,7 @@ export default function EditRoutinePage() {
                             <div className={styles.exerciseInfo}>
                               <span className={styles.exerciseIndex}>{index + 1}</span>
                               <span className={styles.exerciseName}>
-                                {meta?.name ?? ex.exerciseId}
+                                {meta ? getExerciseLocalized(meta, locale).name : ex.exerciseId}
                               </span>
                             </div>
                             <div
@@ -459,6 +462,7 @@ export default function EditRoutinePage() {
                           {swapIndex === index && (
                             <SwapPicker
                               alternatives={swapAlternatives}
+                              locale={locale}
                               onSelect={(id) => handleSwapExercise(index, id)}
                               onClose={() => setSwapIndex(null)}
                               t={t}
@@ -625,7 +629,7 @@ export default function EditRoutinePage() {
                     onClick={() => addExercise(ex.id)}
                     disabled={exercises.some((e) => e.exerciseId === ex.id)}
                   >
-                    <span className={styles.catalogName}>{ex.name}</span>
+                    <span className={styles.catalogName}>{getExerciseLocalized(ex, locale).name}</span>
                     <span className={styles.catalogMeta}>
                       {ex.category} · {ex.equipment}
                     </span>

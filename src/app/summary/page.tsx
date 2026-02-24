@@ -4,7 +4,8 @@ import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { SessionLog, Routine } from '@/types';
-import { getExerciseById } from '@/data/exercises';
+import { getExerciseById, getExerciseLocalized } from '@/data/exercises';
+import { useLocale } from '@/context/LocaleContext';
 import { formatDuration } from '@/utils/time';
 import { formatWeight, lbsToKg } from '@/utils/weight';
 import { getMotivationalMessage, getSessionGrade } from '@/utils/motivation';
@@ -13,6 +14,7 @@ import styles from './page.module.css';
 
 function SummaryContent() {
   const t = useTranslations('summary');
+  const { locale } = useLocale();
   const searchParams = useSearchParams();
   const router = useRouter();
   const sessionId = searchParams.get('sessionId');
@@ -81,7 +83,7 @@ function SummaryContent() {
     if (record && maxWeight >= record.maxWeight) {
       const exercise = getExerciseById(ex.exerciseId);
       if (exercise) {
-        newPRs.push({ exerciseName: exercise.name, weight: maxWeight });
+        newPRs.push({ exerciseName: getExerciseLocalized(exercise, locale).name, weight: maxWeight });
       }
     }
   }
@@ -173,7 +175,7 @@ function SummaryContent() {
               <div key={ex.exerciseId} className={styles.exerciseRow}>
                 <div className={styles.exerciseInfo}>
                   <span className={styles.exerciseName}>
-                    {exercise?.name || ex.exerciseId}
+                    {exercise ? getExerciseLocalized(exercise, locale).name : ex.exerciseId}
                   </span>
                   <span className={styles.exerciseSets}>
                     {t('setsCompletedCount', { count: completedSets.length })}
