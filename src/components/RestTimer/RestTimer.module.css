@@ -178,6 +178,33 @@
   margin: 0 0 var(--space-sm) 0;
 }
 
+.nextExerciseHowTo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-accent);
+  margin-bottom: var(--space-sm);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.nextExerciseHowTo:hover {
+  color: var(--color-accent-hover, var(--color-accent));
+  text-decoration: underline;
+}
+
+.nextSetRecommendation {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--space-sm) 0;
+  padding: var(--space-xs) var(--space-sm);
+  background: var(--color-bg);
+  border-radius: var(--radius-md);
+}
+
 .nextExerciseInstructions {
   font-size: var(--text-sm);
   color: var(--color-text-secondary);

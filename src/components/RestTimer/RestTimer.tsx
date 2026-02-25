@@ -8,6 +8,12 @@ import styles from './RestTimer.module.css';
 export interface NextExercisePreview {
   name: string;
   instructions: string[];
+  /** Link to how to perform the exercise */
+  referenceUrl?: string;
+  /** Recommended weight (lbs) for the next set */
+  nextSetWeightLbs?: number;
+  /** Recommended reps for the next set */
+  nextSetReps?: number;
 }
 
 interface RestTimerProps {
@@ -164,6 +170,31 @@ export default function RestTimer({
           <div className={styles.nextExercise}>
             <h4 className={styles.nextExerciseTitle}>{t('nextUp')}</h4>
             <p className={styles.nextExerciseName}>{nextExercise.name}</p>
+            {nextExercise.referenceUrl && (
+              <a
+                href={nextExercise.referenceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.nextExerciseHowTo}
+              >
+                {t('howToPerform')}
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                  <polyline points="15 3 21 3 21 9" />
+                  <line x1="10" y1="14" x2="21" y2="3" />
+                </svg>
+              </a>
+            )}
+            {(nextExercise.nextSetWeightLbs != null && nextExercise.nextSetWeightLbs > 0) && (
+              <p className={styles.nextSetRecommendation}>
+                {nextExercise.nextSetReps != null && nextExercise.nextSetReps > 0
+                  ? t('nextSetRecommendationWithReps', {
+                      weight: nextExercise.nextSetWeightLbs,
+                      reps: nextExercise.nextSetReps,
+                    })
+                  : t('nextSetRecommendation', { weight: nextExercise.nextSetWeightLbs })}
+              </p>
+            )}
             {nextExercise.instructions.length > 0 && (
               <ol className={styles.nextExerciseInstructions}>
                 {nextExercise.instructions.map((step, i) => (

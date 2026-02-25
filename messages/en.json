@@ -150,7 +150,10 @@
     "pause": "Pause timer",
     "resume": "Resume timer",
     "skipRest": "Skip Rest",
-    "nextUp": "Next up"
+    "nextUp": "Next up",
+    "howToPerform": "How to perform",
+    "nextSetRecommendation": "Next set: {weight} lbs",
+    "nextSetRecommendationWithReps": "Next set: {weight} lbs × {reps} reps"
   },
   "routineEdit": {
     "loading": "Loading…",
@@ -291,6 +294,14 @@
     "weight": "Weight",
     "goal": "Goal",
     "languageHint": "Choose your preferred language for the app. This is saved to your account.",
-    "loading": "Loading…"
+    "loading": "Loading…",
+    "editInfo": "Edit info",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saving": "Saving…",
+    "saved": "Saved!",
+    "heightPlaceholder": "e.g. 170 (cm)",
+    "weightPlaceholder": "e.g. 70 (kg)",
+    "goalPlaceholder": "e.g. Build strength, lose fat"
   }
 }

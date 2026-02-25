@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback, Suspense } from 'react';
+import { useEffect, useState, useCallback, useRef, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { v4 as uuidv4 } from 'uuid';
 import { SessionLog, ExerciseLog, SetLog, RoutineExercise } from '@/types';
@@ -92,12 +92,16 @@ function WorkoutContent() {
   const [nextExercisePreview, setNextExercisePreview] = useState<{
     name: string;
     instructions: string[];
+    referenceUrl?: string;
+    nextSetWeightLbs?: number;
+    nextSetReps?: number;
   } | null>(null);
   const [currentRestTime, setCurrentRestTime] = useState(120);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [showConfirmEnd, setShowConfirmEnd] = useState(false);
   const [isPracticeMode, setIsPracticeMode] = useState(false);
   const [showPracticeSummary, setShowPracticeSummary] = useState(false);
+  const shouldFinishAfterLastSetRef = useRef(false);
 
   // Pre-fetched data for each exercise
   const [lastPerfMap, setLastPerfMap] = useState<Record<string, LastExercisePerformance | null>>({});
@@ -340,22 +344,49 @@ function WorkoutContent() {
       });
 
       const exerciseConfig = effectiveExercises[exerciseIndex];
-      const restTime = exerciseConfig?.restTimeSeconds || 120;
       const hasMoreSetsInExercise = setIndex + 1 < (exerciseConfig?.sets ?? 0);
-      const nextExerciseId = hasMoreSetsInExercise
-        ? exerciseConfig?.exerciseId
-        : effectiveExercises[exerciseIndex + 1]?.exerciseId;
+      const nextExerciseIndex = hasMoreSetsInExercise ? exerciseIndex : exerciseIndex + 1;
+      const nextSetIndex = hasMoreSetsInExercise ? setIndex + 1 : 0;
+      const isLastSetOfRoutine =
+        !hasMoreSetsInExercise && exerciseIndex >= effectiveExercises.length - 1;
+
+      if (isLastSetOfRoutine) {
+        (document.activeElement as HTMLElement)?.blur?.();
+        shouldFinishAfterLastSetRef.current = true;
+        return;
+      }
+
+      const nextExerciseId =
+        hasMoreSetsInExercise
+          ? exerciseConfig?.exerciseId
+          : effectiveExercises[exerciseIndex + 1]?.exerciseId;
       const nextExercise = nextExerciseId ? getExerciseById(nextExerciseId) : null;
       const localized = nextExercise ? getExerciseLocalized(nextExercise, locale) : null;
+      const nextRecSets = nextExerciseId ? recSetsMap[nextExerciseId] ?? [] : [];
+      const nextRec = nextRecSets[nextSetIndex];
       setNextExercisePreview(
-        localized ? { name: localized.name, instructions: localized.instructions } : null
+        localized
+          ? {
+              name: localized.name,
+              instructions: localized.instructions,
+              referenceUrl: nextExercise?.referenceUrl,
+              nextSetWeightLbs: nextRec?.weightLbs,
+              nextSetReps: nextRec?.reps,
+            }
+          : null
       );
+
+      if (!hasMoreSetsInExercise && exerciseIndex + 1 < effectiveExercises.length) {
+        setActiveExerciseIndex(exerciseIndex + 1);
+      }
+
+      const restTime = exerciseConfig?.restTimeSeconds || 120;
       (document.activeElement as HTMLElement)?.blur?.();
       setCurrentRestTime(restTime);
       timer.start(restTime);
       setShowTimer(true);
     },
-    [updateSessionLocal, effectiveExercises, timer, locale]
+    [updateSessionLocal, effectiveExercises, timer, locale, recSetsMap]
   );
 
   const handleUpdateSet = useCallback(
@@ -436,42 +467,54 @@ function WorkoutContent() {
     [updateSessionLocal]
   );
 
-  const handleFinishWorkout = useCallback(async () => {
-    if (!session) return;
+  const handleFinishWorkout = useCallback(
+    async (sessionOverride?: SessionLog) => {
+      const sessionToUse = sessionOverride ?? session;
+      if (!sessionToUse) return;
 
-    setShowConfirmEnd(false);
+      setShowConfirmEnd(false);
 
-    if (isPracticeMode) {
-      setShowPracticeSummary(true);
-      return;
-    }
+      if (isPracticeMode) {
+        setShowPracticeSummary(true);
+        return;
+      }
 
-    const endTime = new Date().toISOString();
-    const duration = Math.floor(
-      (new Date(endTime).getTime() - new Date(session.startTime).getTime()) /
-        1000
-    );
+      const endTime = new Date().toISOString();
+      const duration = Math.floor(
+        (new Date(endTime).getTime() - new Date(sessionToUse.startTime).getTime()) /
+          1000
+      );
 
-    try {
-      await apiUpdateSession(session.id, {
-        endTime,
-        duration,
-        completed: true,
-        exercises: session.exercises,
-        totalWeightLbs: session.totalWeightLbs,
-      });
-    } catch (err) {
-      console.error('Failed to finish workout:', err);
-    }
+      try {
+        await apiUpdateSession(sessionToUse.id, {
+          endTime,
+          duration,
+          completed: true,
+          exercises: sessionToUse.exercises,
+          totalWeightLbs: sessionToUse.totalWeightLbs,
+        });
+      } catch (err) {
+        console.error('Failed to finish workout:', err);
+      }
 
-    router.push(`/summary?sessionId=${session.id}`);
-  }, [session, router, isPracticeMode]);
+      router.push(`/summary?sessionId=${sessionToUse.id}`);
+    },
+    [session, router, isPracticeMode]
+  );
 
   const handleSkipTimer = useCallback(() => {
     timer.reset();
     setShowTimer(false);
     setNextExercisePreview(null);
   }, [timer]);
+
+  // When user completes the last set of the routine, finish after session state has updated
+  useEffect(() => {
+    if (shouldFinishAfterLastSetRef.current && session) {
+      shouldFinishAfterLastSetRef.current = false;
+      handleFinishWorkout(session);
+    }
+  }, [session, handleFinishWorkout]);
 
   if (routineLoading || !routine) {
     return (

@@ -150,7 +150,10 @@
     "pause": "Pausar",
     "resume": "Reanudar",
     "skipRest": "Saltar descanso",
-    "nextUp": "Siguiente"
+    "nextUp": "Siguiente",
+    "howToPerform": "Cómo realizar",
+    "nextSetRecommendation": "Siguiente set: {weight} lbs",
+    "nextSetRecommendationWithReps": "Siguiente set: {weight} lbs × {reps} reps"
   },
   "routineEdit": {
     "loading": "Cargando…",
@@ -291,6 +294,14 @@
     "weight": "Peso",
     "goal": "Objetivo",
     "languageHint": "Elige tu idioma preferido para la app. Se guarda en tu cuenta.",
-    "loading": "Cargando…"
+    "loading": "Cargando…",
+    "editInfo": "Editar información",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "saving": "Guardando…",
+    "saved": "¡Guardado!",
+    "heightPlaceholder": "ej. 170 (cm)",
+    "weightPlaceholder": "ej. 70 (kg)",
+    "goalPlaceholder": "ej. Ganar fuerza, perder grasa"
   }
 }
