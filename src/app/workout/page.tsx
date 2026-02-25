@@ -678,7 +678,7 @@ function WorkoutContent() {
               </button>
               <button
                 className={styles.confirmEnd}
-                onClick={handleFinishWorkout}
+                onClick={() => handleFinishWorkout()}
               >
                 {t('finish')}
               </button>
