@@ -2,13 +2,18 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { WeeklyPlan as WeeklyPlanType, Routine } from '@/types';
+import { useLocale } from '@/context/LocaleContext';
+import { WeeklyPlan as WeeklyPlanType, Routine, Exercise } from '@/types';
 import {
   generateWeeklyPlanFromDescription,
   updateWeeklyPlan,
+  fetchExercises,
 } from '@/lib/api';
-import WeeklyPlan from '@/components/WeeklyPlan/WeeklyPlan';
 import styles from './AIRoutineGenerator.module.css';
+
+const DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+const DAY_ABBR = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+const DAY_LABEL = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
 interface AIRoutineGeneratorProps {
   routines: Routine[];
@@ -24,10 +29,12 @@ export default function AIRoutineGenerator({
   onPlanSaved,
 }: AIRoutineGeneratorProps) {
   const t = useTranslations('aiRoutine');
+  const { locale } = useLocale();
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<Step>('input');
   const [description, setDescription] = useState('');
   const [generatedPlan, setGeneratedPlan] = useState<WeeklyPlanType | null>(null);
+  const [exerciseMap, setExerciseMap] = useState<Record<string, Exercise>>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -52,8 +59,19 @@ export default function AIRoutineGenerator({
     setLoading(true);
     setError(null);
     try {
-      const plan = await generateWeeklyPlanFromDescription(description.trim());
+      const needsExercises = Object.keys(exerciseMap).length === 0;
+      const [plan, allExercises] = await Promise.all([
+        generateWeeklyPlanFromDescription(description.trim()),
+        needsExercises ? fetchExercises() : Promise.resolve(null),
+      ]);
       setGeneratedPlan(plan);
+      if (allExercises) {
+        setExerciseMap(
+          Object.fromEntries(
+            allExercises.map((e) => [(e as unknown as { exerciseId: string }).exerciseId ?? e.id, e])
+          )
+        );
+      }
       setStep('preview');
     } catch (err) {
       setError(err instanceof Error ? err.message : t('errorGenerate'));
@@ -83,7 +101,30 @@ export default function AIRoutineGenerator({
     }
   };
 
-  const planToShow = generatedPlan ?? currentPlan;
+  // Group consecutive/same-routine days together for the summary cards
+  const routineGroups = (() => {
+    if (!generatedPlan) return [];
+    const groups: { routine: Routine; days: string[] }[] = [];
+    const seen = new Map<string, number>();
+    for (const day of DAYS) {
+      const routineId = generatedPlan[day];
+      if (!routineId) continue;
+      if (seen.has(routineId)) {
+        groups[seen.get(routineId)!].days.push(day);
+      } else {
+        const routine = routines.find((r) => r.id === routineId);
+        if (routine) {
+          seen.set(routineId, groups.length);
+          groups.push({ routine, days: [day] });
+        }
+      }
+    }
+    return groups;
+  })();
+
+  const restDays = DAYS.filter((d) => !generatedPlan?.[d]);
+  const totalExercises = routineGroups.reduce((sum, g) => sum + g.routine.exercises.length, 0);
+  const activeDays = DAYS.length - restDays.length;
 
   return (
     <>
@@ -133,15 +174,108 @@ export default function AIRoutineGenerator({
                 </>
               )}
 
-              {step === 'preview' && (
+              {step === 'preview' && generatedPlan && (
                 <>
-                  <p className={styles.previewHint}>{t('previewHint')}</p>
-                  <div className={styles.planPreview}>
-                    <WeeklyPlan
-                      plan={planToShow}
-                      onPlanChange={setGeneratedPlan}
-                      routines={routines}
-                    />
+                  {/* Stats bar */}
+                  <div className={styles.statsBar}>
+                    <div className={styles.stat}>
+                      <span className={styles.statValue}>{activeDays}</span>
+                      <span className={styles.statLabel}>{t('statWorkoutDays')}</span>
+                    </div>
+                    <div className={styles.statDivider} />
+                    <div className={styles.stat}>
+                      <span className={styles.statValue}>{restDays.length}</span>
+                      <span className={styles.statLabel}>{t('statRestDays')}</span>
+                    </div>
+                    <div className={styles.statDivider} />
+                    <div className={styles.stat}>
+                      <span className={styles.statValue}>{totalExercises}</span>
+                      <span className={styles.statLabel}>{t('statExercises')}</span>
+                    </div>
+                  </div>
+
+                  {/* Week strip */}
+                  <div className={styles.weekStrip}>
+                    {DAYS.map((day, i) => {
+                      const routineId = generatedPlan[day];
+                      const routine = routineId ? routines.find((r) => r.id === routineId) : null;
+                      return (
+                        <div key={day} className={styles.dayPill} title={DAY_LABEL[i]}>
+                          <span className={styles.dayPillAbbr}>{DAY_ABBR[i]}</span>
+                          {routine ? (
+                            <span className={styles.dayPillIcon}>{routine.icon}</span>
+                          ) : (
+                            <span className={styles.dayPillRest}>—</span>
+                          )}
+                          <span
+                            className={styles.dayPillBar}
+                            style={{ background: routine ? routine.color : 'var(--color-border)' }}
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Routine cards */}
+                  <div className={styles.routineCards}>
+                    {routineGroups.map(({ routine, days }) => (
+                      <div
+                        key={routine.id}
+                        className={styles.routineCard}
+                        style={{ '--routine-color': routine.color } as React.CSSProperties}
+                      >
+                        <div className={styles.routineCardHeader}>
+                          <div className={styles.routineCardMeta}>
+                            <span className={styles.routineCardIcon}>{routine.icon}</span>
+                            <div>
+                              <span className={styles.routineCardName} style={{ color: routine.color }}>
+                                {routine.name}
+                              </span>
+                              <span className={styles.routineCardDays}>
+                                {days.map((d) => DAY_LABEL[DAYS.indexOf(d)]).join(' · ')}
+                              </span>
+                            </div>
+                          </div>
+                          <span className={styles.routineCardCount}>
+                            {routine.exercises.length} exercises
+                          </span>
+                        </div>
+
+                        <div className={styles.exerciseList}>
+                          {routine.exercises.map((ex, idx) => {
+                            const exercise = exerciseMap[ex.exerciseId];
+                            const name = exercise
+                              ? (exercise.name[locale] ?? exercise.name.en)
+                              : null;
+                            return (
+                              <div key={idx} className={styles.exerciseItem}>
+                                <div className={styles.exerciseLeft}>
+                                  <span className={styles.exerciseIndex}>{idx + 1}</span>
+                                  <span className={styles.exerciseName}>
+                                    {name ?? <span className={styles.exerciseSkeleton} />}
+                                  </span>
+                                </div>
+                                <span className={styles.exerciseSets}>
+                                  {ex.sets} <span className={styles.exerciseSetsX}>×</span> {ex.reps}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
+
+                    {restDays.length > 0 && (
+                      <div className={styles.restCard}>
+                        <span className={styles.restEmoji}>😴</span>
+                        <div>
+                          <span className={styles.restCardLabel}>{t('restDaysLabel')}</span>
+                          <span className={styles.restCardDays}>
+                            {restDays.map((d) => DAY_LABEL[DAYS.indexOf(d)]).join(' · ')}
+                          </span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </>
               )}
