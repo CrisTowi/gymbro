@@ -194,6 +194,15 @@ export async function updateWeeklyPlan(
   });
 }
 
+export async function generateWeeklyPlanFromDescription(
+  description: string
+): Promise<WeeklyPlan> {
+  return request<WeeklyPlan>('/api/weekly-plan/generate', {
+    method: 'POST',
+    body: JSON.stringify({ description: description.trim() }),
+  });
+}
+
 // ─── Sessions ────────────────────────────────────────────────
 
 interface SessionResponse extends Omit<SessionLog, 'id'> {

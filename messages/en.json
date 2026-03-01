@@ -303,5 +303,24 @@
     "heightPlaceholder": "e.g. 170 (cm)",
     "weightPlaceholder": "e.g. 70 (kg)",
     "goalPlaceholder": "e.g. Build strength, lose fat"
+  },
+  "aiRoutine": {
+    "cta": "Create with AI",
+    "openLabel": "Create weekly routine with AI",
+    "title": "Describe your weekly routine",
+    "previewTitle": "Your generated plan",
+    "hint": "Describe how you want your week to look. For example: \"Push Monday and Thursday, Pull Tuesday and Friday, Legs Wednesday, rest weekend\" or \"Upper body 3 days, lower body 2 days, two rest days\".",
+    "placeholder": "e.g. Push and Pull on weekdays, Legs on Saturday, rest Sunday…",
+    "provider": "AI provider",
+    "generate": "Generate",
+    "generating": "Generating…",
+    "cancel": "Cancel",
+    "close": "Close",
+    "previewHint": "Review and adjust the plan below. Tap a day to change the routine, or re-generate with a new description.",
+    "regenerate": "Re-generate",
+    "confirm": "Use this plan",
+    "saving": "Saving…",
+    "errorGenerate": "Failed to generate plan. Check your API key or try again.",
+    "errorSave": "Failed to save plan. Try again."
   }
 }

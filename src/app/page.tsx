@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import WeeklyPlan from '@/components/WeeklyPlan/WeeklyPlan';
 import LastSessionCard from '@/components/SessionSummary/LastSessionCard';
+import AIRoutineGenerator from '@/components/AIRoutineGenerator/AIRoutineGenerator';
 import { WeeklyPlan as WeeklyPlanType, Routine, SessionLog, DEFAULT_WEEKLY_PLAN } from '@/types';
 import { getDayOfWeek } from '@/utils/time';
 import {
@@ -185,6 +186,14 @@ export default function Home() {
           onPlanChange={handlePlanChange}
           routines={routines}
         />
+
+        {process.env.NEXT_PUBLIC_AI_ROUTINE_ENABLED !== 'false' && (
+          <AIRoutineGenerator
+            routines={routines}
+            currentPlan={weeklyPlan}
+            onPlanSaved={loadData}
+          />
+        )}
 
         <div className={styles.manageRoutines}>
           <Link href="/routines" className={styles.manageRoutinesLink}>

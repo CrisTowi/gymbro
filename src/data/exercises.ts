@@ -1881,6 +1881,370 @@ export const exercises: Exercise[] = [
       "abs"
     ],
     "referenceUrl": "https://exrx.net/WeightExercises/RectusAbdominis/BWBallCrunch"
+  },
+  {
+    "id": "wrist-curls",
+    "name": { "en": "Wrist Curls", "es": "Curl de muñeca" },
+    "category": "forearms",
+    "secondaryMuscles": [],
+    "equipment": "dumbbell",
+    "description": { "en": "Isolation exercise for wrist flexors and forearm development.", "es": "Ejercicio de aislamiento para flexores de muñeca y antebrazo." },
+    "instructions": {
+      "en": ["Sit with forearms on bench, palms up, wrists off edge", "Curl weight up by flexing wrists", "Lower with control for full stretch", "Keep upper arms still throughout"],
+      "es": ["Siéntate con antebrazos en el banco, palmas arriba, muñecas fuera del borde", "Curl subiendo flexionando las muñecas", "Baja con control para estirar bien", "Mantén los brazos superiores quietos"]
+    },
+    "tags": ["isolation", "forearms", "pull"],
+    "referenceUrl": "https://exrx.net/WeightExercises/WristFlexors/DBWristCurl"
+  },
+  {
+    "id": "reverse-wrist-curls",
+    "name": { "en": "Reverse Wrist Curls", "es": "Curl inverso de muñeca" },
+    "category": "forearms",
+    "secondaryMuscles": [],
+    "equipment": "dumbbell",
+    "description": { "en": "Isolation exercise for wrist extensors and outer forearms.", "es": "Ejercicio de aislamiento para extensores de muñeca y antebrazo externo." },
+    "instructions": {
+      "en": ["Sit with forearms on bench, palms down, wrists off edge", "Curl weight up by extending wrists", "Lower with control", "Keep upper arms still throughout"],
+      "es": ["Siéntate con antebrazos en el banco, palmas abajo, muñecas fuera del borde", "Curl subiendo extendiendo las muñecas", "Baja con control", "Mantén los brazos superiores quietos"]
+    },
+    "tags": ["isolation", "forearms", "pull"],
+    "referenceUrl": "https://exrx.net/WeightExercises/WristExtensors/DBReverseWristCurl"
+  },
+  {
+    "id": "barbell-shrugs",
+    "name": { "en": "Barbell Shrugs", "es": "Encogimientos con barra" },
+    "category": "traps",
+    "secondaryMuscles": ["forearms"],
+    "equipment": "barbell",
+    "description": { "en": "Compound movement targeting the upper trapezius.", "es": "Movimiento compuesto para el trapecio superior." },
+    "instructions": {
+      "en": ["Stand with barbell at arms' length, grip shoulder-width", "Shrug shoulders straight up toward ears", "Squeeze at the top, lower with control", "Avoid rolling shoulders"],
+      "es": ["De pie con la barra a lo largo de los brazos, agarre a la anchura de los hombros", "Encoge los hombros hacia arriba hacia las orejas", "Contrae arriba y baja con control", "Evita rodar los hombros"]
+    },
+    "tags": ["compound", "traps", "pull"],
+    "referenceUrl": "https://exrx.net/WeightExercises/TrapeziusUpper/BBShrug"
+  },
+  {
+    "id": "dumbbell-shrugs",
+    "name": { "en": "Dumbbell Shrugs", "es": "Encogimientos con mancuernas" },
+    "category": "traps",
+    "secondaryMuscles": ["forearms"],
+    "equipment": "dumbbell",
+    "description": { "en": "Trap isolation with dumbbells for independent arm movement.", "es": "Aislamiento de trapecios con mancuernas para movimiento independiente." },
+    "instructions": {
+      "en": ["Stand with dumbbells at sides, palms facing in", "Shrug shoulders straight up", "Hold at top briefly, lower slowly", "Keep arms straight throughout"],
+      "es": ["De pie con mancuernas a los lados, palmas hacia dentro", "Encoge los hombros hacia arriba", "Mantén arriba un momento y baja despacio", "Mantén los brazos rectos"]
+    },
+    "tags": ["isolation", "traps", "pull"],
+    "referenceUrl": "https://exrx.net/WeightExercises/TrapeziusUpper/DBShrug"
+  },
+  {
+    "id": "glute-bridge",
+    "name": { "en": "Glute Bridge", "es": "Puente de glúteos" },
+    "category": "glutes",
+    "secondaryMuscles": ["hamstrings", "core"],
+    "equipment": "bodyweight",
+    "description": { "en": "Hip extension exercise targeting the glutes and hamstrings.", "es": "Extensión de cadera para glúteos e isquiotibiales." },
+    "instructions": {
+      "en": ["Lie on back with knees bent, feet flat", "Drive through heels to lift hips toward ceiling", "Squeeze glutes at the top", "Lower with control"],
+      "es": ["Tumbado boca arriba con rodillas flexionadas, pies apoyados", "Empuja con los talones para elevar la cadera hacia el techo", "Contrae los glúteos arriba", "Baja con control"]
+    },
+    "tags": ["isolation", "glutes", "push"],
+    "referenceUrl": "https://exrx.net/WeightExercises/GluteusMaximus/BWBridge"
+  },
+  {
+    "id": "single-leg-hip-thrust",
+    "name": { "en": "Single-Leg Hip Thrust", "es": "Hip thrust a una pierna" },
+    "category": "glutes",
+    "secondaryMuscles": ["hamstrings", "core"],
+    "equipment": "bodyweight",
+    "description": { "en": "Unilateral hip thrust for glute focus and balance.", "es": "Hip thrust unilateral para glúteos y equilibrio." },
+    "instructions": {
+      "en": ["Back on bench, one foot flat, other leg extended", "Drive through planted foot to lift hips", "Squeeze glute at top, lower slowly", "Switch legs after set"],
+      "es": ["Espalda en banco, un pie apoyado, otra pierna extendida", "Empuja con el pie apoyado para elevar la cadera", "Contrae el glúteo arriba y baja despacio", "Cambia de pierna después de la serie"]
+    },
+    "tags": ["isolation", "glutes", "unilateral", "push"],
+    "referenceUrl": "https://exrx.net/WeightExercises/GluteusMaximus/BWOneLegBridge"
+  },
+  {
+    "id": "good-morning",
+    "name": { "en": "Good Morning", "es": "Good morning" },
+    "category": "hamstrings",
+    "secondaryMuscles": ["glutes", "back", "core"],
+    "equipment": "barbell",
+    "description": { "en": "Hip hinge exercise for hamstrings and posterior chain.", "es": "Hinge de cadera para isquiotibiales y cadena posterior." },
+    "instructions": {
+      "en": ["Stand with bar on upper back, feet shoulder-width", "Hinge at hips, push butt back", "Lower until torso near parallel", "Drive back up to standing"],
+      "es": ["De pie con la barra en la espalda alta, pies a la anchura de los hombros", "Inclínate desde la cadera, saca el trasero atrás", "Baja hasta que el torso esté casi paralelo", "Sube de nuevo a la posición erguida"]
+    },
+    "tags": ["compound", "hamstrings", "pull"],
+    "referenceUrl": "https://exrx.net/WeightExercises/Hamstrings/BBGoodMorning"
+  },
+  {
+    "id": "stiff-leg-deadlift",
+    "name": { "en": "Stiff-Leg Deadlift", "es": "Peso muerto piernas rígidas" },
+    "category": "hamstrings",
+    "secondaryMuscles": ["glutes", "back", "core"],
+    "equipment": "barbell",
+    "description": { "en": "Deadlift variation with straighter legs to emphasize hamstrings.", "es": "Variante de peso muerto con piernas más rectas para isquiotibiales." },
+    "instructions": {
+      "en": ["Stand with bar in front, slight knee bend", "Hinge at hips and lower bar along legs", "Feel hamstring stretch at bottom", "Return to standing by driving hips forward"],
+      "es": ["De pie con la barra delante, ligera flexión de rodillas", "Inclínate desde la cadera y baja la barra por las piernas", "Siente el estiramiento de isquiotibiales abajo", "Vuelve a estar de pie llevando la cadera adelante"]
+    },
+    "tags": ["compound", "hamstrings", "pull"],
+    "referenceUrl": "https://exrx.net/WeightExercises/Hamstrings/BBStiffLegDeadlift"
+  },
+  {
+    "id": "dead-bug",
+    "name": { "en": "Dead Bug", "es": "Dead bug" },
+    "category": "core",
+    "secondaryMuscles": [],
+    "equipment": "bodyweight",
+    "description": { "en": "Core stability exercise with alternating arm and leg extensions.", "es": "Ejercicio de estabilidad del core con extensión alterna de brazos y piernas." },
+    "instructions": {
+      "en": ["Lie on back, arms up, knees bent 90 degrees", "Extend opposite arm and leg toward floor", "Keep lower back pressed down", "Return and alternate sides"],
+      "es": ["Tumbado boca arriba, brazos arriba, rodillas a 90 grados", "Extiende brazo y pierna opuestos hacia el suelo", "Mantén la zona lumbar apoyada", "Vuelve y alterna lados"]
+    },
+    "tags": ["core", "stability", "bodyweight"],
+    "referenceUrl": "https://exrx.net/WeightExercises/RectusAbdominis/BWDeadBug"
+  },
+  {
+    "id": "hanging-leg-raises",
+    "name": { "en": "Hanging Leg Raises", "es": "Elevaciones de piernas colgado" },
+    "category": "core",
+    "secondaryMuscles": [],
+    "equipment": "bodyweight",
+    "description": { "en": "Advanced core exercise lifting legs while hanging from a bar.", "es": "Ejercicio avanzado de core elevando las piernas colgado de una barra." },
+    "instructions": {
+      "en": ["Hang from bar with arms straight", "Raise legs until parallel or higher", "Lower with control, avoid swinging", "Keep core engaged throughout"],
+      "es": ["Cuelga de la barra con los brazos rectos", "Eleva las piernas hasta paralelas o más", "Baja con control, evita balancearte", "Mantén el core activo durante todo el movimiento"]
+    },
+    "tags": ["core", "compound", "bodyweight", "abs"],
+    "referenceUrl": "https://exrx.net/WeightExercises/Illiopsoas/BWHangingLegHipRaise"
+  },
+  {
+    "id": "russian-twist",
+    "name": { "en": "Russian Twist", "es": "Giro ruso" },
+    "category": "core",
+    "secondaryMuscles": [],
+    "equipment": "bodyweight",
+    "description": { "en": "Rotational core exercise for obliques and stability.", "es": "Ejercicio de rotación del core para oblicuos y estabilidad." },
+    "instructions": {
+      "en": ["Sit with feet off floor, knees bent", "Hold hands together, rotate torso side to side", "Touch floor or weight beside hip each side", "Keep movement controlled"],
+      "es": ["Sentado con los pies levantados, rodillas flexionadas", "Junta las manos y rota el torso de un lado al otro", "Toca el suelo o el peso al lado de la cadera en cada lado", "Mantén el movimiento controlado"]
+    },
+    "tags": ["core", "obliques", "bodyweight"],
+    "referenceUrl": "https://exrx.net/WeightExercises/Obliques/BWSeatedTwist"
+  },
+  {
+    "id": "single-leg-calf-raise",
+    "name": { "en": "Single-Leg Calf Raise", "es": "Elevación de gemelo a una pierna" },
+    "category": "calves",
+    "secondaryMuscles": [],
+    "equipment": "dumbbell",
+    "description": { "en": "Unilateral calf raise for balance and focused calf work.", "es": "Elevación de gemelo unilateral para equilibrio y trabajo focalizado." },
+    "instructions": {
+      "en": ["Stand on one foot, hold dumbbell in opposite hand", "Rise onto ball of foot as high as possible", "Lower with full stretch", "Switch legs after set"],
+      "es": ["De pie sobre un pie, sujeta la mancuerna con la mano contraria", "Sube sobre la punta del pie lo más alto posible", "Baja con estiramiento completo", "Cambia de pierna después de la serie"]
+    },
+    "tags": ["isolation", "calves", "unilateral", "push"],
+    "referenceUrl": "https://exrx.net/WeightExercises/Gastrocnemius/DBOneLegCalfRaise"
+  },
+  {
+    "id": "kettlebell-goblet-squat",
+    "name": { "en": "Kettlebell Goblet Squat", "es": "Sentadilla tipo copa con kettlebell" },
+    "category": "quadriceps",
+    "secondaryMuscles": ["glutes", "core"],
+    "equipment": "kettlebell",
+    "description": { "en": "Front-loaded squat with kettlebell for quads and core.", "es": "Sentadilla con peso delante con kettlebell para cuádriceps y core." },
+    "instructions": {
+      "en": ["Hold kettlebell at chest, elbows under the bell", "Squat down keeping chest up", "Drive through heels to stand", "Keep core tight throughout"],
+      "es": ["Sostén el kettlebell a la altura del pecho, codos bajo la campana", "Baja en sentadilla manteniendo el pecho alto", "Empuja con los talones para levantarte", "Mantén el core tenso durante todo el movimiento"]
+    },
+    "tags": ["compound", "quadriceps", "kettlebell", "push"],
+    "referenceUrl": "https://exrx.net/WeightExercises/Quadriceps/KBGobletSquat"
+  },
+  {
+    "id": "kettlebell-swing",
+    "name": { "en": "Kettlebell Swing", "es": "Swing con kettlebell" },
+    "category": "glutes",
+    "secondaryMuscles": ["hamstrings", "core", "shoulders"],
+    "equipment": "kettlebell",
+    "description": { "en": "Hip-hinge explosive movement for posterior chain and conditioning.", "es": "Movimiento explosivo de cadera para cadena posterior y condición física." },
+    "instructions": {
+      "en": ["Hinge at hips, kettlebell between legs", "Drive hips forward to swing bell to chest height", "Let arms follow, don't lift with arms", "Control the downswing and repeat"],
+      "es": ["Inclínate desde la cadera, kettlebell entre las piernas", "Empuja la cadera hacia delante para llevar la campana a la altura del pecho", "Deja que los brazos sigan, no levantes con los brazos", "Controla la bajada y repite"]
+    },
+    "tags": ["compound", "glutes", "kettlebell", "cardio"],
+    "referenceUrl": "https://exrx.net/WeightExercises/GluteusMaximus/KBSwing"
+  },
+  {
+    "id": "ez-bar-bicep-curl",
+    "name": { "en": "EZ-Bar Bicep Curl", "es": "Curl de bíceps con barra EZ" },
+    "category": "biceps",
+    "secondaryMuscles": ["forearms"],
+    "equipment": "ez-bar",
+    "description": { "en": "Bicep curl with EZ bar for wrist comfort and bicep focus.", "es": "Curl de bíceps con barra EZ para comodidad de muñeca y enfoque en bíceps." },
+    "instructions": {
+      "en": ["Stand with EZ bar at arms' length, palms forward", "Curl bar up toward shoulders", "Squeeze biceps at top, lower with control", "Keep elbows at sides throughout"],
+      "es": ["De pie con la barra EZ a lo largo de los brazos, palmas al frente", "Curl de la barra hacia los hombros", "Contrae los bíceps arriba y baja con control", "Mantén los codos a los lados durante todo el movimiento"]
+    },
+    "tags": ["isolation", "biceps", "pull"],
+    "referenceUrl": "https://exrx.net/WeightExercises/Biceps/EZBarCurl"
+  },
+  {
+    "id": "ez-bar-skull-crusher",
+    "name": { "en": "EZ-Bar Skull Crusher", "es": "Skull crusher con barra EZ" },
+    "category": "triceps",
+    "secondaryMuscles": [],
+    "equipment": "ez-bar",
+    "description": { "en": "Lying triceps extension with EZ bar for comfortable grip.", "es": "Extensión de tríceps tumbado con barra EZ para agarre cómodo." },
+    "instructions": {
+      "en": ["Lie on bench, EZ bar above chest, narrow grip", "Lower bar toward forehead by bending elbows", "Keep upper arms perpendicular to floor", "Extend arms back to start"],
+      "es": ["Tumbado en banco, barra EZ sobre el pecho, agarre estrecho", "Baja la barra hacia la frente flexionando los codos", "Mantén los brazos superiores perpendiculares al suelo", "Extiende los brazos de nuevo al inicio"]
+    },
+    "tags": ["isolation", "triceps", "push"],
+    "referenceUrl": "https://exrx.net/WeightExercises/Triceps/EZBarLyingTriExt"
+  },
+  {
+    "id": "banded-squat",
+    "name": { "en": "Banded Squat", "es": "Sentadilla con banda" },
+    "category": "quadriceps",
+    "secondaryMuscles": ["glutes", "core"],
+    "equipment": "resistance-band",
+    "description": { "en": "Squat with resistance band for added tension and knee tracking.", "es": "Sentadilla con banda de resistencia para tensión adicional y alineación de rodilla." },
+    "instructions": {
+      "en": ["Place band above knees, stand with feet shoulder-width", "Push knees out against band as you squat", "Drive through heels to stand", "Keep tension on band throughout"],
+      "es": ["Coloca la banda por encima de las rodillas, pies a la anchura de los hombros", "Empuja las rodillas hacia fuera contra la banda al bajar", "Empuja con los talones para levantarte", "Mantén la tensión en la banda durante todo el movimiento"]
+    },
+    "tags": ["compound", "quadriceps", "resistance-band", "push"],
+    "referenceUrl": "https://exrx.net/WeightExercises/Quadriceps/BandSquat"
+  },
+  {
+    "id": "banded-hip-thrust",
+    "name": { "en": "Banded Hip Thrust", "es": "Hip thrust con banda" },
+    "category": "glutes",
+    "secondaryMuscles": ["hamstrings", "core"],
+    "equipment": "resistance-band",
+    "description": { "en": "Hip thrust with resistance band for glute activation.", "es": "Hip thrust con banda de resistencia para activación de glúteos." },
+    "instructions": {
+      "en": ["Sit with upper back on bench, band around thighs or above knees", "Drive through heels to extend hips", "Squeeze glutes at top", "Lower with control"],
+      "es": ["Siéntate con la espalda alta en el banco, banda en muslos o por encima de rodillas", "Empuja con los talones para extender la cadera", "Contrae los glúteos arriba", "Baja con control"]
+    },
+    "tags": ["compound", "glutes", "resistance-band", "push"],
+    "referenceUrl": "https://exrx.net/WeightExercises/GluteusMaximus/BandHipThrust"
+  },
+  {
+    "id": "smith-machine-bench-press",
+    "name": { "en": "Smith Machine Bench Press", "es": "Press de banca en Smith" },
+    "category": "chest",
+    "secondaryMuscles": ["triceps", "shoulders"],
+    "equipment": "smith-machine",
+    "description": { "en": "Bench press on Smith machine for controlled bar path.", "es": "Press de banca en máquina Smith para trayectoria controlada." },
+    "instructions": {
+      "en": ["Lie on bench under Smith bar, grip slightly wider than shoulders", "Unrack and lower bar to mid-chest", "Press up to lockout", "Keep feet flat on floor"],
+      "es": ["Tumbado en banco bajo la barra Smith, agarre algo más ancho que los hombros", "Desengancha y baja la barra al centro del pecho", "Empuja hasta extender", "Mantén los pies apoyados en el suelo"]
+    },
+    "tags": ["push", "compound", "chest"],
+    "referenceUrl": "https://exrx.net/WeightExercises/PectoralSternal/SMBenchPress"
+  },
+  {
+    "id": "smith-machine-incline-press",
+    "name": { "en": "Smith Machine Incline Press", "es": "Press inclinado en Smith" },
+    "category": "chest",
+    "secondaryMuscles": ["triceps", "shoulders"],
+    "equipment": "smith-machine",
+    "description": { "en": "Incline press on Smith machine for upper chest.", "es": "Press inclinado en Smith para la parte superior del pecho." },
+    "instructions": {
+      "en": ["Set bench to 30-45 degrees under Smith bar", "Unrack and lower bar to upper chest", "Press up to lockout", "Keep control throughout"],
+      "es": ["Coloca el banco a 30-45 grados bajo la barra Smith", "Desengancha y baja la barra al pecho alto", "Empuja hasta extender", "Mantén el control durante todo el movimiento"]
+    },
+    "tags": ["push", "compound", "upper-chest", "chest"],
+    "referenceUrl": "https://exrx.net/WeightExercises/PectoralClavicular/SMInclineBenchPress"
+  },
+  {
+    "id": "t-bar-row",
+    "name": { "en": "T-Bar Row", "es": "Remo con barra T" },
+    "category": "back",
+    "secondaryMuscles": ["biceps", "traps"],
+    "equipment": "barbell",
+    "description": { "en": "Bent-over row using T-bar or landmine for mid-back thickness.", "es": "Remo inclinado con barra T o landmine para grosor de espalda media." },
+    "instructions": {
+      "en": ["Stand over the bar, hinge at hips, grip the handle", "Pull handle toward lower chest", "Squeeze shoulder blades together", "Lower with control"],
+      "es": ["De pie sobre la barra, inclínate desde la cadera, agarra el mango", "Tira del mango hacia el pecho bajo", "Junta las escápulas", "Baja con control"]
+    },
+    "tags": ["pull", "compound", "back"],
+    "referenceUrl": "https://exrx.net/WeightExercises/BackGeneral/TBarRow"
+  },
+  {
+    "id": "straight-arm-pulldown",
+    "name": { "en": "Straight-Arm Pulldown", "es": "Jalón con brazos rectos" },
+    "category": "back",
+    "secondaryMuscles": [],
+    "equipment": "cable",
+    "description": { "en": "Lat isolation with straight arms for stretch and contraction.", "es": "Aislamiento de dorsales con brazos rectos para estiramiento y contracción." },
+    "instructions": {
+      "en": ["Stand facing cable, bar attachment, arms straight", "Pull bar down to thighs using lats", "Keep arms straight, slight bend in elbows", "Return slowly for stretch"],
+      "es": ["De pie frente a la polea, barra, brazos rectos", "Tira de la barra hacia los muslos usando las dorsales", "Mantén los brazos rectos, ligera flexión de codos", "Vuelve despacio para estirar"]
+    },
+    "tags": ["pull", "isolation", "back", "lats"],
+    "referenceUrl": "https://exrx.net/WeightExercises/LatissimusDorsi/CBStraightArmPulldown"
+  },
+  {
+    "id": "pec-deck",
+    "name": { "en": "Pec Deck", "es": "Pec deck" },
+    "category": "chest",
+    "secondaryMuscles": ["shoulders"],
+    "equipment": "machine",
+    "description": { "en": "Machine fly for chest isolation and squeeze.", "es": "Aperturas en máquina para aislamiento y contracción de pecho." },
+    "instructions": {
+      "en": ["Sit with back flat, grip handles or place forearms on pads", "Bring arms together in front of chest", "Squeeze chest at peak", "Return slowly to stretch"],
+      "es": ["Siéntate con la espalda apoyada, agarra los mangos o apoya los antebrazos", "Junta los brazos delante del pecho", "Contrae el pecho en el punto máximo", "Vuelve despacio para estirar"]
+    },
+    "tags": ["push", "isolation", "chest"],
+    "referenceUrl": "https://exrx.net/WeightExercises/PectoralSternal/LVPecFly"
+  },
+  {
+    "id": "upright-row",
+    "name": { "en": "Upright Row", "es": "Remo al mentón" },
+    "category": "traps",
+    "secondaryMuscles": ["shoulders", "biceps"],
+    "equipment": "barbell",
+    "description": { "en": "Vertical pull for traps and lateral deltoids.", "es": "Jalón vertical para trapecios y deltoides laterales." },
+    "instructions": {
+      "en": ["Stand with bar at thighs, grip slightly narrower than shoulder-width", "Pull bar up toward chin, elbows high", "Lower with control", "Keep bar close to body"],
+      "es": ["De pie con la barra en los muslos, agarre algo más estrecho que los hombros", "Tira de la barra hacia la barbilla, codos altos", "Baja con control", "Mantén la barra cerca del cuerpo"]
+    },
+    "tags": ["pull", "compound", "traps", "shoulders"],
+    "referenceUrl": "https://exrx.net/WeightExercises/TrapeziusUpper/BBUprightRow"
+  },
+  {
+    "id": "cable-woodchop",
+    "name": { "en": "Cable Woodchop", "es": "Woodchop en polea" },
+    "category": "core",
+    "secondaryMuscles": ["shoulders"],
+    "equipment": "cable",
+    "description": { "en": "Rotational cable exercise for obliques and core power.", "es": "Ejercicio de rotación en polea para oblicuos y potencia del core." },
+    "instructions": {
+      "en": ["Set cable at shoulder height, stand sideways", "Grip handle with both hands, rotate torso away from cable", "Pull across body to opposite hip", "Control the return and repeat"],
+      "es": ["Coloca la polea a la altura del hombro, ponte de lado", "Agarra el mango con ambas manos, rota el torso alejándote de la polea", "Tira hacia el lado opuesto de la cadera", "Controla la vuelta y repite"]
+    },
+    "tags": ["core", "obliques", "rotation", "pull"],
+    "referenceUrl": "https://exrx.net/WeightExercises/Obliques/CBWoodchopper"
+  },
+  {
+    "id": "farmer-walk",
+    "name": { "en": "Farmer Walk", "es": "Marcha del granjero" },
+    "category": "forearms",
+    "secondaryMuscles": ["traps", "core"],
+    "equipment": "dumbbell",
+    "description": { "en": "Loaded carry for grip, traps, and core stability.", "es": "Marcha cargada para agarre, trapecios y estabilidad del core." },
+    "instructions": {
+      "en": ["Hold heavy dumbbells or kettlebells at sides", "Walk forward with short steps, standing tall", "Keep core tight and shoulders down", "Walk for distance or time"],
+      "es": ["Sujeta mancuernas o kettlebells pesados a los lados", "Camina hacia delante con pasos cortos, erguido", "Mantén el core tenso y los hombros abajo", "Camina por distancia o tiempo"]
+    },
+    "tags": ["compound", "forearms", "grip", "carry"],
+    "referenceUrl": "https://exrx.net/WeightExercises/TrapeziusUpper/DBFarmerWalk"
   }
 ];
 export function getExerciseById(id: string): Exercise | undefined {

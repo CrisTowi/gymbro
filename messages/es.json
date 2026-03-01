@@ -303,5 +303,24 @@
     "heightPlaceholder": "ej. 170 (cm)",
     "weightPlaceholder": "ej. 70 (kg)",
     "goalPlaceholder": "ej. Ganar fuerza, perder grasa"
+  },
+  "aiRoutine": {
+    "cta": "Crear con IA",
+    "openLabel": "Crear rutina semanal con IA",
+    "title": "Describe tu rutina semanal",
+    "previewTitle": "Tu plan generado",
+    "hint": "Describe cómo quieres tu semana. Por ejemplo: \"Push lunes y jueves, Pull martes y viernes, Legs miércoles, descanso el fin de semana\" o \"Tren superior 3 días, tren inferior 2 días, dos días de descanso\".",
+    "placeholder": "ej. Push y Pull entre semana, Legs el sábado, descanso el domingo…",
+    "provider": "Proveedor de IA",
+    "generate": "Generar",
+    "generating": "Generando…",
+    "cancel": "Cancelar",
+    "close": "Cerrar",
+    "previewHint": "Revisa y ajusta el plan. Toca un día para cambiar la rutina o vuelve a generar con otra descripción.",
+    "regenerate": "Volver a generar",
+    "confirm": "Usar este plan",
+    "saving": "Guardando…",
+    "errorGenerate": "Error al generar el plan. Revisa tu API key o inténtalo de nuevo.",
+    "errorSave": "Error al guardar el plan. Inténtalo de nuevo."
   }
 }

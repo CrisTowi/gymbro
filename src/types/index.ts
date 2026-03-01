@@ -41,8 +41,6 @@ export type Equipment =
   | 'smith-machine'
   | 'resistance-band';
 
-/** @deprecated Use string routine id; kept for session log routineId compatibility */
-export type RoutineType = 'push' | 'pull' | 'legs' | 'full-body';
 
 export interface RoutineExercise {
   exerciseId: string;
@@ -131,10 +129,5 @@ export interface ExerciseHistory {
   };
 }
 
-export interface TimerState {
-  isRunning: boolean;
-  totalSeconds: number;
-  remainingSeconds: number;
-}
 
 export type TimeRange = 'this-month' | 'this-year' | 'all-time' | 'yearly';
