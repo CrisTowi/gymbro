@@ -35,6 +35,7 @@ export default function AIRoutineGenerator({
   const [description, setDescription] = useState('');
   const [generatedPlan, setGeneratedPlan] = useState<WeeklyPlanType | null>(null);
   const [exerciseMap, setExerciseMap] = useState<Record<string, Exercise>>({});
+  const [editingDay, setEditingDay] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -83,7 +84,17 @@ export default function AIRoutineGenerator({
   const handleRegenerate = () => {
     setStep('input');
     setGeneratedPlan(null);
+    setEditingDay(null);
     setError(null);
+  };
+
+  const handleDayPillClick = (day: string) => {
+    setEditingDay((prev) => (prev === day ? null : day));
+  };
+
+  const handleAssignDay = (day: string, routineId: string | null) => {
+    setGeneratedPlan((prev) => ({ ...prev, [day]: routineId }));
+    setEditingDay(null);
   };
 
   const handleConfirm = async () => {
@@ -199,8 +210,15 @@ export default function AIRoutineGenerator({
                     {DAYS.map((day, i) => {
                       const routineId = generatedPlan[day];
                       const routine = routineId ? routines.find((r) => r.id === routineId) : null;
+                      const isEditing = editingDay === day;
                       return (
-                        <div key={day} className={styles.dayPill} title={DAY_LABEL[i]}>
+                        <button
+                          key={day}
+                          type="button"
+                          className={`${styles.dayPill} ${isEditing ? styles.dayPillActive : ''}`}
+                          title={DAY_LABEL[i]}
+                          onClick={() => handleDayPillClick(day)}
+                        >
                           <span className={styles.dayPillAbbr}>{DAY_ABBR[i]}</span>
                           {routine ? (
                             <span className={styles.dayPillIcon}>{routine.icon}</span>
@@ -211,10 +229,41 @@ export default function AIRoutineGenerator({
                             className={styles.dayPillBar}
                             style={{ background: routine ? routine.color : 'var(--color-border)' }}
                           />
-                        </div>
+                        </button>
                       );
                     })}
                   </div>
+
+                  {/* Day editor */}
+                  {editingDay && (
+                    <div className={styles.dayEditor}>
+                      <p className={styles.dayEditorTitle}>
+                        {DAY_LABEL[DAYS.indexOf(editingDay)]}
+                      </p>
+                      <div className={styles.dayEditorOptions}>
+                        <button
+                          type="button"
+                          className={`${styles.dayEditorOption} ${!generatedPlan[editingDay] ? styles.dayEditorOptionSelected : ''}`}
+                          onClick={() => handleAssignDay(editingDay, null)}
+                        >
+                          <span>😴</span>
+                          <span>{t('restDaysLabel')}</span>
+                        </button>
+                        {routines.map((routine) => (
+                          <button
+                            key={routine.id}
+                            type="button"
+                            className={`${styles.dayEditorOption} ${generatedPlan[editingDay] === routine.id ? styles.dayEditorOptionSelected : ''}`}
+                            style={{ '--routine-color': routine.color } as React.CSSProperties}
+                            onClick={() => handleAssignDay(editingDay, routine.id)}
+                          >
+                            <span>{routine.icon}</span>
+                            <span>{routine.name}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   {/* Routine cards */}
                   <div className={styles.routineCards}>

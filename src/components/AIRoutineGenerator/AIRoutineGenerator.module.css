@@ -230,6 +230,21 @@
   flex-direction: column;
   align-items: center;
   gap: 4px;
+  padding: var(--space-xs) 2px;
+  background: none;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.dayPill:hover {
+  background: var(--color-bg-card);
+}
+
+.dayPillActive {
+  background: var(--color-bg-card);
+  outline: 1px solid var(--color-accent);
 }
 
 .dayPillAbbr {
@@ -256,6 +271,65 @@
   height: 4px;
   border-radius: 2px;
   transition: background var(--transition-fast);
+}
+
+/* ─── Day editor ───────────────────────────────────────────── */
+
+.dayEditor {
+  background: var(--color-bg);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+  margin-bottom: var(--space-md);
+  animation: slideDown 0.15s ease;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.dayEditorTitle {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 var(--space-sm);
+}
+
+.dayEditorOptions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.dayEditorOption {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  text-align: left;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.dayEditorOption:hover {
+  background: var(--color-bg-card);
+  border-color: var(--routine-color, var(--color-accent));
+}
+
+.dayEditorOptionSelected {
+  border-color: var(--routine-color, var(--color-accent));
+  background: color-mix(in srgb, var(--routine-color, var(--color-accent)) 10%, var(--color-bg-secondary));
+  font-weight: 700;
 }
 
 /* ─── Preview: routine cards ───────────────────────────────── */
