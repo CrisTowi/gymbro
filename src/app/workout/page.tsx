@@ -127,6 +127,22 @@ function WorkoutContent() {
     }
   }, [permission, requestPermission]);
 
+  // Lock screen to portrait during the workout session
+  useEffect(() => {
+    if (!session) return;
+    const orientation = typeof screen !== 'undefined' ? screen.orientation : null;
+    if (orientation && typeof orientation.lock === 'function') {
+      orientation.lock('portrait').catch(() => {
+        // Some browsers (e.g. Safari) don't support orientation lock — ignore
+      });
+    }
+    return () => {
+      if (orientation && typeof orientation.unlock === 'function') {
+        try { orientation.unlock(); } catch { /* ignore */ }
+      }
+    };
+  }, [session]);
+
   // Keep screen on during the whole workout session (avoid auto-lock)
   useEffect(() => {
     if (!session) return;
