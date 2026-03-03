@@ -1,36 +1,101 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# GymTrack
 
-## Getting Started
+A personal workout tracker built as a mobile-first PWA. Log sets and reps, track personal records, follow a weekly training plan, and watch your progress over time.
 
-First, run the development server:
+**Backend repo:** [gymtrack-be](https://github.com/CrisTowi/gymtrack-be)
+
+## Features
+
+- **Workout logging** — track sets, reps, and weight for every exercise, with a built-in rest timer and push notifications when rest ends
+- **Personal records** — automatically detected and surfaced on the dashboard with progress charts
+- **Weekly plan** — assign routines to days of the week; generate a plan from a natural language description using AI
+- **Exercise catalog** — 80+ exercises across all muscle groups, with last-session performance and smart set recommendations
+- **Progress charts** — volume and max-weight history per exercise
+- **Installable PWA** — works offline-first, installable on iOS and Android, portrait-locked during workouts
+- **English / Spanish** — full i18n support, language preference saved to your profile
+- **Invite-only registration** — the server admin generates one-time invitation links; no open sign-ups
+
+## Tech stack
+
+| Layer | Technology |
+|---|---|
+| Framework | Next.js 16 (App Router) |
+| Language | TypeScript / React 19 |
+| Styling | CSS Modules |
+| i18n | next-intl |
+| Auth | JWT (stored in localStorage) |
+| API | REST — see [gymtrack-be](https://github.com/CrisTowi/gymtrack-be) |
+
+## Getting started
+
+You need the backend running first. Follow the setup steps in [gymtrack-be](https://github.com/CrisTowi/gymtrack-be), then come back here.
+
+### 1. Install dependencies
+
+```bash
+npm install
+```
+
+### 2. Configure environment
+
+```bash
+cp .env.local.example .env.local
+```
+
+Set `NEXT_PUBLIC_API_URL` to point at your running backend (default: `http://localhost:5001`).
+
+### 3. Run the dev server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 4. Register
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Generate an invitation link from the backend:
 
-## Learn More
+```bash
+# In gymtrack-be/
+npm run create-invitation
+```
 
-To learn more about Next.js, take a look at the following resources:
+Open the printed URL to create your account.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Available scripts
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm run dev          # Start dev server on :3000
+npm run build        # Production build
+npm run lint         # ESLint
+npm run test         # Jest
+npm run test:watch   # Jest in watch mode
+npm run test:coverage
+npm run validate-i18n  # Check en.json / es.json are in sync
+```
 
-## Deploy on Vercel
+## Project structure
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+src/
+  app/            # Next.js App Router pages and layouts
+  components/     # Reusable UI components
+  context/        # AuthContext, LocaleContext
+  data/           # Client-side exercise catalog
+  hooks/          # useTimer, useNotification, ...
+  lib/            # api.ts — single HTTP client
+  types/          # Shared TypeScript types
+  utils/          # Formatting helpers
+messages/
+  en.json         # English strings
+  es.json         # Spanish strings
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## License
+
+MIT — see [LICENSE](LICENSE).
