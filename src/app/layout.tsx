@@ -9,14 +9,14 @@ import DevTools from '@/components/DevTools/DevTools';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'GymTrack - Your Personal Workout Companion',
+  title: 'GymBro - Your Personal Workout Companion',
   description:
-    'Track your workouts, monitor progress, and crush your fitness goals with GymTrack.',
+    'Track your workouts, monitor progress, and crush your fitness goals with GymBro.',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'GymTrack',
+    title: 'GymBro',
   },
 };
 

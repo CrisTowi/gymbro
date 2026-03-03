@@ -258,13 +258,13 @@ function PreviewContent() {
   const handleStartWorkout = useCallback(() => {
     if (!routineId) return;
     sessionStorage.setItem(
-      'gymtrack_workout_overrides',
+      'gymbro_workout_overrides',
       JSON.stringify(overrides)
     );
     if (dontSave) {
-      sessionStorage.setItem('gymtrack_practice_session', '1');
+      sessionStorage.setItem('gymbro_practice_session', '1');
     } else {
-      sessionStorage.removeItem('gymtrack_practice_session');
+      sessionStorage.removeItem('gymbro_practice_session');
     }
     router.push(`/workout?routine=${routineId}`);
   }, [routineId, overrides, dontSave, router]);

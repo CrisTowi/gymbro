@@ -1,10 +1,10 @@
 import { SessionLog, WeeklyPlan, DEFAULT_WEEKLY_PLAN } from '@/types';
 
 const STORAGE_KEYS = {
-  SESSIONS: 'gymtrack_sessions',
-  WEEKLY_PLAN: 'gymtrack_weekly_plan',
-  ACTIVE_SESSION: 'gymtrack_active_session',
-  PENDING_SYNC: 'gymtrack_pending_sync',
+  SESSIONS: 'gymbro_sessions',
+  WEEKLY_PLAN: 'gymbro_weekly_plan',
+  ACTIVE_SESSION: 'gymbro_active_session',
+  PENDING_SYNC: 'gymbro_pending_sync',
 } as const;
 
 function getItem<T>(key: string, fallback: T): T {

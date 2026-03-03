@@ -31,7 +31,7 @@ export default function LoginPage() {
     <div className={styles.page}>
       <div className={styles.card}>
         <h1 className={styles.title}>
-          <span className={styles.logoIcon}>⚡</span> GymTrack
+          <span className={styles.logoIcon}>⚡</span> GymBro
         </h1>
         <p className={styles.subtitle}>{t('signInToAccount')}</p>
 

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gymtrack-v1';
+const CACHE_NAME = 'gymbro-v1';
 const STATIC_ASSETS = [
   '/',
   '/dashboard',

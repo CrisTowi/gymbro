@@ -16,7 +16,7 @@
     "logOutAria": "Cerrar sesión"
   },
   "home": {
-    "logo": "GymTrack",
+    "logo": "GymBro",
     "setUpRoutine": "Configura tu rutina",
     "readyToday": "¿Listo para darle hoy?",
     "createCustomize": "Crea y personaliza tu rutina",
@@ -52,7 +52,7 @@
     "invalidInvitation": "Invitación no válida o caducada",
     "invalidInvitationDesc": "Este enlace no es válido, ya se ha usado o ha caducado.",
     "backToSignIn": "Volver a iniciar sesión",
-    "youreInvited": "Estás invitado a GymTrack",
+    "youreInvited": "Estás invitado a GymBro",
     "createAccount": "Crea tu cuenta",
     "registrationFailed": "Error en el registro",
     "heightOptional": "Altura (opcional)",

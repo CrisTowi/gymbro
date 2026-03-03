@@ -4,13 +4,13 @@ import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import styles from './DevTools.module.css';
 
-const DEV_MODE_KEY = 'gymtrack_dev_mode';
+const DEV_MODE_KEY = 'gymbro_dev_mode';
 
 const STORAGE_KEYS = [
-  'gymtrack_sessions',
-  'gymtrack_weekly_plan',
-  'gymtrack_active_session',
-  'gymtrack_pending_sync',
+  'gymbro_sessions',
+  'gymbro_weekly_plan',
+  'gymbro_active_session',
+  'gymbro_pending_sync',
 ];
 
 export default function DevTools() {
@@ -46,15 +46,15 @@ export default function DevTools() {
   }, [showToast]);
 
   const handleClearSessions = useCallback(() => {
-    localStorage.removeItem('gymtrack_sessions');
-    localStorage.removeItem('gymtrack_active_session');
+    localStorage.removeItem('gymbro_sessions');
+    localStorage.removeItem('gymbro_active_session');
     showToast('Session data cleared');
     setConfirmAction(null);
     setIsOpen(false);
   }, [showToast]);
 
   const handleClearPlan = useCallback(() => {
-    localStorage.removeItem('gymtrack_weekly_plan');
+    localStorage.removeItem('gymbro_weekly_plan');
     showToast('Weekly plan reset to default');
     setConfirmAction(null);
     setIsOpen(false);

@@ -35,9 +35,9 @@ interface ExerciseOverride {
 function readOverrides(): ExerciseOverride[] | null {
   if (typeof window === 'undefined') return null;
   try {
-    const raw = sessionStorage.getItem('gymtrack_workout_overrides');
+    const raw = sessionStorage.getItem('gymbro_workout_overrides');
     if (!raw) return null;
-    sessionStorage.removeItem('gymtrack_workout_overrides');
+    sessionStorage.removeItem('gymbro_workout_overrides');
     return JSON.parse(raw) as ExerciseOverride[];
   } catch {
     return null;
@@ -47,8 +47,8 @@ function readOverrides(): ExerciseOverride[] | null {
 function readPracticeFlag(): boolean {
   if (typeof window === 'undefined') return false;
   try {
-    const flag = sessionStorage.getItem('gymtrack_practice_session') === '1';
-    sessionStorage.removeItem('gymtrack_practice_session');
+    const flag = sessionStorage.getItem('gymbro_practice_session') === '1';
+    sessionStorage.removeItem('gymbro_practice_session');
     return flag;
   } catch {
     return false;

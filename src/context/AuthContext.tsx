@@ -18,7 +18,7 @@ import {
   type User,
 } from '@/lib/api';
 
-const STORAGE_KEY = 'gymtrack_token';
+const STORAGE_KEY = 'gymbro_token';
 
 interface AuthState {
   user: User | null;

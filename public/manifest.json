@@ -1,6 +1,6 @@
 {
-  "name": "GymTrack - Workout Companion",
-  "short_name": "GymTrack",
+  "name": "GymBro - Workout Companion",
+  "short_name": "GymBro",
   "description": "Track your workouts, monitor progress, and crush your fitness goals.",
   "start_url": "/",
   "display": "standalone",

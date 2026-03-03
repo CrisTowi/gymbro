@@ -1,8 +1,8 @@
-# GymTrack
+# GymBro
 
 A personal workout tracker built as a mobile-first PWA. Log sets and reps, track personal records, follow a weekly training plan, and watch your progress over time.
 
-**Backend repo:** [gymtrack-be](https://github.com/CrisTowi/gymtrack-be)
+**Backend repo:** [gymbro-be](https://github.com/CrisTowi/gymbro-be)
 
 ## Features
 
@@ -24,11 +24,11 @@ A personal workout tracker built as a mobile-first PWA. Log sets and reps, track
 | Styling | CSS Modules |
 | i18n | next-intl |
 | Auth | JWT (stored in localStorage) |
-| API | REST — see [gymtrack-be](https://github.com/CrisTowi/gymtrack-be) |
+| API | REST — see [gymbro-be](https://github.com/CrisTowi/gymbro-be) |
 
 ## Getting started
 
-You need the backend running first. Follow the setup steps in [gymtrack-be](https://github.com/CrisTowi/gymtrack-be), then come back here.
+You need the backend running first. Follow the setup steps in [gymbro-be](https://github.com/CrisTowi/gymbro-be), then come back here.
 
 ### 1. Install dependencies
 
@@ -57,7 +57,7 @@ Open [http://localhost:3000](http://localhost:3000).
 Generate an invitation link from the backend:
 
 ```bash
-# In gymtrack-be/
+# In gymbro-be/
 npm run create-invitation
 ```
 

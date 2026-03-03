@@ -16,7 +16,7 @@
     "logOutAria": "Log out"
   },
   "home": {
-    "logo": "GymTrack",
+    "logo": "GymBro",
     "setUpRoutine": "Set up your routine",
     "readyToday": "Ready to crush it today?",
     "createCustomize": "Create and customize your routine",
@@ -52,7 +52,7 @@
     "invalidInvitation": "Invalid or expired invitation",
     "invalidInvitationDesc": "This link is invalid, has already been used, or has expired.",
     "backToSignIn": "Back to sign in",
-    "youreInvited": "You're invited to join GymTrack",
+    "youreInvited": "You're invited to join GymBro",
     "createAccount": "Create your account",
     "registrationFailed": "Registration failed",
     "heightOptional": "Height (optional)",

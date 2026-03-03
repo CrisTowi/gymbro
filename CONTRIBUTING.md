@@ -1,18 +1,18 @@
-# Contributing to GymTrack (frontend)
+# Contributing to GymBro (frontend)
 
-Thanks for your interest! This is the Next.js frontend. The backend lives in [gymtrack-be](https://github.com/CrisTowi/gymtrack-be) — you'll need both running locally.
+Thanks for your interest! This is the Next.js frontend. The backend lives in [gymbro-be](https://github.com/CrisTowi/gymbro-be) — you'll need both running locally.
 
 ## Prerequisites
 
 - Node.js 20+
-- A running instance of [gymtrack-be](https://github.com/CrisTowi/gymtrack-be)
+- A running instance of [gymbro-be](https://github.com/CrisTowi/gymbro-be)
 
 ## Local setup
 
 ```bash
 # 1. Clone
-git clone https://github.com/CrisTowi/gymtrack.git
-cd gymtrack
+git clone https://github.com/CrisTowi/gymbro.git
+cd gymbro
 
 # 2. Install
 npm install
