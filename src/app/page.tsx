@@ -67,9 +67,7 @@ export default function Home() {
   };
 
   const todayRoutineId = weeklyPlan[getDayOfWeek()] ?? null;
-  const todayRoutine = todayRoutineId
-    ? routines.find((r) => r.id === todayRoutineId)
-    : null;
+  const todayRoutine = todayRoutineId ? routines.find((r) => r.id === todayRoutineId) : null;
 
   if (!mounted) {
     return (
@@ -150,9 +148,21 @@ export default function Home() {
                 {t('exercisesCount', { count: todayRoutine.exercises.length })}
               </span>
             </div>
-            <Link href={`/workout/preview?routine=${todayRoutineId}`} className={styles.startButton}>
+            <Link
+              href={`/workout/preview?routine=${todayRoutineId}`}
+              className={styles.startButton}
+            >
               {t('startWorkout')}
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <line x1="5" y1="12" x2="19" y2="12" />
                 <polyline points="12 5 19 12 12 19" />
               </svg>
@@ -181,18 +191,10 @@ export default function Home() {
           </div>
         )}
 
-        <WeeklyPlan
-          plan={weeklyPlan}
-          onPlanChange={handlePlanChange}
-          routines={routines}
-        />
+        <WeeklyPlan plan={weeklyPlan} onPlanChange={handlePlanChange} routines={routines} />
 
         {process.env.NEXT_PUBLIC_AI_ROUTINE_ENABLED !== 'false' && (
-          <AIRoutineGenerator
-            routines={routines}
-            currentPlan={weeklyPlan}
-            onPlanSaved={loadData}
-          />
+          <AIRoutineGenerator routines={routines} currentPlan={weeklyPlan} onPlanSaved={loadData} />
         )}
 
         <div className={styles.manageRoutines}>
@@ -204,7 +206,7 @@ export default function Home() {
         <LastSessionCard
           session={lastSession}
           routine={
-            lastSession ? routines.find((r) => r.id === lastSession.routineId) ?? null : null
+            lastSession ? (routines.find((r) => r.id === lastSession.routineId) ?? null) : null
           }
         />
       </div>

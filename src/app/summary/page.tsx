@@ -21,7 +21,9 @@ function SummaryContent() {
 
   const [session, setSession] = useState<SessionLog | null>(null);
   const [routine, setRoutine] = useState<Routine | null>(null);
-  const [personalRecords, setPersonalRecords] = useState<Record<string, { maxWeight: number; maxVolume: number; date: string }>>({});
+  const [personalRecords, setPersonalRecords] = useState<
+    Record<string, { maxWeight: number; maxVolume: number; date: string }>
+  >({});
   const [message] = useState(getMotivationalMessage());
 
   useEffect(() => {
@@ -61,18 +63,12 @@ function SummaryContent() {
     (sum, ex) => sum + ex.sets.filter((s) => s.completed).length,
     0
   );
-  const totalSets = session.exercises.reduce(
-    (sum, ex) => sum + ex.sets.length,
-    0
-  );
+  const totalSets = session.exercises.reduce((sum, ex) => sum + ex.sets.length, 0);
   const exercisesCompleted = session.exercises.filter((ex) =>
     ex.sets.some((s) => s.completed)
   ).length;
 
-  const { grade, message: gradeMessage } = getSessionGrade(
-    totalCompletedSets,
-    totalSets
-  );
+  const { grade, message: gradeMessage } = getSessionGrade(totalCompletedSets, totalSets);
 
   const newPRs: { exerciseName: string; weight: number }[] = [];
   for (const ex of session.exercises) {
@@ -83,7 +79,10 @@ function SummaryContent() {
     if (record && maxWeight >= record.maxWeight) {
       const exercise = getExerciseById(ex.exerciseId);
       if (exercise) {
-        newPRs.push({ exerciseName: getExerciseLocalized(exercise, locale).name, weight: maxWeight });
+        newPRs.push({
+          exerciseName: getExerciseLocalized(exercise, locale).name,
+          weight: maxWeight,
+        });
       }
     }
   }
@@ -112,9 +111,7 @@ function SummaryContent() {
 
         <div className={styles.statsGrid}>
           <div className={styles.statCard}>
-            <span className={styles.statValue}>
-              {session.totalWeightLbs.toLocaleString()}
-            </span>
+            <span className={styles.statValue}>{session.totalWeightLbs.toLocaleString()}</span>
             <span className={styles.statUnit}>{t('lbsLifted')}</span>
             <span className={styles.statSub}>
               ({lbsToKg(session.totalWeightLbs).toLocaleString()} kg)
@@ -148,9 +145,7 @@ function SummaryContent() {
               <div key={i} className={styles.prItem}>
                 <span className={styles.prIcon}>🏆</span>
                 <span className={styles.prName}>{pr.exerciseName}</span>
-                <span className={styles.prWeight}>
-                  {formatWeight(pr.weight)}
-                </span>
+                <span className={styles.prWeight}>{formatWeight(pr.weight)}</span>
               </div>
             ))}
           </div>
@@ -163,13 +158,8 @@ function SummaryContent() {
             const completedSets = ex.sets.filter((s) => s.completed);
             if (completedSets.length === 0) return null;
 
-            const maxWeight = Math.max(
-              ...completedSets.map((s) => s.weightLbs)
-            );
-            const volume = completedSets.reduce(
-              (sum, s) => sum + s.weightLbs * s.reps,
-              0
-            );
+            const maxWeight = Math.max(...completedSets.map((s) => s.weightLbs));
+            const volume = completedSets.reduce((sum, s) => sum + s.weightLbs * s.reps, 0);
 
             return (
               <div key={ex.exerciseId} className={styles.exerciseRow}>
@@ -196,7 +186,16 @@ function SummaryContent() {
 
         <button className={styles.homeButton} onClick={() => router.push('/')}>
           {t('backToHome')}
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <line x1="5" y1="12" x2="19" y2="12" />
             <polyline points="12 5 19 12 12 19" />
           </svg>

@@ -17,14 +17,14 @@ A personal workout tracker built as a mobile-first PWA. Log sets and reps, track
 
 ## Tech stack
 
-| Layer | Technology |
-|---|---|
-| Framework | Next.js 16 (App Router) |
-| Language | TypeScript / React 19 |
-| Styling | CSS Modules |
-| i18n | next-intl |
-| Auth | JWT (stored in localStorage) |
-| API | REST — see [gymbro-be](https://github.com/CrisTowi/gymbro-be) |
+| Layer     | Technology                                                    |
+| --------- | ------------------------------------------------------------- |
+| Framework | Next.js 16 (App Router)                                       |
+| Language  | TypeScript / React 19                                         |
+| Styling   | CSS Modules                                                   |
+| i18n      | next-intl                                                     |
+| Auth      | JWT (stored in localStorage)                                  |
+| API       | REST — see [gymbro-be](https://github.com/CrisTowi/gymbro-be) |
 
 ## Getting started
 

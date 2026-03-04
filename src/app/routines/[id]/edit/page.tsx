@@ -22,11 +22,7 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Routine, RoutineExercise, Exercise, type Locale } from '@/types';
-import {
-  fetchRoutineById,
-  updateRoutine,
-  fetchExercises,
-} from '@/lib/api';
+import { fetchRoutineById, updateRoutine, fetchExercises } from '@/lib/api';
 import { getExerciseById, getAlternativeExercises, getExerciseLocalized } from '@/data/exercises';
 import { useLocale } from '@/context/LocaleContext';
 import { formatTime } from '@/utils/time';
@@ -49,16 +45,12 @@ function SortableRow({
     isDragging: boolean;
   }) => ReactNode;
 }) {
-  const {
-    setNodeRef,
-    setActivatorNodeRef,
-    listeners,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id });
+  const { setNodeRef, setActivatorNodeRef, listeners, transform, transition, isDragging } =
+    useSortable({ id });
   return (
-    <>{children({ setNodeRef, setActivatorNodeRef, listeners, transform, transition, isDragging })}</>
+    <>
+      {children({ setNodeRef, setActivatorNodeRef, listeners, transform, transition, isDragging })}
+    </>
   );
 }
 
@@ -69,7 +61,16 @@ const DEFAULT_EXERCISE: Omit<RoutineExercise, 'exerciseId'> = {
 };
 
 const EMOJI_OPTIONS = ['💪', '🏋️', '🦵', '⚡', '🔥', '🎯', '💎', '🏃', '🧘', '👊', '🦾', '📋'];
-const COLOR_OPTIONS = ['#FF6B6B', '#4ECDC4', '#FFE66D', '#A78BFA', '#F97316', '#22C55E', '#3B82F6', '#EC4899'];
+const COLOR_OPTIONS = [
+  '#FF6B6B',
+  '#4ECDC4',
+  '#FFE66D',
+  '#A78BFA',
+  '#F97316',
+  '#22C55E',
+  '#3B82F6',
+  '#EC4899',
+];
 
 function SwapPicker({
   alternatives,
@@ -89,8 +90,22 @@ function SwapPicker({
       <div className={styles.swapPicker}>
         <div className={styles.swapPickerHeader}>
           <span className={styles.swapPickerTitle}>{t('noAlternatives')}</span>
-          <button type="button" className={styles.swapPickerClose} onClick={onClose} aria-label={t('close')}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <button
+            type="button"
+            className={styles.swapPickerClose}
+            onClick={onClose}
+            aria-label={t('close')}
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
             </svg>
@@ -103,8 +118,22 @@ function SwapPicker({
     <div className={styles.swapPicker}>
       <div className={styles.swapPickerHeader}>
         <span className={styles.swapPickerTitle}>{t('replaceWithAlternative')}</span>
-        <button type="button" className={styles.swapPickerClose} onClick={onClose} aria-label={t('close')}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <button
+          type="button"
+          className={styles.swapPickerClose}
+          onClick={onClose}
+          aria-label={t('close')}
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <line x1="18" y1="6" x2="6" y2="18" />
             <line x1="6" y1="6" x2="18" y2="18" />
           </svg>
@@ -119,7 +148,9 @@ function SwapPicker({
             onClick={() => onSelect(alt.id)}
           >
             <div className={styles.swapOptionInfo}>
-              <span className={styles.swapOptionName}>{getExerciseLocalized(alt, locale).name}</span>
+              <span className={styles.swapOptionName}>
+                {getExerciseLocalized(alt, locale).name}
+              </span>
               <span className={styles.swapOptionMeta}>
                 {alt.category} · {alt.equipment}
                 {alt.referenceUrl && (
@@ -138,7 +169,16 @@ function SwapPicker({
                 )}
               </span>
             </div>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <polyline points="9 18 15 12 9 6" />
             </svg>
           </button>
@@ -284,7 +324,9 @@ export default function EditRoutinePage() {
   const filteredCatalog = catalogSearch.trim()
     ? exerciseCatalog.filter(
         (ex) =>
-          getExerciseLocalized(ex, locale).name.toLowerCase().includes(catalogSearch.toLowerCase()) ||
+          getExerciseLocalized(ex, locale)
+            .name.toLowerCase()
+            .includes(catalogSearch.toLowerCase()) ||
           ex.id.toLowerCase().includes(catalogSearch.toLowerCase())
       )
     : exerciseCatalog.slice(0, 50);
@@ -402,7 +444,14 @@ export default function EditRoutinePage() {
                   const meta = getExerciseById(ex.exerciseId);
                   return (
                     <SortableRow key={`${ex.exerciseId}-${index}`} id={String(index)}>
-                      {({ setNodeRef, setActivatorNodeRef, listeners, transform, transition, isDragging }) => (
+                      {({
+                        setNodeRef,
+                        setActivatorNodeRef,
+                        listeners,
+                        transform,
+                        transition,
+                        isDragging,
+                      }) => (
                         <li
                           ref={setNodeRef}
                           style={{
@@ -427,7 +476,16 @@ export default function EditRoutinePage() {
                               title={t('dragToReorder')}
                               {...listeners}
                             >
-                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <svg
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              >
                                 <circle cx="9" cy="5" r="1" />
                                 <circle cx="9" cy="12" r="1" />
                                 <circle cx="9" cy="19" r="1" />
@@ -450,7 +508,16 @@ export default function EditRoutinePage() {
                                 onClick={(e) => e.stopPropagation()}
                               >
                                 {t('howToPerform')}
-                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <svg
+                                  width="10"
+                                  height="10"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2.5"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                >
                                   <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
                                   <polyline points="15 3 21 3 21 9" />
                                   <line x1="10" y1="14" x2="21" y2="3" />
@@ -470,34 +537,52 @@ export default function EditRoutinePage() {
                           )}
 
                           <div className={styles.rowActions}>
-                    <button
-                      type="button"
-                      className={styles.actionBtn}
-                      onClick={() => setSwapIndex(swapIndex === index ? null : index)}
-                      aria-label={t('replaceWithAlternative')}
-                      title={t('replaceWithAlternative')}
-                    >
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="17 1 21 5 17 9" />
-                        <path d="M3 11V9a4 4 0 0 1 4-4h14" />
-                        <polyline points="7 23 3 19 7 15" />
-                        <path d="M21 13v2a4 4 0 0 1-4 4H3" />
-                      </svg>
-                    </button>
-                    <button
-                      type="button"
-                      className={`${styles.actionBtn} ${styles.actionBtnDelete}`}
-                      onClick={() => removeExercise(index)}
-                      aria-label={t('removeExercise')}
-                      title={t('removeExercise')}
-                    >
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="3 6 5 6 21 6" />
-                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                        <line x1="10" y1="11" x2="10" y2="17" />
-                        <line x1="14" y1="11" x2="14" y2="17" />
-                      </svg>
-                    </button>
+                            <button
+                              type="button"
+                              className={styles.actionBtn}
+                              onClick={() => setSwapIndex(swapIndex === index ? null : index)}
+                              aria-label={t('replaceWithAlternative')}
+                              title={t('replaceWithAlternative')}
+                            >
+                              <svg
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              >
+                                <polyline points="17 1 21 5 17 9" />
+                                <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+                                <polyline points="7 23 3 19 7 15" />
+                                <path d="M21 13v2a4 4 0 0 1-4 4H3" />
+                              </svg>
+                            </button>
+                            <button
+                              type="button"
+                              className={`${styles.actionBtn} ${styles.actionBtnDelete}`}
+                              onClick={() => removeExercise(index)}
+                              aria-label={t('removeExercise')}
+                              title={t('removeExercise')}
+                            >
+                              <svg
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              >
+                                <polyline points="3 6 5 6 21 6" />
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                <line x1="10" y1="11" x2="10" y2="17" />
+                                <line x1="14" y1="11" x2="14" y2="17" />
+                              </svg>
+                            </button>
                           </div>
 
                           <div className={styles.controls}>
@@ -546,7 +631,11 @@ export default function EditRoutinePage() {
                                 type="button"
                                 className={styles.controlBtn}
                                 onClick={() =>
-                                  updateExercise(index, 'restTimeSeconds', Math.max(0, ex.restTimeSeconds - 15))
+                                  updateExercise(
+                                    index,
+                                    'restTimeSeconds',
+                                    Math.max(0, ex.restTimeSeconds - 15)
+                                  )
                                 }
                                 disabled={ex.restTimeSeconds < 15}
                                 aria-label={t('decreaseRest')}
@@ -580,7 +669,9 @@ export default function EditRoutinePage() {
 
         <div className={styles.footer}>
           {saveStatus === 'success' && (
-            <p className={styles.saveStatusSuccess} role="status">{t('routineSaved')}</p>
+            <p className={styles.saveStatusSuccess} role="status">
+              {t('routineSaved')}
+            </p>
           )}
           {saveStatus === 'error' && (
             <p className={styles.saveStatusError} role="alert">
@@ -629,7 +720,9 @@ export default function EditRoutinePage() {
                     onClick={() => addExercise(ex.id)}
                     disabled={exercises.some((e) => e.exerciseId === ex.id)}
                   >
-                    <span className={styles.catalogName}>{getExerciseLocalized(ex, locale).name}</span>
+                    <span className={styles.catalogName}>
+                      {getExerciseLocalized(ex, locale).name}
+                    </span>
                     <span className={styles.catalogMeta}>
                       {ex.category} · {ex.equipment}
                     </span>

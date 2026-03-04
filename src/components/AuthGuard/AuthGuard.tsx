@@ -10,7 +10,9 @@ export default function AuthGuard({ children }: { children: ReactNode }) {
   const { token, isLoading } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
-  const isPublic = PUBLIC_PATHS.some((p) => pathname.startsWith(p === '/register' ? '/register' : p));
+  const isPublic = PUBLIC_PATHS.some((p) =>
+    pathname.startsWith(p === '/register' ? '/register' : p)
+  );
 
   useEffect(() => {
     if (isLoading) return;

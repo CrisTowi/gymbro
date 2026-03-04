@@ -4,11 +4,7 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useLocale } from '@/context/LocaleContext';
 import { WeeklyPlan as WeeklyPlanType, Routine, Exercise } from '@/types';
-import {
-  generateWeeklyPlanFromDescription,
-  updateWeeklyPlan,
-  fetchExercises,
-} from '@/lib/api';
+import { generateWeeklyPlanFromDescription, updateWeeklyPlan, fetchExercises } from '@/lib/api';
 import styles from './AIRoutineGenerator.module.css';
 
 const DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
@@ -17,7 +13,7 @@ const DAY_LABEL = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Satu
 
 interface AIRoutineGeneratorProps {
   routines: Routine[];
-  currentPlan: WeeklyPlanType;
+  currentPlan?: WeeklyPlanType;
   onPlanSaved: () => void;
 }
 
@@ -25,7 +21,7 @@ type Step = 'input' | 'preview';
 
 export default function AIRoutineGenerator({
   routines,
-  currentPlan,
+  currentPlan: _currentPlan,
   onPlanSaved,
 }: AIRoutineGeneratorProps) {
   const t = useTranslations('aiRoutine');
@@ -69,7 +65,10 @@ export default function AIRoutineGenerator({
       if (allExercises) {
         setExerciseMap(
           Object.fromEntries(
-            allExercises.map((e) => [(e as unknown as { exerciseId: string }).exerciseId ?? e.id, e])
+            allExercises.map((e) => [
+              (e as unknown as { exerciseId: string }).exerciseId ?? e.id,
+              e,
+            ])
           )
         );
       }
@@ -151,7 +150,12 @@ export default function AIRoutineGenerator({
       </button>
 
       {open && (
-        <div className={styles.overlay} role="dialog" aria-modal="true" aria-labelledby="ai-routine-title">
+        <div
+          className={styles.overlay}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="ai-routine-title"
+        >
           <div className={styles.modal}>
             <div className={styles.header}>
               <h2 id="ai-routine-title" className={styles.title}>
@@ -163,7 +167,14 @@ export default function AIRoutineGenerator({
                 onClick={handleClose}
                 aria-label={t('close')}
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
                   <line x1="18" y1="6" x2="6" y2="18" />
                   <line x1="6" y1="6" x2="18" y2="18" />
                 </svg>
@@ -237,9 +248,7 @@ export default function AIRoutineGenerator({
                   {/* Day editor */}
                   {editingDay && (
                     <div className={styles.dayEditor}>
-                      <p className={styles.dayEditorTitle}>
-                        {DAY_LABEL[DAYS.indexOf(editingDay)]}
-                      </p>
+                      <p className={styles.dayEditorTitle}>{DAY_LABEL[DAYS.indexOf(editingDay)]}</p>
                       <div className={styles.dayEditorOptions}>
                         <button
                           type="button"
@@ -277,7 +286,10 @@ export default function AIRoutineGenerator({
                           <div className={styles.routineCardMeta}>
                             <span className={styles.routineCardIcon}>{routine.icon}</span>
                             <div>
-                              <span className={styles.routineCardName} style={{ color: routine.color }}>
+                              <span
+                                className={styles.routineCardName}
+                                style={{ color: routine.color }}
+                              >
                                 {routine.name}
                               </span>
                               <span className={styles.routineCardDays}>
@@ -305,7 +317,8 @@ export default function AIRoutineGenerator({
                                   </span>
                                 </div>
                                 <span className={styles.exerciseSets}>
-                                  {ex.sets} <span className={styles.exerciseSetsX}>×</span> {ex.reps}
+                                  {ex.sets} <span className={styles.exerciseSetsX}>×</span>{' '}
+                                  {ex.reps}
                                 </span>
                               </div>
                             );

@@ -85,11 +85,7 @@ export default function ProfilePage() {
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>{t('yourInfo')}</h2>
             {!isEditing ? (
-              <button
-                type="button"
-                className={styles.editButton}
-                onClick={startEditing}
-              >
+              <button type="button" className={styles.editButton} onClick={startEditing}>
                 {t('editInfo')}
               </button>
             ) : null}
@@ -117,7 +113,7 @@ export default function ProfilePage() {
                     <span className={styles.value}>{user.weight} kg</span>
                   </div>
                 )}
-                {(user.goal != null && user.goal !== '') && (
+                {user.goal != null && user.goal !== '' && (
                   <div className={styles.row}>
                     <span className={styles.label}>{t('goal')}</span>
                     <span className={styles.value}>{user.goal}</span>

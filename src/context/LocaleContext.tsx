@@ -1,13 +1,6 @@
 'use client';
 
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-  type ReactNode,
-} from 'react';
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
 import { NextIntlClientProvider } from 'next-intl';
 import { useAuth } from '@/context/AuthContext';
 import { updateMe } from '@/lib/api';

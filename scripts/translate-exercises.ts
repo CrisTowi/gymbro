@@ -86,9 +86,9 @@ async function main(): Promise<void> {
     const instrEs =
       es?.instructions && es.instructions.length === ex.instructions.en.length
         ? es.instructions
-        : (ex.instructions.es?.length === ex.instructions.en.length
-            ? ex.instructions.es
-            : ex.instructions.en.map((s) => `[ES] ${s}`));
+        : ex.instructions.es?.length === ex.instructions.en.length
+          ? ex.instructions.es
+          : ex.instructions.en.map((s) => `[ES] ${s}`);
 
     const entry: ExerciseI18n = {
       id: ex.id,
@@ -108,11 +108,7 @@ async function main(): Promise<void> {
     fs.mkdirSync(OUTPUT_DIR, { recursive: true });
   }
 
-  fs.writeFileSync(
-    OUTPUT_FILE,
-    JSON.stringify(result, null, 2),
-    'utf8'
-  );
+  fs.writeFileSync(OUTPUT_FILE, JSON.stringify(result, null, 2), 'utf8');
 
   console.log(`\nDone. Written to ${OUTPUT_FILE}`);
 }

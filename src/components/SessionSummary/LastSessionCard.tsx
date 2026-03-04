@@ -31,13 +31,8 @@ export default function LastSessionCard({ session, routine }: LastSessionCardPro
     (sum, ex) => sum + ex.sets.filter((s) => s.completed).length,
     0
   );
-  const totalSets = session.exercises.reduce(
-    (sum, ex) => sum + ex.sets.length,
-    0
-  );
-  const exerciseCount = session.exercises.filter(
-    (ex) => ex.sets.some((s) => s.completed)
-  ).length;
+  const totalSets = session.exercises.reduce((sum, ex) => sum + ex.sets.length, 0);
+  const exerciseCount = session.exercises.filter((ex) => ex.sets.some((s) => s.completed)).length;
 
   return (
     <div className={styles.card}>
@@ -48,16 +43,17 @@ export default function LastSessionCard({ session, routine }: LastSessionCardPro
 
       <div
         className={styles.routineBadge}
-        style={{ backgroundColor: routine?.color ? `${routine.color}22` : undefined, color: routine?.color }}
+        style={{
+          backgroundColor: routine?.color ? `${routine.color}22` : undefined,
+          color: routine?.color,
+        }}
       >
         {routine ? `${routine.icon} ${routine.name}` : session.routineId}
       </div>
 
       <div className={styles.stats}>
         <div className={styles.stat}>
-          <span className={styles.statValue}>
-            {session.totalWeightLbs.toLocaleString()} lbs
-          </span>
+          <span className={styles.statValue}>{session.totalWeightLbs.toLocaleString()} lbs</span>
           <span className={styles.statLabel}>{t('totalLifted')}</span>
         </div>
         <div className={styles.stat}>
@@ -84,13 +80,12 @@ export default function LastSessionCard({ session, routine }: LastSessionCardPro
             const exercise = getExerciseById(ex.exerciseId);
             const bestSet = ex.sets
               .filter((s) => s.completed)
-              .reduce(
-                (best, s) => (s.weightLbs > best.weightLbs ? s : best),
-                ex.sets[0]
-              );
+              .reduce((best, s) => (s.weightLbs > best.weightLbs ? s : best), ex.sets[0]);
             return (
               <div key={ex.exerciseId} className={styles.exerciseRow}>
-                <span className={styles.exerciseName}>{exercise ? getExerciseLocalized(exercise, locale).name : ex.exerciseId}</span>
+                <span className={styles.exerciseName}>
+                  {exercise ? getExerciseLocalized(exercise, locale).name : ex.exerciseId}
+                </span>
                 <span className={styles.exerciseDetail}>
                   {bestSet?.weightLbs || 0} lbs x {bestSet?.reps || 0}
                 </span>

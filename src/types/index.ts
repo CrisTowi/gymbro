@@ -41,7 +41,6 @@ export type Equipment =
   | 'smith-machine'
   | 'resistance-band';
 
-
 export interface RoutineExercise {
   exerciseId: string;
   sets: number;
@@ -128,6 +127,5 @@ export interface ExerciseHistory {
     weightLbs: number;
   };
 }
-
 
 export type TimeRange = 'this-month' | 'this-year' | 'all-time' | 'yearly';

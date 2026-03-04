@@ -41,6 +41,8 @@ export default function RestTimer({
   onResume,
   nextExercise,
 }: RestTimerProps) {
+  const t = useTranslations('restTimer');
+
   // Remove focus from any input when timer opens to avoid iOS "Undo typing" prompt when moving the phone
   useEffect(() => {
     (document.activeElement as HTMLElement)?.blur?.();
@@ -64,7 +66,11 @@ export default function RestTimer({
   useEffect(() => {
     let sentinel: WakeLockSentinel | null = null;
     const nav = typeof navigator !== 'undefined' ? navigator : null;
-    const wakeLock = nav && 'wakeLock' in nav ? (nav as Navigator & { wakeLock: { request(type: 'screen'): Promise<WakeLockSentinel> } }).wakeLock : null;
+    const wakeLock =
+      nav && 'wakeLock' in nav
+        ? (nav as Navigator & { wakeLock: { request(type: 'screen'): Promise<WakeLockSentinel> } })
+            .wakeLock
+        : null;
 
     async function requestWakeLock() {
       if (wakeLock) {
@@ -95,7 +101,6 @@ export default function RestTimer({
 
   if (totalSeconds === 0) return null;
 
-  const t = useTranslations('restTimer');
   const circumference = 2 * Math.PI * 54;
   const strokeDashoffset = circumference * (1 - progress);
   const isAlmostDone = remainingSeconds <= 10 && remainingSeconds > 0;
@@ -132,7 +137,9 @@ export default function RestTimer({
             <span className={`${styles.time} ${isAlmostDone ? styles.timePulse : ''}`}>
               {formatTime(remainingSeconds)}
             </span>
-            <span className={styles.totalTime}>{t('of')} {formatTime(totalSeconds)}</span>
+            <span className={styles.totalTime}>
+              {t('of')} {formatTime(totalSeconds)}
+            </span>
           </div>
         </div>
 
@@ -178,14 +185,23 @@ export default function RestTimer({
                 className={styles.nextExerciseHowTo}
               >
                 {t('howToPerform')}
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
                   <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
                   <polyline points="15 3 21 3 21 9" />
                   <line x1="10" y1="14" x2="21" y2="3" />
                 </svg>
               </a>
             )}
-            {(nextExercise.nextSetWeightLbs != null && nextExercise.nextSetWeightLbs > 0) && (
+            {nextExercise.nextSetWeightLbs != null && nextExercise.nextSetWeightLbs > 0 && (
               <p className={styles.nextSetRecommendation}>
                 {nextExercise.nextSetReps != null && nextExercise.nextSetReps > 0
                   ? t('nextSetRecommendationWithReps', {
@@ -207,7 +223,16 @@ export default function RestTimer({
 
         <button className={styles.skipButton} onClick={onSkip}>
           {t('skipRest')}
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <polygon points="5,4 15,12 5,20" />
             <line x1="19" y1="5" x2="19" y2="19" />
           </svg>

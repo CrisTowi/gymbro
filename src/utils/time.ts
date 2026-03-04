@@ -19,15 +19,7 @@ export const formatDuration = (seconds: number): string => {
 };
 
 export const getDayOfWeek = (date: Date = new Date()): string => {
-  const days = [
-    'sunday',
-    'monday',
-    'tuesday',
-    'wednesday',
-    'thursday',
-    'friday',
-    'saturday',
-  ];
+  const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
   return days[date.getDay()];
 };
 

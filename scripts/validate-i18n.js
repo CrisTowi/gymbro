@@ -47,7 +47,9 @@ function collectUsedKeys(dir, acc = { used: new Map() }) {
     const content = fs.readFileSync(full, 'utf8');
     // Map variable name -> namespace: const t = useTranslations('nav') or const tSettings = useTranslations('settings')
     const varToNs = new Map();
-    const assignMatches = content.matchAll(/(\w+)\s*=\s*useTranslations\s*\(\s*['"]([^'"]+)['"]\s*\)/g);
+    const assignMatches = content.matchAll(
+      /(\w+)\s*=\s*useTranslations\s*\(\s*['"]([^'"]+)['"]\s*\)/g
+    );
     for (const m of assignMatches) {
       varToNs.set(m[1], m[2]);
     }

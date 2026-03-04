@@ -10,8 +10,7 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: 'GymBro - Your Personal Workout Companion',
-  description:
-    'Track your workouts, monitor progress, and crush your fitness goals with GymBro.',
+  description: 'Track your workouts, monitor progress, and crush your fitness goals with GymBro.',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
@@ -29,11 +28,7 @@ export const viewport: Viewport = {
   themeColor: '#0a0a0f',
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>

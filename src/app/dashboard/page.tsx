@@ -68,10 +68,7 @@ export default function DashboardPage() {
   useEffect(() => {
     async function load() {
       try {
-        const [stats, records] = await Promise.all([
-          fetchOverview(),
-          fetchPersonalRecords(),
-        ]);
+        const [stats, records] = await Promise.all([fetchOverview(), fetchPersonalRecords()]);
         setOverallStats(stats);
         setPersonalRecords(records);
       } catch (err) {
@@ -107,18 +104,13 @@ export default function DashboardPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mounted, exercisesToFetch]);
 
-  const filterByTimeRange = (
-    data: ExerciseHistoryPoint[]
-  ) => {
+  const filterByTimeRange = (data: ExerciseHistoryPoint[]) => {
     const now = new Date();
     return data.filter((d) => {
       const date = new Date(d.date);
       switch (selectedTimeRange) {
         case 'this-month':
-          return (
-            date.getMonth() === now.getMonth() &&
-            date.getFullYear() === now.getFullYear()
-          );
+          return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
         case 'this-year':
           return date.getFullYear() === now.getFullYear();
         case 'all-time':
@@ -148,9 +140,7 @@ export default function DashboardPage() {
       <div className={styles.content}>
         <div className={styles.overviewGrid}>
           <div className={styles.overviewCard}>
-            <span className={styles.overviewValue}>
-              {overallStats.totalSessions}
-            </span>
+            <span className={styles.overviewValue}>{overallStats.totalSessions}</span>
             <span className={styles.overviewLabel}>{t('totalSessions')}</span>
           </div>
           <div className={styles.overviewCard}>
@@ -163,15 +153,11 @@ export default function DashboardPage() {
             </span>
           </div>
           <div className={styles.overviewCard}>
-            <span className={styles.overviewValue}>
-              {overallStats.totalExercises}
-            </span>
+            <span className={styles.overviewValue}>{overallStats.totalExercises}</span>
             <span className={styles.overviewLabel}>{t('exercisesTracked')}</span>
           </div>
           <div className={styles.overviewCard}>
-            <span className={styles.overviewValue}>
-              {overallStats.personalRecordCount}
-            </span>
+            <span className={styles.overviewValue}>{overallStats.personalRecordCount}</span>
             <span className={styles.overviewLabel}>{t('personalRecords')}</span>
           </div>
         </div>
@@ -222,11 +208,7 @@ export default function DashboardPage() {
                     <h3 className={styles.chartTitle}>{exerciseName}</h3>
                     <span className={styles.chartCategory}>{exercise.category}</span>
                   </div>
-                  <ProgressChart
-                    data={history}
-                    exerciseName={exerciseName}
-                    showVolume={true}
-                  />
+                  <ProgressChart data={history} exerciseName={exerciseName} showVolume={true} />
                   {personalRecords[exerciseId] && (
                     <div className={styles.prBadge}>
                       {t('pr')}: {personalRecords[exerciseId].maxWeight} lbs (

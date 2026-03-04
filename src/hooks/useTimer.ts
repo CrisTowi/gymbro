@@ -28,7 +28,9 @@ export function useTimer(onComplete?: () => void): UseTimerReturn {
   const onCompleteRef = useRef(onComplete);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  onCompleteRef.current = onComplete;
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+  });
 
   const clearTimer = useCallback(() => {
     if (intervalRef.current) {
@@ -59,6 +61,8 @@ export function useTimer(onComplete?: () => void): UseTimerReturn {
     }
 
     return clearTimer;
+    // remainingSeconds intentionally omitted: including it would restart the interval on every tick
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isRunning, clearTimer, tick]);
 
   // Recalculate when the tab becomes visible again
@@ -115,9 +119,7 @@ export function useTimer(onComplete?: () => void): UseTimerReturn {
   const addTime = useCallback((seconds: number) => {
     endTimeRef.current += seconds * 1000;
     setTotalSeconds((prev) => prev + seconds);
-    setRemainingSeconds(
-      Math.round((endTimeRef.current - Date.now()) / 1000)
-    );
+    setRemainingSeconds(Math.round((endTimeRef.current - Date.now()) / 1000));
   }, []);
 
   const reduceTime = useCallback((seconds: number) => {
@@ -133,8 +135,7 @@ export function useTimer(onComplete?: () => void): UseTimerReturn {
     }
   }, []);
 
-  const progress =
-    totalSeconds > 0 ? (totalSeconds - remainingSeconds) / totalSeconds : 0;
+  const progress = totalSeconds > 0 ? (totalSeconds - remainingSeconds) / totalSeconds : 0;
 
   return {
     remainingSeconds,

@@ -106,7 +106,16 @@ export default function WorkoutExercise({
             disabled={!canMoveUp}
             aria-label="Move exercise up"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <polyline points="18 15 12 9 6 15" />
             </svg>
           </button>
@@ -116,7 +125,16 @@ export default function WorkoutExercise({
             disabled={!canMoveDown}
             aria-label="Move exercise down"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <polyline points="6 9 12 15 18 9" />
             </svg>
           </button>
@@ -141,13 +159,31 @@ export default function WorkoutExercise({
               rel="noopener noreferrer"
               className={styles.referenceLink}
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <circle cx="12" cy="12" r="10" />
                 <line x1="12" y1="16" x2="12" y2="12" />
                 <line x1="12" y1="8" x2="12.01" y2="8" />
               </svg>
               How to perform this exercise
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
                 <polyline points="15 3 21 3 21 9" />
                 <line x1="10" y1="14" x2="21" y2="3" />
@@ -220,19 +256,11 @@ function SetRow({
   onRemove: () => void;
 }) {
   const t = useTranslations('workoutExercise');
-  const suggestedWeight = recommendation?.weightLbs
-    ?? previousCompletedSet?.weightLbs
-    ?? 0;
-  const suggestedReps = recommendation?.reps
-    ?? previousCompletedSet?.reps
-    ?? targetReps;
+  const suggestedWeight = recommendation?.weightLbs ?? previousCompletedSet?.weightLbs ?? 0;
+  const suggestedReps = recommendation?.reps ?? previousCompletedSet?.reps ?? targetReps;
 
-  const [weight, setWeight] = useState(
-    set.weightLbs > 0 ? set.weightLbs : suggestedWeight
-  );
-  const [reps, setReps] = useState(
-    set.reps > 0 ? set.reps : suggestedReps
-  );
+  const [weight, setWeight] = useState(set.weightLbs > 0 ? set.weightLbs : suggestedWeight);
+  const [reps, setReps] = useState(set.reps > 0 ? set.reps : suggestedReps);
 
   // When the previous set is completed, default this set to those values (only if not yet edited)
   useEffect(() => {
@@ -240,7 +268,8 @@ function SetRow({
     setReps(set.reps > 0 ? set.reps : suggestedReps);
   }, [suggestedWeight, suggestedReps]);
 
-  const isUsingRecommendation = hasRecommendations && !set.completed && weight === suggestedWeight && suggestedWeight > 0;
+  const isUsingRecommendation =
+    hasRecommendations && !set.completed && weight === suggestedWeight && suggestedWeight > 0;
 
   const handleComplete = () => {
     onComplete(weight, reps);
@@ -274,9 +303,7 @@ function SetRow({
           className={`${styles.input} ${isUsingRecommendation ? styles.inputRecommended : ''}`}
           aria-label={`Set ${index + 1} weight`}
         />
-        {isUsingRecommendation && (
-          <span className={styles.recommendedHint}>rec</span>
-        )}
+        {isUsingRecommendation && <span className={styles.recommendedHint}>rec</span>}
       </div>
 
       <div className={styles.repsInput}>
@@ -314,7 +341,16 @@ function SetRow({
               disabled={weight <= 0 || reps <= 0}
               aria-label={`Complete set ${index + 1}`}
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <polyline points="20 6 9 17 4 12" />
               </svg>
             </button>
@@ -324,7 +360,16 @@ function SetRow({
               aria-label={`Remove set ${index + 1} (skip)`}
               title="Remove this set"
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <line x1="18" y1="6" x2="6" y2="18" />
                 <line x1="6" y1="6" x2="18" y2="18" />
               </svg>
@@ -336,7 +381,16 @@ function SetRow({
             onClick={onRemove}
             aria-label={`Remove set ${index + 1}`}
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
             </svg>

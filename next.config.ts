@@ -1,9 +1,9 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  transpilePackages: ["next-intl"],
+  transpilePackages: ['next-intl'],
   experimental: {
-    optimizePackageImports: ["next-intl"],
+    optimizePackageImports: ['next-intl'],
   },
 };
 

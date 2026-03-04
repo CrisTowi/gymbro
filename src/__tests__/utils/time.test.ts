@@ -47,8 +47,13 @@ describe('time utils', () => {
     it('returns a string for current date', () => {
       const result = getDayOfWeek();
       const validDays = [
-        'sunday', 'monday', 'tuesday', 'wednesday',
-        'thursday', 'friday', 'saturday',
+        'sunday',
+        'monday',
+        'tuesday',
+        'wednesday',
+        'thursday',
+        'friday',
+        'saturday',
       ];
       expect(validDays).toContain(result);
     });

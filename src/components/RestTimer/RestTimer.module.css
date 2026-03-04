@@ -18,8 +18,13 @@
 }
 
 @keyframes pulseBackground {
-  0%, 100% { background: rgba(10, 10, 15, 0.95); }
-  50% { background: rgba(108, 92, 231, 0.15); }
+  0%,
+  100% {
+    background: rgba(10, 10, 15, 0.95);
+  }
+  50% {
+    background: rgba(108, 92, 231, 0.15);
+  }
 }
 
 .container {

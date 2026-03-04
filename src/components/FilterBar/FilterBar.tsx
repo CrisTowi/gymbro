@@ -57,9 +57,7 @@ export default function FilterBar({
           {TIME_RANGE_KEYS.map(({ value, key }) => (
             <button
               key={value}
-              className={`${styles.chip} ${
-                selectedTimeRange === value ? styles.chipActive : ''
-              }`}
+              className={`${styles.chip} ${selectedTimeRange === value ? styles.chipActive : ''}`}
               onClick={() => onTimeRangeChange(value)}
             >
               {t(key)}
@@ -72,9 +70,7 @@ export default function FilterBar({
         <label className={styles.label}>{t('muscleGroup')}</label>
         <div className={styles.chips}>
           <button
-            className={`${styles.chip} ${
-              selectedMuscleGroup === 'all' ? styles.chipActive : ''
-            }`}
+            className={`${styles.chip} ${selectedMuscleGroup === 'all' ? styles.chipActive : ''}`}
             onClick={() => {
               onMuscleGroupChange('all');
               onExerciseChange(null);
@@ -85,9 +81,7 @@ export default function FilterBar({
           {muscleGroups.map((group) => (
             <button
               key={group}
-              className={`${styles.chip} ${
-                selectedMuscleGroup === group ? styles.chipActive : ''
-              }`}
+              className={`${styles.chip} ${selectedMuscleGroup === group ? styles.chipActive : ''}`}
               onClick={() => {
                 onMuscleGroupChange(group);
                 onExerciseChange(null);
@@ -105,9 +99,7 @@ export default function FilterBar({
           <select
             className={styles.select}
             value={selectedExerciseId || ''}
-            onChange={(e) =>
-              onExerciseChange(e.target.value || null)
-            }
+            onChange={(e) => onExerciseChange(e.target.value || null)}
           >
             <option value="">{t('allExercises')}</option>
             {exercises.map((ex) => (

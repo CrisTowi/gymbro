@@ -166,7 +166,10 @@ function RegisterForm() {
         </form>
 
         <p className={styles.footer}>
-          {t('alreadyHaveAccount')} <Link href="/login" className={styles.link}>{t('signIn')}</Link>
+          {t('alreadyHaveAccount')}{' '}
+          <Link href="/login" className={styles.link}>
+            {t('signIn')}
+          </Link>
         </p>
       </div>
     </div>

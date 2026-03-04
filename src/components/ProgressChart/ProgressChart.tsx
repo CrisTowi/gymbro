@@ -25,7 +25,11 @@ interface ProgressChartProps {
   showVolume?: boolean;
 }
 
-function CustomTooltip({ active, payload, label }: {
+function CustomTooltip({
+  active,
+  payload,
+  label,
+}: {
   active?: boolean;
   payload?: Array<{ value: number; dataKey: string; color: string }>;
   label?: string;
@@ -43,8 +47,8 @@ function CustomTooltip({ active, payload, label }: {
       </p>
       {payload.map((item, index) => (
         <p key={index} className={styles.tooltipValue} style={{ color: item.color }}>
-          {item.dataKey === 'maxWeight' ? 'Max Weight' : 'Volume'}:{' '}
-          {item.value.toLocaleString()} lbs ({lbsToKg(item.value)} kg)
+          {item.dataKey === 'maxWeight' ? 'Max Weight' : 'Volume'}: {item.value.toLocaleString()}{' '}
+          lbs ({lbsToKg(item.value)} kg)
         </p>
       ))}
     </div>
@@ -90,9 +94,7 @@ export default function ProgressChart({
             tick={{ fill: 'var(--color-text-muted)' }}
           />
           <Tooltip content={<CustomTooltip />} />
-          <Legend
-            wrapperStyle={{ fontSize: '12px', color: 'var(--color-text-muted)' }}
-          />
+          <Legend wrapperStyle={{ fontSize: '12px', color: 'var(--color-text-muted)' }} />
           <Line
             type="monotone"
             dataKey="maxWeight"

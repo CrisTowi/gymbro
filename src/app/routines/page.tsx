@@ -5,12 +5,7 @@ import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { Routine, WeeklyPlan } from '@/types';
 import { getDayOfWeek } from '@/utils/time';
-import {
-  fetchRoutines,
-  fetchWeeklyPlan,
-  updateWeeklyPlan,
-  deleteRoutine,
-} from '@/lib/api';
+import { fetchRoutines, fetchWeeklyPlan, updateWeeklyPlan, deleteRoutine } from '@/lib/api';
 import styles from './page.module.css';
 
 export default function RoutinesPage() {
@@ -23,10 +18,7 @@ export default function RoutinesPage() {
 
   const loadData = useCallback(async () => {
     try {
-      const [list, plan] = await Promise.all([
-        fetchRoutines(),
-        fetchWeeklyPlan(),
-      ]);
+      const [list, plan] = await Promise.all([fetchRoutines(), fetchWeeklyPlan()]);
       setRoutines(list);
       setWeeklyPlan(plan);
     } catch (err) {
@@ -64,11 +56,9 @@ export default function RoutinesPage() {
         await deleteRoutine(routine.id);
         const nextPlan = weeklyPlan
           ? Object.fromEntries(
-              Object.entries(weeklyPlan).map(([day, id]) => [
-                day,
-                id === routine.id ? null : id,
-              ])
-            ) : null;
+              Object.entries(weeklyPlan).map(([day, id]) => [day, id === routine.id ? null : id])
+            )
+          : null;
         if (nextPlan) {
           await updateWeeklyPlan(nextPlan);
           setWeeklyPlan(nextPlan);

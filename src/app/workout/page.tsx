@@ -96,7 +96,7 @@ function WorkoutContent() {
     nextSetWeightLbs?: number;
     nextSetReps?: number;
   } | null>(null);
-  const [currentRestTime, setCurrentRestTime] = useState(120);
+  const [_currentRestTime, setCurrentRestTime] = useState(120);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [showConfirmEnd, setShowConfirmEnd] = useState(false);
   const [isPracticeMode, setIsPracticeMode] = useState(false);
@@ -104,7 +104,9 @@ function WorkoutContent() {
   const shouldFinishAfterLastSetRef = useRef(false);
 
   // Pre-fetched data for each exercise
-  const [lastPerfMap, setLastPerfMap] = useState<Record<string, LastExercisePerformance | null>>({});
+  const [lastPerfMap, setLastPerfMap] = useState<Record<string, LastExercisePerformance | null>>(
+    {}
+  );
   const [recSetsMap, setRecSetsMap] = useState<Record<string, RecommendedSet[]>>({});
 
   const { permission, requestPermission, sendNotification } = useNotification();
@@ -139,7 +141,11 @@ function WorkoutContent() {
       // Some browsers (e.g. Safari) don't support orientation lock — ignore
     });
     return () => {
-      try { screen?.orientation?.unlock?.(); } catch { /* ignore */ }
+      try {
+        screen?.orientation?.unlock?.();
+      } catch {
+        /* ignore */
+      }
     };
   }, [session]);
 
@@ -328,9 +334,7 @@ function WorkoutContent() {
         const totalWeight = updated.exercises.reduce(
           (total, ex) =>
             total +
-            ex.sets
-              .filter((s) => s.completed)
-              .reduce((sum, s) => sum + s.weightLbs * s.reps, 0),
+            ex.sets.filter((s) => s.completed).reduce((sum, s) => sum + s.weightLbs * s.reps, 0),
           0
         );
         const withTotal = { ...updated, totalWeightLbs: totalWeight };
@@ -361,7 +365,7 @@ function WorkoutContent() {
 
       const exerciseConfig = effectiveExercises[exerciseIndex];
       const hasMoreSetsInExercise = setIndex + 1 < (exerciseConfig?.sets ?? 0);
-      const nextExerciseIndex = hasMoreSetsInExercise ? exerciseIndex : exerciseIndex + 1;
+      const _nextExerciseIndex = hasMoreSetsInExercise ? exerciseIndex : exerciseIndex + 1;
       const nextSetIndex = hasMoreSetsInExercise ? setIndex + 1 : 0;
       const isLastSetOfRoutine =
         !hasMoreSetsInExercise && exerciseIndex >= effectiveExercises.length - 1;
@@ -372,13 +376,12 @@ function WorkoutContent() {
         return;
       }
 
-      const nextExerciseId =
-        hasMoreSetsInExercise
-          ? exerciseConfig?.exerciseId
-          : effectiveExercises[exerciseIndex + 1]?.exerciseId;
+      const nextExerciseId = hasMoreSetsInExercise
+        ? exerciseConfig?.exerciseId
+        : effectiveExercises[exerciseIndex + 1]?.exerciseId;
       const nextExercise = nextExerciseId ? getExerciseById(nextExerciseId) : null;
       const localized = nextExercise ? getExerciseLocalized(nextExercise, locale) : null;
-      const nextRecSets = nextExerciseId ? recSetsMap[nextExerciseId] ?? [] : [];
+      const nextRecSets = nextExerciseId ? (recSetsMap[nextExerciseId] ?? []) : [];
       const nextRec = nextRecSets[nextSetIndex];
       setNextExercisePreview(
         localized
@@ -497,8 +500,7 @@ function WorkoutContent() {
 
       const endTime = new Date().toISOString();
       const duration = Math.floor(
-        (new Date(endTime).getTime() - new Date(sessionToUse.startTime).getTime()) /
-          1000
+        (new Date(endTime).getTime() - new Date(sessionToUse.startTime).getTime()) / 1000
       );
 
       try {
@@ -559,20 +561,23 @@ function WorkoutContent() {
     (sum, ex) => sum + ex.sets.filter((s) => s.completed).length,
     0
   );
-  const totalSets = session.exercises.reduce(
-    (sum, ex) => sum + ex.sets.length,
-    0
-  );
+  const totalSets = session.exercises.reduce((sum, ex) => sum + ex.sets.length, 0);
 
   return (
     <div className={styles.page}>
       <header className={styles.header}>
         <div className={styles.headerTop}>
-          <button
-            className={styles.backButton}
-            onClick={() => setShowConfirmEnd(true)}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <button className={styles.backButton} onClick={() => setShowConfirmEnd(true)}>
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <line x1="19" y1="12" x2="5" y2="12" />
               <polyline points="12 19 5 12 12 5" />
             </svg>
@@ -589,9 +594,7 @@ function WorkoutContent() {
             </h1>
           </div>
 
-          <div className={styles.timerBadge}>
-            {formatDuration(elapsedSeconds)}
-          </div>
+          <div className={styles.timerBadge}>{formatDuration(elapsedSeconds)}</div>
         </div>
 
         <div className={styles.progressBar}>
@@ -636,9 +639,7 @@ function WorkoutContent() {
               onSetComplete={(setIdx, weight, reps) =>
                 handleSetComplete(index, setIdx, weight, reps)
               }
-              onUpdateSet={(setIdx, updates) =>
-                handleUpdateSet(index, setIdx, updates)
-              }
+              onUpdateSet={(setIdx, updates) => handleUpdateSet(index, setIdx, updates)}
               onAddSet={() => handleAddSet(index)}
               onRemoveSet={(setIdx) => handleRemoveSet(index, setIdx)}
               onToggleActive={() =>
@@ -686,16 +687,10 @@ function WorkoutContent() {
                 : t('setsComplete', { completed: totalCompletedSets, total: totalSets })}
             </p>
             <div className={styles.confirmButtons}>
-              <button
-                className={styles.confirmCancel}
-                onClick={() => setShowConfirmEnd(false)}
-              >
+              <button className={styles.confirmCancel} onClick={() => setShowConfirmEnd(false)}>
                 {t('keepGoing')}
               </button>
-              <button
-                className={styles.confirmEnd}
-                onClick={() => handleFinishWorkout()}
-              >
+              <button className={styles.confirmEnd} onClick={() => handleFinishWorkout()}>
                 {t('finish')}
               </button>
             </div>
@@ -711,12 +706,11 @@ function WorkoutContent() {
             <div className={styles.practiceSummaryStats}>
               <span>{session.totalWeightLbs.toLocaleString()} lbs</span>
               <span>{formatDuration(elapsedSeconds)}</span>
-              <span>{totalCompletedSets}/{totalSets} sets</span>
+              <span>
+                {totalCompletedSets}/{totalSets} sets
+              </span>
             </div>
-            <button
-              className={styles.practiceHomeButton}
-              onClick={() => router.push('/')}
-            >
+            <button className={styles.practiceHomeButton} onClick={() => router.push('/')}>
               {t('backToHome')}
             </button>
           </div>

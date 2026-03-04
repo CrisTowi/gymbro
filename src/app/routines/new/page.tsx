@@ -7,7 +7,16 @@ import { createRoutine } from '@/lib/api';
 import styles from '../[id]/edit/page.module.css';
 
 const EMOJI_OPTIONS = ['💪', '🏋️', '🦵', '⚡', '🔥', '🎯', '💎', '🏃', '🧘', '👊', '🦾', '📋'];
-const COLOR_OPTIONS = ['#FF6B6B', '#4ECDC4', '#FFE66D', '#A78BFA', '#F97316', '#22C55E', '#3B82F6', '#EC4899'];
+const COLOR_OPTIONS = [
+  '#FF6B6B',
+  '#4ECDC4',
+  '#FFE66D',
+  '#A78BFA',
+  '#F97316',
+  '#22C55E',
+  '#3B82F6',
+  '#EC4899',
+];
 
 export default function NewRoutinePage() {
   const router = useRouter();
@@ -25,7 +34,10 @@ export default function NewRoutinePage() {
       setError('Enter a name for your routine.');
       return;
     }
-    const slug = trimmed.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    const slug = trimmed
+      .toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9-]/g, '');
     if (!slug) {
       setError('Name must contain at least one letter or number.');
       return;

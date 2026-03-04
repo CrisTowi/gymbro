@@ -69,10 +69,34 @@ export default function DevTools() {
   if (!isDevMode) return null;
 
   const actions = [
-    { id: 'clear-all', label: 'Clear all data', icon: '🗑️', onConfirm: handleClearAll, destructive: true },
-    { id: 'clear-sessions', label: 'Clear sessions', icon: '📋', onConfirm: handleClearSessions, destructive: true },
-    { id: 'clear-plan', label: 'Reset weekly plan', icon: '📅', onConfirm: handleClearPlan, destructive: false },
-    { id: 'exit-dev', label: 'Exit dev mode', icon: '🚪', onConfirm: handleExitDevMode, destructive: false },
+    {
+      id: 'clear-all',
+      label: 'Clear all data',
+      icon: '🗑️',
+      onConfirm: handleClearAll,
+      destructive: true,
+    },
+    {
+      id: 'clear-sessions',
+      label: 'Clear sessions',
+      icon: '📋',
+      onConfirm: handleClearSessions,
+      destructive: true,
+    },
+    {
+      id: 'clear-plan',
+      label: 'Reset weekly plan',
+      icon: '📅',
+      onConfirm: handleClearPlan,
+      destructive: false,
+    },
+    {
+      id: 'exit-dev',
+      label: 'Exit dev mode',
+      icon: '🚪',
+      onConfirm: handleExitDevMode,
+      destructive: false,
+    },
   ];
 
   return (
@@ -80,7 +104,13 @@ export default function DevTools() {
       {toast && <div className={styles.toast}>{toast}</div>}
 
       {isOpen && (
-        <div className={styles.backdrop} onClick={() => { setIsOpen(false); setConfirmAction(null); }} />
+        <div
+          className={styles.backdrop}
+          onClick={() => {
+            setIsOpen(false);
+            setConfirmAction(null);
+          }}
+        />
       )}
 
       <div className={`${styles.menu} ${isOpen ? styles.menuOpen : ''}`}>
@@ -93,8 +123,12 @@ export default function DevTools() {
             {confirmAction === action.id ? (
               <div className={styles.confirmRow}>
                 <span className={styles.confirmText}>Are you sure?</span>
-                <button className={styles.confirmYes} onClick={action.onConfirm}>Yes</button>
-                <button className={styles.confirmNo} onClick={() => setConfirmAction(null)}>No</button>
+                <button className={styles.confirmYes} onClick={action.onConfirm}>
+                  Yes
+                </button>
+                <button className={styles.confirmNo} onClick={() => setConfirmAction(null)}>
+                  No
+                </button>
               </div>
             ) : (
               <button
@@ -117,10 +151,22 @@ export default function DevTools() {
 
       <button
         className={`${styles.fab} ${isOpen ? styles.fabOpen : ''}`}
-        onClick={() => { setIsOpen(!isOpen); setConfirmAction(null); }}
+        onClick={() => {
+          setIsOpen(!isOpen);
+          setConfirmAction(null);
+        }}
         aria-label="Toggle dev tools"
       >
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
           {isOpen ? (
             <>
               <line x1="18" y1="6" x2="6" y2="18" />

@@ -25,8 +25,7 @@ export function useLocalStorage<T>(
     (value: T | ((prev: T) => T)) => {
       try {
         setStoredValue((prev) => {
-          const valueToStore =
-            value instanceof Function ? value(prev) : value;
+          const valueToStore = value instanceof Function ? value(prev) : value;
           localStorage.setItem(key, JSON.stringify(valueToStore));
           return valueToStore;
         });

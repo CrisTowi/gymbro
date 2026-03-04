@@ -32,9 +32,7 @@ function isI18nInstructions(
 
 /** Normalize API response so Exercise always has name/description/instructions keyed by locale. */
 function normalizeExercise(raw: LegacyExercise): Exercise {
-  const name = isI18nName(raw.name)
-    ? raw.name
-    : { en: raw.name, es: raw.name };
+  const name = isI18nName(raw.name) ? raw.name : { en: raw.name, es: raw.name };
   const description = isI18nName(raw.description)
     ? raw.description
     : { en: raw.description, es: raw.description };
@@ -100,10 +98,7 @@ export async function fetchCategories(): Promise<string[]> {
   return request<string[]>('/api/exercises/categories');
 }
 
-export async function fetchAlternatives(
-  id: string,
-  exclude?: string[]
-): Promise<Exercise[]> {
+export async function fetchAlternatives(id: string, exclude?: string[]): Promise<Exercise[]> {
   const qs = exclude?.length ? `?exclude=${exclude.join(',')}` : '';
   const raw = await request<LegacyExercise[]>(`/api/exercises/${id}/alternatives${qs}`);
   return raw.map(normalizeExercise);
@@ -185,18 +180,14 @@ export async function fetchWeeklyPlan(): Promise<WeeklyPlan> {
   return request<WeeklyPlan>('/api/weekly-plan');
 }
 
-export async function updateWeeklyPlan(
-  plan: WeeklyPlan
-): Promise<WeeklyPlan> {
+export async function updateWeeklyPlan(plan: WeeklyPlan): Promise<WeeklyPlan> {
   return request<WeeklyPlan>('/api/weekly-plan', {
     method: 'PUT',
     body: JSON.stringify(plan),
   });
 }
 
-export async function generateWeeklyPlanFromDescription(
-  description: string
-): Promise<WeeklyPlan> {
+export async function generateWeeklyPlanFromDescription(description: string): Promise<WeeklyPlan> {
   return request<WeeklyPlan>('/api/weekly-plan/generate', {
     method: 'POST',
     body: JSON.stringify({ description: description.trim() }),
@@ -222,13 +213,10 @@ export async function fetchSessions(params?: {
   routineId?: string;
 }): Promise<SessionLog[]> {
   const query = new URLSearchParams();
-  if (params?.completed !== undefined)
-    query.set('completed', String(params.completed));
+  if (params?.completed !== undefined) query.set('completed', String(params.completed));
   if (params?.routineId) query.set('routineId', params.routineId);
   const qs = query.toString();
-  const data = await request<SessionResponse[]>(
-    `/api/sessions${qs ? `?${qs}` : ''}`
-  );
+  const data = await request<SessionResponse[]>(`/api/sessions${qs ? `?${qs}` : ''}`);
   return data.map(normalizeSession);
 }
 
@@ -262,10 +250,7 @@ export async function createSession(session: {
   return normalizeSession(data);
 }
 
-export async function updateSession(
-  id: string,
-  updates: Partial<SessionLog>
-): Promise<SessionLog> {
+export async function updateSession(id: string, updates: Partial<SessionLog>): Promise<SessionLog> {
   const data = await request<SessionResponse>(`/api/sessions/${id}`, {
     method: 'PUT',
     body: JSON.stringify(updates),
@@ -304,12 +289,8 @@ export interface ExerciseHistoryPoint {
   totalVolume: number;
 }
 
-export async function fetchExerciseHistory(
-  exerciseId: string
-): Promise<ExerciseHistoryPoint[]> {
-  return request<ExerciseHistoryPoint[]>(
-    `/api/stats/exercises/${exerciseId}/history`
-  );
+export async function fetchExerciseHistory(exerciseId: string): Promise<ExerciseHistoryPoint[]> {
+  return request<ExerciseHistoryPoint[]>(`/api/stats/exercises/${exerciseId}/history`);
 }
 
 export interface LastExercisePerformance {
@@ -321,9 +302,7 @@ export interface LastExercisePerformance {
 export async function fetchLastExercisePerformance(
   exerciseId: string
 ): Promise<LastExercisePerformance | null> {
-  return request<LastExercisePerformance | null>(
-    `/api/stats/exercises/${exerciseId}/last`
-  );
+  return request<LastExercisePerformance | null>(`/api/stats/exercises/${exerciseId}/last`);
 }
 
 export interface RecommendedSet {
@@ -379,7 +358,10 @@ export async function register(params: {
   });
 }
 
-export async function login(email: string, password: string): Promise<{ user: User; token: string }> {
+export async function login(
+  email: string,
+  password: string
+): Promise<{ user: User; token: string }> {
   return request<{ user: User; token: string }>('/api/auth/login', {
     method: 'POST',
     body: JSON.stringify({ email, password }),
@@ -390,7 +372,9 @@ export async function fetchMe(): Promise<User> {
   return request<User>('/api/auth/me');
 }
 
-export async function updateMe(updates: Partial<Pick<User, 'name' | 'height' | 'weight' | 'goal' | 'language'>>): Promise<User> {
+export async function updateMe(
+  updates: Partial<Pick<User, 'name' | 'height' | 'weight' | 'goal' | 'language'>>
+): Promise<User> {
   return request<User>('/api/auth/me', {
     method: 'PATCH',
     body: JSON.stringify(updates),

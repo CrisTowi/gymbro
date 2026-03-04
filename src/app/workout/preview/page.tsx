@@ -51,7 +51,10 @@ function estimateTime(exercises: ExerciseOverride[]): number {
   return totalSeconds;
 }
 
-function formatEstimate(seconds: number, t: (key: string, values?: Record<string, number>) => string): string {
+function formatEstimate(
+  seconds: number,
+  t: (key: string, values?: Record<string, number>) => string
+): string {
   const mins = Math.round(seconds / 60);
   if (mins < 60) return t('estTimeMin', { mins });
   const hours = Math.floor(mins / 60);
@@ -73,16 +76,12 @@ function SortableRow({
     isDragging: boolean;
   }) => ReactNode;
 }) {
-  const {
-    setNodeRef,
-    setActivatorNodeRef,
-    listeners,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id });
+  const { setNodeRef, setActivatorNodeRef, listeners, transform, transition, isDragging } =
+    useSortable({ id });
   return (
-    <>{children({ setNodeRef, setActivatorNodeRef, listeners, transform, transition, isDragging })}</>
+    <>
+      {children({ setNodeRef, setActivatorNodeRef, listeners, transform, transition, isDragging })}
+    </>
   );
 }
 
@@ -131,7 +130,9 @@ function PreviewContent() {
   }, [routine]);
 
   const [swapIndex, setSwapIndex] = useState<number | null>(null);
-  const [lastPerfMap, setLastPerfMap] = useState<Record<string, LastExercisePerformance | null>>({});
+  const [lastPerfMap, setLastPerfMap] = useState<Record<string, LastExercisePerformance | null>>(
+    {}
+  );
   const [dontSave, setDontSave] = useState(false);
 
   // Fetch last performance for all exercises in the routine
@@ -159,10 +160,7 @@ function PreviewContent() {
 
   const estimatedSeconds = useMemo(() => estimateTime(overrides), [overrides]);
 
-  const totalSets = useMemo(
-    () => overrides.reduce((sum, ex) => sum + ex.sets, 0),
-    [overrides]
-  );
+  const totalSets = useMemo(() => overrides.reduce((sum, ex) => sum + ex.sets, 0), [overrides]);
 
   const hasChanges = useMemo(() => {
     if (!routine) return false;
@@ -197,21 +195,20 @@ function PreviewContent() {
     []
   );
 
-  const handleSwapExercise = useCallback(
-    (index: number, newExerciseId: string) => {
-      setOverrides((prev) => {
-        const next = [...prev];
-        next[index] = { ...next[index], exerciseId: newExerciseId };
-        return next;
-      });
-      setSwapIndex(null);
-    },
-    []
-  );
+  const handleSwapExercise = useCallback((index: number, newExerciseId: string) => {
+    setOverrides((prev) => {
+      const next = [...prev];
+      next[index] = { ...next[index], exerciseId: newExerciseId };
+      return next;
+    });
+    setSwapIndex(null);
+  }, []);
 
   const removeExercise = useCallback((index: number) => {
     setOverrides((prev) => prev.filter((_, i) => i !== index));
-    setSwapIndex((current) => (current === index ? null : current != null && current > index ? current - 1 : current));
+    setSwapIndex((current) =>
+      current === index ? null : current != null && current > index ? current - 1 : current
+    );
   }, []);
 
   const sensors = useSensors(
@@ -257,10 +254,7 @@ function PreviewContent() {
 
   const handleStartWorkout = useCallback(() => {
     if (!routineId) return;
-    sessionStorage.setItem(
-      'gymbro_workout_overrides',
-      JSON.stringify(overrides)
-    );
+    sessionStorage.setItem('gymbro_workout_overrides', JSON.stringify(overrides));
     if (dontSave) {
       sessionStorage.setItem('gymbro_practice_session', '1');
     } else {
@@ -294,7 +288,16 @@ function PreviewContent() {
     <div className={styles.page}>
       <header className={styles.header}>
         <button className={styles.backBtn} onClick={() => router.push('/')}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <line x1="19" y1="12" x2="5" y2="12" />
             <polyline points="12 19 5 12 12 5" />
           </svg>
@@ -303,10 +306,7 @@ function PreviewContent() {
       </header>
 
       <div className={styles.content}>
-        <div
-          className={styles.routineHeader}
-          style={{ borderColor: routine.color }}
-        >
+        <div className={styles.routineHeader} style={{ borderColor: routine.color }}>
           <span className={styles.routineIcon}>{routine.icon}</span>
           <h1 className={styles.routineName} style={{ color: routine.color }}>
             {routine.name}
@@ -360,15 +360,21 @@ function PreviewContent() {
                 const isSwapped = defaultEx && override.exerciseId !== defaultEx.exerciseId;
                 const isModified =
                   isSwapped ||
-                  (defaultEx && (
-                    override.sets !== defaultEx.sets ||
-                    override.reps !== defaultEx.reps ||
-                    override.restTimeSeconds !== defaultEx.restTimeSeconds
-                  ));
+                  (defaultEx &&
+                    (override.sets !== defaultEx.sets ||
+                      override.reps !== defaultEx.reps ||
+                      override.restTimeSeconds !== defaultEx.restTimeSeconds));
 
                 return (
                   <SortableRow key={`${override.exerciseId}-${index}`} id={String(index)}>
-                    {({ setNodeRef, setActivatorNodeRef, listeners, transform, transition, isDragging }) => (
+                    {({
+                      setNodeRef,
+                      setActivatorNodeRef,
+                      listeners,
+                      transform,
+                      transition,
+                      isDragging,
+                    }) => (
                       <div
                         ref={setNodeRef}
                         style={{
@@ -381,7 +387,9 @@ function PreviewContent() {
                           <div className={styles.exerciseInfo}>
                             <span className={styles.exerciseIndex}>{index + 1}</span>
                             <span className={styles.exerciseName}>
-                              {exercise ? getExerciseLocalized(exercise, locale).name : override.exerciseId}
+                              {exercise
+                                ? getExerciseLocalized(exercise, locale).name
+                                : override.exerciseId}
                             </span>
                           </div>
                           <div
@@ -393,7 +401,16 @@ function PreviewContent() {
                             title={t('dragToReorder')}
                             {...listeners}
                           >
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <svg
+                              width="18"
+                              height="18"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
                               <circle cx="9" cy="5" r="1" />
                               <circle cx="9" cy="12" r="1" />
                               <circle cx="9" cy="19" r="1" />
@@ -404,38 +421,59 @@ function PreviewContent() {
                           </div>
                         </div>
                         <div className={styles.exerciseDetails}>
-                            <span className={styles.exerciseMeta}>
-                              {exercise?.category} · {exercise?.equipment}
-                              {isSwapped && defaultEx && (
-                                <span className={styles.swappedNote}>
-                                  {' '}· {t('replacesExercise', { name: (() => { const ex = getExerciseById(defaultEx.exerciseId); return ex ? getExerciseLocalized(ex, locale).name : defaultEx.exerciseId; })() })}
-                                </span>
-                              )}
-                              {!isSwapped && defaultEx?.notes && (
-                                <span className={styles.exerciseNote}> · {defaultEx.notes}</span>
-                              )}
-                            </span>
-                            {lastPerf && (
-                              <span className={styles.lastWeight}>
-                                {t('lastWeight', { weight: formatWeight(lastPerf.weightLbs, false), reps: lastPerf.reps })}
+                          <span className={styles.exerciseMeta}>
+                            {exercise?.category} · {exercise?.equipment}
+                            {isSwapped && defaultEx && (
+                              <span className={styles.swappedNote}>
+                                {' '}
+                                ·{' '}
+                                {t('replacesExercise', {
+                                  name: (() => {
+                                    const ex = getExerciseById(defaultEx.exerciseId);
+                                    return ex
+                                      ? getExerciseLocalized(ex, locale).name
+                                      : defaultEx.exerciseId;
+                                  })(),
+                                })}
                               </span>
                             )}
-                            {exercise?.referenceUrl && (
-                              <a
-                                href={exercise.referenceUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className={styles.howToLink}
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                {t('howToPerform')}
-                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                                  <polyline points="15 3 21 3 21 9" />
-                                  <line x1="10" y1="14" x2="21" y2="3" />
-                                </svg>
-                              </a>
+                            {!isSwapped && defaultEx?.notes && (
+                              <span className={styles.exerciseNote}> · {defaultEx.notes}</span>
                             )}
+                          </span>
+                          {lastPerf && (
+                            <span className={styles.lastWeight}>
+                              {t('lastWeight', {
+                                weight: formatWeight(lastPerf.weightLbs, false),
+                                reps: lastPerf.reps,
+                              })}
+                            </span>
+                          )}
+                          {exercise?.referenceUrl && (
+                            <a
+                              href={exercise.referenceUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className={styles.howToLink}
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              {t('howToPerform')}
+                              <svg
+                                width="10"
+                                height="10"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              >
+                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                                <polyline points="15 3 21 3 21 9" />
+                                <line x1="10" y1="14" x2="21" y2="3" />
+                              </svg>
+                            </a>
+                          )}
                         </div>
 
                         {swapIndex === index && (
@@ -449,100 +487,126 @@ function PreviewContent() {
                         )}
 
                         <div className={styles.rowActions}>
-                  <button
-                    type="button"
-                    className={styles.actionBtn}
-                    onClick={() => setSwapIndex(swapIndex === index ? null : index)}
-                    aria-label={t('swapExercise')}
-                    title={t('swapExercise')}
-                  >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="17 1 21 5 17 9" />
-                      <path d="M3 11V9a4 4 0 0 1 4-4h14" />
-                      <polyline points="7 23 3 19 7 15" />
-                      <path d="M21 13v2a4 4 0 0 1-4 4H3" />
-                    </svg>
-                  </button>
-                  <button
-                    type="button"
-                    className={`${styles.actionBtn} ${styles.actionBtnDelete}`}
-                    onClick={() => removeExercise(index)}
-                    aria-label={t('removeExercise')}
-                    title={t('removeExercise')}
-                  >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="3 6 5 6 21 6" />
-                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                      <line x1="10" y1="11" x2="10" y2="17" />
-                      <line x1="14" y1="11" x2="14" y2="17" />
-                    </svg>
-                  </button>
-                </div>
+                          <button
+                            type="button"
+                            className={styles.actionBtn}
+                            onClick={() => setSwapIndex(swapIndex === index ? null : index)}
+                            aria-label={t('swapExercise')}
+                            title={t('swapExercise')}
+                          >
+                            <svg
+                              width="18"
+                              height="18"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <polyline points="17 1 21 5 17 9" />
+                              <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+                              <polyline points="7 23 3 19 7 15" />
+                              <path d="M21 13v2a4 4 0 0 1-4 4H3" />
+                            </svg>
+                          </button>
+                          <button
+                            type="button"
+                            className={`${styles.actionBtn} ${styles.actionBtnDelete}`}
+                            onClick={() => removeExercise(index)}
+                            aria-label={t('removeExercise')}
+                            title={t('removeExercise')}
+                          >
+                            <svg
+                              width="18"
+                              height="18"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <polyline points="3 6 5 6 21 6" />
+                              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                              <line x1="10" y1="11" x2="10" y2="17" />
+                              <line x1="14" y1="11" x2="14" y2="17" />
+                            </svg>
+                          </button>
+                        </div>
 
-                <div className={styles.controls}>
-                  <div className={styles.control}>
-                    <button
-                      className={styles.controlBtn}
-                      onClick={() => updateOverride(index, 'sets', override.sets - 1)}
-                      disabled={override.sets <= 1}
-                      aria-label={t('decreaseSets')}
-                    >
-                      −
-                    </button>
-                    <span className={styles.controlValue}>{override.sets}</span>
-                    <button
-                      className={styles.controlBtn}
-                      onClick={() => updateOverride(index, 'sets', override.sets + 1)}
-                      aria-label={t('increaseSets')}
-                    >
-                      +
-                    </button>
-                  </div>
+                        <div className={styles.controls}>
+                          <div className={styles.control}>
+                            <button
+                              className={styles.controlBtn}
+                              onClick={() => updateOverride(index, 'sets', override.sets - 1)}
+                              disabled={override.sets <= 1}
+                              aria-label={t('decreaseSets')}
+                            >
+                              −
+                            </button>
+                            <span className={styles.controlValue}>{override.sets}</span>
+                            <button
+                              className={styles.controlBtn}
+                              onClick={() => updateOverride(index, 'sets', override.sets + 1)}
+                              aria-label={t('increaseSets')}
+                            >
+                              +
+                            </button>
+                          </div>
 
-                  <div className={styles.control}>
-                    <button
-                      className={styles.controlBtn}
-                      onClick={() => updateOverride(index, 'reps', override.reps - 1)}
-                      disabled={override.reps <= 1}
-                      aria-label={t('decreaseReps')}
-                    >
-                      −
-                    </button>
-                    <span className={styles.controlValue}>{override.reps}</span>
-                    <button
-                      className={styles.controlBtn}
-                      onClick={() => updateOverride(index, 'reps', override.reps + 1)}
-                      aria-label={t('increaseReps')}
-                    >
-                      +
-                    </button>
-                  </div>
+                          <div className={styles.control}>
+                            <button
+                              className={styles.controlBtn}
+                              onClick={() => updateOverride(index, 'reps', override.reps - 1)}
+                              disabled={override.reps <= 1}
+                              aria-label={t('decreaseReps')}
+                            >
+                              −
+                            </button>
+                            <span className={styles.controlValue}>{override.reps}</span>
+                            <button
+                              className={styles.controlBtn}
+                              onClick={() => updateOverride(index, 'reps', override.reps + 1)}
+                              aria-label={t('increaseReps')}
+                            >
+                              +
+                            </button>
+                          </div>
 
-                  <div className={styles.control}>
-                    <button
-                      className={styles.controlBtn}
-                      onClick={() =>
-                        updateOverride(index, 'restTimeSeconds', override.restTimeSeconds - 15)
-                      }
-                      disabled={override.restTimeSeconds <= 15}
-                      aria-label={t('decreaseRest')}
-                    >
-                      −
-                    </button>
-                    <span className={styles.controlValue}>
-                      {formatTime(override.restTimeSeconds)}
-                    </span>
-                    <button
-                      className={styles.controlBtn}
-                      onClick={() =>
-                        updateOverride(index, 'restTimeSeconds', override.restTimeSeconds + 15)
-                      }
-                      aria-label={t('increaseRest')}
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
+                          <div className={styles.control}>
+                            <button
+                              className={styles.controlBtn}
+                              onClick={() =>
+                                updateOverride(
+                                  index,
+                                  'restTimeSeconds',
+                                  override.restTimeSeconds - 15
+                                )
+                              }
+                              disabled={override.restTimeSeconds <= 15}
+                              aria-label={t('decreaseRest')}
+                            >
+                              −
+                            </button>
+                            <span className={styles.controlValue}>
+                              {formatTime(override.restTimeSeconds)}
+                            </span>
+                            <button
+                              className={styles.controlBtn}
+                              onClick={() =>
+                                updateOverride(
+                                  index,
+                                  'restTimeSeconds',
+                                  override.restTimeSeconds + 15
+                                )
+                              }
+                              aria-label={t('increaseRest')}
+                            >
+                              +
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     )}
                   </SortableRow>
@@ -563,12 +627,8 @@ function PreviewContent() {
           />
           <span>{t('dontSaveWorkout')}</span>
         </label>
-        <p className={styles.dontSaveHint}>
-          {t('dontSaveHint')}
-        </p>
-        {overrides.length === 0 && (
-          <p className={styles.noExercisesHint}>{t('addOneExercise')}</p>
-        )}
+        <p className={styles.dontSaveHint}>{t('dontSaveHint')}</p>
+        {overrides.length === 0 && <p className={styles.noExercisesHint}>{t('addOneExercise')}</p>}
         <button
           className={styles.startBtn}
           onClick={handleStartWorkout}
@@ -576,7 +636,16 @@ function PreviewContent() {
           style={{ backgroundColor: routine.color }}
         >
           {t('startWorkout')}
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <line x1="5" y1="12" x2="19" y2="12" />
             <polyline points="12 5 19 12 12 19" />
           </svg>
@@ -605,7 +674,16 @@ function SwapPicker({
         <div className={styles.swapPickerHeader}>
           <span className={styles.swapPickerTitle}>{t('noAlternatives')}</span>
           <button className={styles.swapPickerClose} onClick={onClose} aria-label={t('close')}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
             </svg>
@@ -620,7 +698,16 @@ function SwapPicker({
       <div className={styles.swapPickerHeader}>
         <span className={styles.swapPickerTitle}>{t('swapWithAlternative')}</span>
         <button className={styles.swapPickerClose} onClick={onClose} aria-label={t('close')}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <line x1="18" y1="6" x2="6" y2="18" />
             <line x1="6" y1="6" x2="18" y2="18" />
           </svg>
@@ -628,13 +715,11 @@ function SwapPicker({
       </div>
       <div className={styles.swapPickerList}>
         {alternatives.map((alt) => (
-          <button
-            key={alt.id}
-            className={styles.swapOption}
-            onClick={() => onSelect(alt.id)}
-          >
+          <button key={alt.id} className={styles.swapOption} onClick={() => onSelect(alt.id)}>
             <div className={styles.swapOptionInfo}>
-              <span className={styles.swapOptionName}>{getExerciseLocalized(alt, locale).name}</span>
+              <span className={styles.swapOptionName}>
+                {getExerciseLocalized(alt, locale).name}
+              </span>
               <span className={styles.swapOptionMeta}>
                 {alt.equipment}
                 {alt.referenceUrl && (
@@ -653,7 +738,16 @@ function SwapPicker({
                 )}
               </span>
             </div>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <polyline points="9 18 15 12 9 6" />
             </svg>
           </button>
