@@ -122,7 +122,7 @@ function RegisterForm() {
               onChange={(e) => setEmail(e.target.value)}
               className={styles.input}
               autoComplete="email"
-              readOnly={!!email}
+              disabled={!!email}
               required
             />
           </label>

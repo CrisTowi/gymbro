@@ -137,8 +137,8 @@ export async function fetchRoutineById(id: string): Promise<Routine> {
   return normalizeRoutine(data);
 }
 
-export async function seedDefaultRoutines(): Promise<Routine[]> {
-  const data = await request<RoutineResponse[]>('/api/routines/seed-defaults', {
+export async function seedDefaultRoutines(lang: string = 'en'): Promise<Routine[]> {
+  const data = await request<RoutineResponse[]>(`/api/routines/seed-defaults?lang=${encodeURIComponent(lang)}`, {
     method: 'POST',
   });
   return data.map(normalizeRoutine);

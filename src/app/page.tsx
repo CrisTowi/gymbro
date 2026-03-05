@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
+import { useLocale } from '@/context/LocaleContext';
 import WeeklyPlan from '@/components/WeeklyPlan/WeeklyPlan';
 import LastSessionCard from '@/components/SessionSummary/LastSessionCard';
 import AIRoutineGenerator from '@/components/AIRoutineGenerator/AIRoutineGenerator';
@@ -19,6 +20,7 @@ import styles from './page.module.css';
 
 export default function Home() {
   const t = useTranslations('home');
+  const { locale } = useLocale();
   const [weeklyPlan, setWeeklyPlan] = useState<WeeklyPlanType>(DEFAULT_WEEKLY_PLAN);
   const [routines, setRoutines] = useState<Routine[]>([]);
   const [lastSession, setLastSession] = useState<SessionLog | null>(null);
@@ -57,7 +59,7 @@ export default function Home() {
   const handleSeedDefaults = async () => {
     setSeeding(true);
     try {
-      const created = await seedDefaultRoutines();
+      const created = await seedDefaultRoutines(locale);
       setRoutines(created);
     } catch (err) {
       console.error('Failed to create default routines:', err);
