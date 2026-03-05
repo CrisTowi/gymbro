@@ -8,8 +8,9 @@ import {
   RoutineExercise,
 } from '@/types';
 
-/** Legacy API shape: name/description/instructions as plain string or string[] */
-type LegacyExercise = Omit<Exercise, 'name' | 'description' | 'instructions'> & {
+/** Raw API shape: backend sends exerciseId instead of id, and name/description/instructions may be plain strings */
+type LegacyExercise = Omit<Exercise, 'id' | 'name' | 'description' | 'instructions'> & {
+  exerciseId: string;
   name: string | Record<Locale, string>;
   description: string | Record<Locale, string>;
   instructions: string[] | Record<Locale, string[]>;
@@ -41,6 +42,7 @@ function normalizeExercise(raw: LegacyExercise): Exercise {
     : { en: raw.instructions, es: raw.instructions };
   return {
     ...raw,
+    id: raw.exerciseId,
     name,
     description,
     instructions,
