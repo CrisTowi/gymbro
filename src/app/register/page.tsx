@@ -5,6 +5,8 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { useAuth } from '@/context/AuthContext';
+import { useLocale } from '@/context/LocaleContext';
+import type { Locale } from '@/context/LocaleContext';
 import styles from '../login/auth.module.css';
 
 function RegisterForm() {
@@ -12,8 +14,10 @@ function RegisterForm() {
   const searchParams = useSearchParams();
   const invitationToken = searchParams.get('invitation') ?? '';
   const { register, validateInvitation } = useAuth();
+  const { setLocale } = useLocale();
 
   const [status, setStatus] = useState<'checking' | 'valid' | 'invalid'>('checking');
+  const [invitationLang, setInvitationLang] = useState<Locale>('en');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -30,9 +34,15 @@ function RegisterForm() {
       return;
     }
     validateInvitation(invitationToken)
-      .then(() => setStatus('valid'))
+      .then((inv) => {
+        if (inv.email) setEmail(inv.email);
+        const lang = inv.lang === 'es' ? 'es' : 'en';
+        setInvitationLang(lang);
+        setLocale(lang);
+        setStatus('valid');
+      })
       .catch(() => setStatus('invalid'));
-  }, [invitationToken, validateInvitation]);
+  }, [invitationToken, validateInvitation, setLocale]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -47,6 +57,7 @@ function RegisterForm() {
         height: height ? Number(height) : null,
         weight: weight ? Number(weight) : null,
         goal: goal.trim() || null,
+        language: invitationLang,
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : t('registrationFailed'));
@@ -111,6 +122,7 @@ function RegisterForm() {
               onChange={(e) => setEmail(e.target.value)}
               className={styles.input}
               autoComplete="email"
+              readOnly={!!email}
               required
             />
           </label>

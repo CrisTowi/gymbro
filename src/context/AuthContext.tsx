@@ -30,8 +30,9 @@ interface AuthContextValue extends AuthState {
     height?: number | null;
     weight?: number | null;
     goal?: string | null;
+    language?: string;
   }) => Promise<void>;
-  validateInvitation: (token: string) => Promise<{ valid: boolean }>;
+  validateInvitation: (token: string) => Promise<{ valid: boolean; email: string | null; lang: string }>;
   refreshUser: () => Promise<void>;
 }
 
@@ -88,6 +89,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       height?: number | null;
       weight?: number | null;
       goal?: string | null;
+      language?: string;
     }) => {
       const { user, token } = await apiRegister(params);
       localStorage.setItem(STORAGE_KEY, token);

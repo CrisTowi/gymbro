@@ -336,11 +336,12 @@ export interface User {
   language?: 'en' | 'es';
 }
 
-export async function validateInvitation(token: string): Promise<{ valid: boolean }> {
-  const res = await request<{ valid: boolean; invitationId?: string }>(
+export async function validateInvitation(
+  token: string
+): Promise<{ valid: boolean; email: string | null; lang: string }> {
+  return request<{ valid: boolean; invitationId?: string; email: string | null; lang: string }>(
     `/api/auth/invitation/${encodeURIComponent(token)}`
   );
-  return res;
 }
 
 export async function register(params: {
@@ -351,6 +352,7 @@ export async function register(params: {
   height?: number | null;
   weight?: number | null;
   goal?: string | null;
+  language?: string;
 }): Promise<{ user: User; token: string }> {
   return request<{ user: User; token: string }>('/api/auth/register', {
     method: 'POST',
