@@ -32,7 +32,9 @@ interface AuthContextValue extends AuthState {
     goal?: string | null;
     language?: string;
   }) => Promise<void>;
-  validateInvitation: (token: string) => Promise<{ valid: boolean; email: string | null; lang: string }>;
+  validateInvitation: (
+    token: string
+  ) => Promise<{ valid: boolean; email: string | null; lang: string }>;
   refreshUser: () => Promise<void>;
 }
 

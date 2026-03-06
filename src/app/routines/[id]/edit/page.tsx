@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback, useRef, type ReactNode } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
@@ -14,45 +14,19 @@ import {
   useSensors,
   closestCenter,
 } from '@dnd-kit/core';
-import {
-  SortableContext,
-  useSortable,
-  verticalListSortingStrategy,
-  arrayMove,
-} from '@dnd-kit/sortable';
+import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Routine, RoutineExercise, Exercise, type Locale } from '@/types';
+import { Routine, RoutineExercise, Exercise } from '@/types';
 import { fetchRoutineById, updateRoutine, fetchExercises } from '@/lib/api';
 import { getExerciseById, getAlternativeExercises, getExerciseLocalized } from '@/data/exercises';
 import { useLocale } from '@/context/LocaleContext';
 import { formatTime } from '@/utils/time';
+import SortableRow from '@/components/SortableRow/SortableRow';
+import SwapPicker from './_components/SwapPicker/SwapPicker';
 import styles from './page.module.css';
 
 const touchActivation = { delay: 250, tolerance: 8 };
 const pointerActivation = { distance: 8 };
-
-function SortableRow({
-  id,
-  children,
-}: {
-  id: string;
-  children: (props: {
-    setNodeRef: (node: HTMLElement | null) => void;
-    setActivatorNodeRef: (node: HTMLElement | null) => void;
-    listeners: Record<string, unknown> | undefined;
-    transform: { x: number; y: number; scaleX: number; scaleY: number } | null;
-    transition: string | undefined;
-    isDragging: boolean;
-  }) => ReactNode;
-}) {
-  const { setNodeRef, setActivatorNodeRef, listeners, transform, transition, isDragging } =
-    useSortable({ id });
-  return (
-    <>
-      {children({ setNodeRef, setActivatorNodeRef, listeners, transform, transition, isDragging })}
-    </>
-  );
-}
 
 const DEFAULT_EXERCISE: Omit<RoutineExercise, 'exerciseId'> = {
   sets: 3,
@@ -71,122 +45,6 @@ const COLOR_OPTIONS = [
   '#3B82F6',
   '#EC4899',
 ];
-
-function SwapPicker({
-  alternatives,
-  locale,
-  onSelect,
-  onClose,
-  t,
-}: {
-  alternatives: Exercise[];
-  locale: Locale;
-  onSelect: (exerciseId: string) => void;
-  onClose: () => void;
-  t: (key: string) => string;
-}) {
-  if (alternatives.length === 0) {
-    return (
-      <div className={styles.swapPicker}>
-        <div className={styles.swapPickerHeader}>
-          <span className={styles.swapPickerTitle}>{t('noAlternatives')}</span>
-          <button
-            type="button"
-            className={styles.swapPickerClose}
-            onClick={onClose}
-            aria-label={t('close')}
-          >
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
-        </div>
-      </div>
-    );
-  }
-  return (
-    <div className={styles.swapPicker}>
-      <div className={styles.swapPickerHeader}>
-        <span className={styles.swapPickerTitle}>{t('replaceWithAlternative')}</span>
-        <button
-          type="button"
-          className={styles.swapPickerClose}
-          onClick={onClose}
-          aria-label={t('close')}
-        >
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <line x1="18" y1="6" x2="6" y2="18" />
-            <line x1="6" y1="6" x2="18" y2="18" />
-          </svg>
-        </button>
-      </div>
-      <div className={styles.swapPickerList}>
-        {alternatives.map((alt) => (
-          <button
-            key={alt.id}
-            type="button"
-            className={styles.swapOption}
-            onClick={() => onSelect(alt.id)}
-          >
-            <div className={styles.swapOptionInfo}>
-              <span className={styles.swapOptionName}>
-                {getExerciseLocalized(alt, locale).name}
-              </span>
-              <span className={styles.swapOptionMeta}>
-                {alt.category} · {alt.equipment}
-                {alt.referenceUrl && (
-                  <>
-                    {' · '}
-                    <a
-                      href={alt.referenceUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={styles.swapOptionLink}
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      {t('howToPerform')}
-                    </a>
-                  </>
-                )}
-              </span>
-            </div>
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polyline points="9 18 15 12 9 6" />
-            </svg>
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
 
 export default function EditRoutinePage() {
   const t = useTranslations('routineEdit');
@@ -530,7 +388,7 @@ export default function EditRoutinePage() {
                             <SwapPicker
                               alternatives={swapAlternatives}
                               locale={locale}
-                              onSelect={(id) => handleSwapExercise(index, id)}
+                              onSelect={(newId) => handleSwapExercise(index, newId)}
                               onClose={() => setSwapIndex(null)}
                               t={t}
                             />

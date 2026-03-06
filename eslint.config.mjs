@@ -33,6 +33,7 @@ const eslintConfig = defineConfig([
           caughtErrorsIgnorePattern: '^_',
         },
       ],
+      'react/no-multi-comp': ['error', { ignoreStateless: false }],
     },
   },
 ]);
