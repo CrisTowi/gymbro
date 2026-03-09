@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { Routine, WeeklyPlan } from '@/types';
 import { getDayOfWeek } from '@/utils/time';
 import { fetchRoutines, fetchWeeklyPlan, updateWeeklyPlan, deleteRoutine } from '@/lib/api';
+import ConfirmationModal from '@/components/ConfirmationModal/ConfirmationModal'; // Import new modal
 import styles from './page.module.css';
 
 export default function RoutinesPage() {
@@ -15,6 +16,10 @@ export default function RoutinesPage() {
   const [routines, setRoutines] = useState<Routine[]>([]);
   const [weeklyPlan, setWeeklyPlan] = useState<WeeklyPlan | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // State for confirmation modal
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [routineToDelete, setRoutineToDelete] = useState<Routine | null>(null);
 
   const loadData = useCallback(async () => {
     try {
@@ -48,28 +53,41 @@ export default function RoutinesPage() {
     [weeklyPlan, todayKey, t]
   );
 
+  // Modified handleDelete to open modal
   const handleDelete = useCallback(
-    async (routine: Routine) => {
+    (routine: Routine) => {
       if (routine.id === activeRoutineId) return;
-      if (!confirm(t('confirmDelete'))) return;
-      try {
-        await deleteRoutine(routine.id);
-        const nextPlan = weeklyPlan
-          ? Object.fromEntries(
-              Object.entries(weeklyPlan).map(([day, id]) => [day, id === routine.id ? null : id])
-            )
-          : null;
-        if (nextPlan) {
-          await updateWeeklyPlan(nextPlan);
-          setWeeklyPlan(nextPlan);
-        }
-        setRoutines((prev) => prev.filter((r) => r.id !== routine.id));
-      } catch (err) {
-        console.error('Failed to delete routine:', err);
-      }
+      setRoutineToDelete(routine);
+      setShowDeleteModal(true);
     },
-    [activeRoutineId, weeklyPlan, t]
+    [activeRoutineId]
   );
+
+  // New function to confirm and execute deletion
+  const confirmDeleteRoutine = useCallback(async () => {
+    if (!routineToDelete) return;
+    try {
+      await deleteRoutine(routineToDelete.id);
+      const nextPlan = weeklyPlan
+        ? Object.fromEntries(
+            Object.entries(weeklyPlan).map(([day, id]) =>
+              [day, id === routineToDelete.id ? null : id]
+            )
+          )
+        : null;
+      if (nextPlan) {
+        await updateWeeklyPlan(nextPlan);
+        setWeeklyPlan(nextPlan);
+      }
+      setRoutines((prev) => prev.filter((r) => r.id !== routineToDelete.id));
+      setShowDeleteModal(false);
+      setRoutineToDelete(null);
+    } catch (err) {
+      console.error('Failed to delete routine:', err);
+      setShowDeleteModal(false);
+      setRoutineToDelete(null);
+    }
+  }, [routineToDelete, weeklyPlan]);
 
   if (loading) {
     return (
@@ -167,6 +185,14 @@ export default function RoutinesPage() {
           + {t('newRoutine')}
         </Link>
       </div>
+
+      <ConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={confirmDeleteRoutine}
+        title={t('confirmDeleteTitle')}
+        message={t('confirmDeleteMessage', { name: routineToDelete?.name })}
+      />
     </div>
   );
 }
