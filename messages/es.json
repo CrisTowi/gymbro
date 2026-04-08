@@ -53,7 +53,6 @@
     "invalidInvitationDesc": "Este enlace no es válido, ya se ha usado o ha caducado.",
     "backToSignIn": "Volver a iniciar sesión",
     "youreInvited": "Estás invitado a GymBro",
-    "createAccount": "Crea tu cuenta",
     "registrationFailed": "Error en el registro",
     "heightOptional": "Altura (opcional)",
     "weightOptional": "Peso (opcional)",
@@ -123,7 +122,10 @@
     "dontSaveHint": "Para pruebas o sesiones no planificadas. No se envía nada al servidor.",
     "addOneExercise": "Añade al menos un ejercicio para empezar.",
     "startWorkout": "Empezar entrenamiento",
-    "close": "Cerrar"
+    "close": "Cerrar",
+    "moveUp": "Mover arriba",
+    "moveDown": "Mover abajo",
+    "searchPlaceholder": "Buscar ejercicios…"
   },
   "workoutExercise": {
     "previousBest": "Mejor anterior: {weight} x {reps} reps",
@@ -221,7 +223,9 @@
     "cannotDeleteActive": "No puedes eliminar la rutina activa. Asigna otra como entrenamiento de hoy primero.",
     "deleteRoutine": "Eliminar rutina",
     "delete": "Eliminar",
-    "editRoutineAria": "Editar {name}"
+    "editRoutineAria": "Editar {name}",
+    "moveUp": "Mover arriba",
+    "moveDown": "Mover abajo"
   },
   "dashboard": {
     "title": "Panel",
