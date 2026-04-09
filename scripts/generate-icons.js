@@ -1,11 +1,11 @@
 /**
- * Icon generation script for PWA.
+ * Icon generation script for GymBro PWA.
  * Run: node scripts/generate-icons.js
  *
- * For production, replace with actual designed icons.
- * This generates simple placeholder SVGs converted to basic format.
+ * Writes the lightning bolt SVG to all icon sizes and converts to proper PNGs via sharp.
  */
 
+const sharp = require('sharp');
 const fs = require('fs');
 const path = require('path');
 
@@ -16,29 +16,44 @@ if (!fs.existsSync(iconsDir)) {
   fs.mkdirSync(iconsDir, { recursive: true });
 }
 
-function generateSVG(size) {
-  const fontSize = Math.round(size * 0.4);
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
-  <rect width="${size}" height="${size}" rx="${Math.round(size * 0.15)}" fill="#6C5CE7"/>
-  <text x="50%" y="52%" dominant-baseline="middle" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold" font-size="${fontSize}" fill="white">GT</text>
+// Full-bleed background (no rounded corners) so the icon works as maskable.
+// The OS/browser applies its own shape mask.
+const masterSVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#9080f8"/>
+      <stop offset="100%" stop-color="#4C3BC4"/>
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <polygon
+    points="298,58 124,284 252,284 214,454 388,228 258,228"
+    fill="white"
+    filter="url(#glow)"
+  />
 </svg>`;
-}
 
-sizes.forEach((size) => {
-  const svg = generateSVG(size);
-  const filename = `icon-${size}x${size}.svg`;
-  fs.writeFileSync(path.join(iconsDir, filename), svg);
-  console.log(`Generated ${filename}`);
-});
+(async () => {
+  const svgBuffer = Buffer.from(masterSVG);
 
-// Also create PNG-named SVGs (browsers accept SVG in most cases)
-// For true PNG generation, use a tool like sharp
-sizes.forEach((size) => {
-  const svg = generateSVG(size);
-  const filename = `icon-${size}x${size}.png`;
-  // Write SVG with .png extension - works for most PWA purposes
-  // For production, use proper PNG generation
-  fs.writeFileSync(path.join(iconsDir, filename), svg);
-});
+  for (const size of sizes) {
+    // Write SVG file
+    const svgOut = path.join(iconsDir, `icon-${size}x${size}.svg`);
+    fs.writeFileSync(svgOut, masterSVG);
+    console.log(`✓ icon-${size}x${size}.svg`);
 
-console.log('Icons generated in public/icons/');
+    // Write PNG file via sharp
+    const pngOut = path.join(iconsDir, `icon-${size}x${size}.png`);
+    await sharp(svgBuffer).resize(size, size).png().toFile(pngOut);
+    console.log(`✓ icon-${size}x${size}.png`);
+  }
+
+  console.log('\nDone. All icons updated in public/icons/');
+})();
