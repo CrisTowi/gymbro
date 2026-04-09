@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { formatTime } from '@/utils/time';
 import styles from './RestTimer.module.css';
@@ -42,6 +42,7 @@ export default function RestTimer({
   nextExercise,
 }: RestTimerProps) {
   const t = useTranslations('restTimer');
+  const [isMinimized, setIsMinimized] = useState(false);
 
   // Remove focus from any input when timer opens to avoid iOS "Undo typing" prompt when moving the phone
   useEffect(() => {
@@ -50,6 +51,7 @@ export default function RestTimer({
 
   // Lock background scroll while timer overlay is open (removes scrollbar behind modal)
   useEffect(() => {
+    if (isMinimized) return;
     const html = document.documentElement;
     const body = document.body;
     const prevHtmlOverflow = html.style.overflow;
@@ -60,7 +62,7 @@ export default function RestTimer({
       html.style.overflow = prevHtmlOverflow;
       body.style.overflow = prevBodyOverflow;
     };
-  }, []);
+  }, [isMinimized]);
 
   // Keep screen on while rest timer is visible (e.g. avoid iPhone auto-lock). Supported in Safari iOS 16.4+.
   useEffect(() => {
@@ -105,9 +107,126 @@ export default function RestTimer({
   const strokeDashoffset = circumference * (1 - progress);
   const isAlmostDone = remainingSeconds <= 10 && remainingSeconds > 0;
 
+  if (isMinimized) {
+    const minCircumference = 2 * Math.PI * 14;
+    const minStrokeDashoffset = minCircumference * (1 - progress);
+    return (
+      <div className={styles.minimizedOverlay}>
+        <div className={styles.minimizedContainer}>
+          <div className={styles.minimizedInfo} onClick={() => setIsMinimized(false)}>
+            <div className={styles.minimizedTimerCircle}>
+              <svg className={styles.minimizedSvg} viewBox="0 0 32 32">
+                <circle
+                  cx="16"
+                  cy="16"
+                  r="14"
+                  fill="none"
+                  strokeWidth="3"
+                  className={styles.trackCircle}
+                />
+                <circle
+                  cx="16"
+                  cy="16"
+                  r="14"
+                  fill="none"
+                  strokeWidth="3"
+                  className={styles.progressCircle}
+                  strokeDasharray={minCircumference}
+                  strokeDashoffset={minStrokeDashoffset}
+                  strokeLinecap="round"
+                  transform="rotate(-90 16 16)"
+                />
+              </svg>
+              <span className={styles.minimizedTime}>{remainingSeconds}</span>
+            </div>
+            {nextExercise && <span className={styles.minimizedNext}>{nextExercise.name}</span>}
+          </div>
+
+          <div className={styles.minimizedActions}>
+            {isRunning ? (
+              <button
+                className={styles.minimizedActionBtn}
+                onClick={onPause}
+                aria-label={t('pause')}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                  <rect x="6" y="4" width="4" height="16" rx="1" />
+                  <rect x="14" y="4" width="4" height="16" rx="1" />
+                </svg>
+              </button>
+            ) : (
+              <button
+                className={styles.minimizedActionBtn}
+                onClick={onResume}
+                aria-label={t('resume')}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                  <polygon points="5,3 19,12 5,21" />
+                </svg>
+              </button>
+            )}
+            <button
+              className={styles.minimizedActionBtn}
+              onClick={onSkip}
+              aria-label={t('skipRest')}
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polygon points="5,4 15,12 5,20" />
+                <line x1="19" y1="5" x2="19" y2="19" />
+              </svg>
+            </button>
+            <button className={styles.minimizedExpandBtn} onClick={() => setIsMinimized(false)}>
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polyline points="18 15 12 9 6 15" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={`${styles.overlay} ${isAlmostDone ? styles.almostDone : ''}`}>
       <div className={styles.container}>
+        <div className={styles.topActions}>
+          <button
+            className={styles.minimizeBtn}
+            onClick={() => setIsMinimized(true)}
+            aria-label={t('minimize') || 'Minimize'}
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </button>
+        </div>
         <h3 className={styles.title}>{t('restTime')}</h3>
 
         <div className={styles.timerCircle}>

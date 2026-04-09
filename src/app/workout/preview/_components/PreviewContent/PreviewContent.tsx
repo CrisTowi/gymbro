@@ -1,33 +1,31 @@
 'use client';
 
-import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import {
-  DndContext,
-  DragEndEvent,
-  DragOverEvent,
-  PointerSensor,
-  TouchSensor,
-  useSensor,
-  useSensors,
-  closestCenter,
-} from '@dnd-kit/core';
-import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
 import { fetchRoutineById } from '@/lib/api';
 import type { Routine } from '@/types';
 import { getExerciseById, getAlternativeExercises, getExerciseLocalized } from '@/data/exercises';
 import { useLocale } from '@/context/LocaleContext';
+
+function arrayMoveMutable<T>(array: T[], fromIndex: number, toIndex: number) {
+  const startIndex = fromIndex < 0 ? array.length + fromIndex : fromIndex;
+  if (startIndex >= 0 && startIndex < array.length) {
+    const endIndex = toIndex < 0 ? array.length + toIndex : toIndex;
+    const [item] = array.splice(fromIndex, 1);
+    array.splice(endIndex, 0, item);
+  }
+}
+function arrayMove<T>(array: T[], fromIndex: number, toIndex: number): T[] {
+  const newArray = [...array];
+  arrayMoveMutable(newArray, fromIndex, toIndex);
+  return newArray;
+}
 import { formatWeight } from '@/utils/weight';
 import { formatTime } from '@/utils/time';
 import { fetchLastExercisePerformance, LastExercisePerformance } from '@/lib/api';
-import SortableRow from '@/components/SortableRow/SortableRow';
 import SwapPicker from '../SwapPicker/SwapPicker';
 import styles from '../../page.module.css';
-
-const touchActivation = { delay: 250, tolerance: 8 };
-const pointerActivation = { distance: 8 };
 
 interface ExerciseOverride {
   exerciseId: string;
@@ -183,34 +181,30 @@ export default function PreviewContent() {
     );
   }, []);
 
-  const sensors = useSensors(
-    useSensor(TouchSensor, { activationConstraint: touchActivation }),
-    useSensor(PointerSensor, { activationConstraint: pointerActivation })
-  );
-
-  const lastOverIdRef = useRef<string | number | null>(null);
-
-  const handleDragOver = useCallback((event: DragOverEvent) => {
-    if (event.over) lastOverIdRef.current = event.over.id;
-  }, []);
-
-  const handleDragEnd = useCallback((event: DragEndEvent) => {
-    const { active, over } = event;
-    const overId = over?.id ?? lastOverIdRef.current;
-    lastOverIdRef.current = null;
-    if (overId == null || String(overId) === String(active.id)) return;
-    const fromIndex = Number(active.id);
-    const toIndex = Number(overId);
-    if (Number.isNaN(fromIndex) || Number.isNaN(toIndex)) return;
-    setOverrides((prev) => arrayMove(prev, fromIndex, toIndex));
+  const moveUp = useCallback((index: number) => {
+    if (index === 0) return;
+    setOverrides((prev) => arrayMove(prev, index, index - 1));
     setSwapIndex((current) => {
       if (current === null) return null;
-      if (current === fromIndex) return toIndex;
-      if (fromIndex < current && toIndex >= current) return current - 1;
-      if (fromIndex > current && toIndex <= current) return current + 1;
+      if (current === index) return index - 1;
+      if (current === index - 1) return index;
       return current;
     });
   }, []);
+
+  const moveDown = useCallback(
+    (index: number) => {
+      if (index === overrides.length - 1) return;
+      setOverrides((prev) => arrayMove(prev, index, index + 1));
+      setSwapIndex((current) => {
+        if (current === null) return null;
+        if (current === index) return index + 1;
+        if (current === index + 1) return index;
+        return current;
+      });
+    },
+    [overrides.length]
+  );
 
   const resetToDefaults = useCallback(() => {
     if (!routine) return;
@@ -315,277 +309,256 @@ export default function PreviewContent() {
             <span className={styles.listHeaderControl}>{t('rest')}</span>
           </div>
 
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragOver={handleDragOver}
-            onDragEnd={handleDragEnd}
-          >
-            <SortableContext
-              items={overrides.map((_, i) => String(i))}
-              strategy={verticalListSortingStrategy}
-            >
-              {overrides.map((override, index) => {
-                const exercise = getExerciseById(override.exerciseId);
-                const defaultEx = routine.exercises[index];
-                const lastPerf = lastPerfMap[override.exerciseId] ?? null;
-                const isSwapped = defaultEx && override.exerciseId !== defaultEx.exerciseId;
-                const isModified =
-                  isSwapped ||
-                  (defaultEx &&
-                    (override.sets !== defaultEx.sets ||
-                      override.reps !== defaultEx.reps ||
-                      override.restTimeSeconds !== defaultEx.restTimeSeconds));
+          {overrides.map((override, index) => {
+            const exercise = getExerciseById(override.exerciseId);
+            const defaultEx = routine.exercises[index];
+            const lastPerf = lastPerfMap[override.exerciseId] ?? null;
+            const isSwapped = defaultEx && override.exerciseId !== defaultEx.exerciseId;
+            const isModified =
+              isSwapped ||
+              (defaultEx &&
+                (override.sets !== defaultEx.sets ||
+                  override.reps !== defaultEx.reps ||
+                  override.restTimeSeconds !== defaultEx.restTimeSeconds));
 
-                return (
-                  <SortableRow key={`${override.exerciseId}-${index}`} id={String(index)}>
-                    {({
-                      setNodeRef,
-                      setActivatorNodeRef,
-                      listeners,
-                      transform,
-                      transition,
-                      isDragging,
-                    }) => (
-                      <div
-                        ref={setNodeRef}
-                        style={{
-                          transform: CSS.Transform.toString(transform),
-                          transition,
-                        }}
-                        className={`${styles.exerciseRow} ${isModified ? styles.modified : ''} ${isSwapped ? styles.swapped : ''} ${isDragging ? styles.dragging : ''}`}
+            return (
+              <div key={`${override.exerciseId}-${index}`}>
+                <div
+                  className={`${styles.exerciseRow} ${isModified ? styles.modified : ''} ${isSwapped ? styles.swapped : ''}`}
+                >
+                  <div className={styles.cardHeader}>
+                    <div className={styles.exerciseInfo}>
+                      <span className={styles.exerciseIndex}>{index + 1}</span>
+                      <span className={styles.exerciseName}>
+                        {exercise
+                          ? getExerciseLocalized(exercise, locale).name
+                          : override.exerciseId}
+                      </span>
+                    </div>
+                    <div className={styles.moveButtons}>
+                      <button
+                        className={styles.moveBtn}
+                        onClick={() => moveUp(index)}
+                        disabled={index === 0}
+                        aria-label={t('moveUp')}
                       >
-                        <div className={styles.cardHeader}>
-                          <div className={styles.exerciseInfo}>
-                            <span className={styles.exerciseIndex}>{index + 1}</span>
-                            <span className={styles.exerciseName}>
-                              {exercise
-                                ? getExerciseLocalized(exercise, locale).name
-                                : override.exerciseId}
-                            </span>
-                          </div>
-                          <div
-                            ref={setActivatorNodeRef}
-                            className={styles.dragHandle}
-                            role="button"
-                            tabIndex={0}
-                            aria-label={t('dragToReorder')}
-                            title={t('dragToReorder')}
-                            {...listeners}
-                          >
-                            <svg
-                              width="18"
-                              height="18"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            >
-                              <circle cx="9" cy="5" r="1" />
-                              <circle cx="9" cy="12" r="1" />
-                              <circle cx="9" cy="19" r="1" />
-                              <circle cx="15" cy="5" r="1" />
-                              <circle cx="15" cy="12" r="1" />
-                              <circle cx="15" cy="19" r="1" />
-                            </svg>
-                          </div>
-                        </div>
-                        <div className={styles.exerciseDetails}>
-                          <span className={styles.exerciseMeta}>
-                            {exercise?.category} · {exercise?.equipment}
-                            {isSwapped && defaultEx && (
-                              <span className={styles.swappedNote}>
-                                {' '}
-                                ·{' '}
-                                {t('replacesExercise', {
-                                  name: (() => {
-                                    const ex = getExerciseById(defaultEx.exerciseId);
-                                    return ex
-                                      ? getExerciseLocalized(ex, locale).name
-                                      : defaultEx.exerciseId;
-                                  })(),
-                                })}
-                              </span>
-                            )}
-                            {!isSwapped && defaultEx?.notes && (
-                              <span className={styles.exerciseNote}> · {defaultEx.notes}</span>
-                            )}
-                          </span>
-                          {lastPerf && (
-                            <span className={styles.lastWeight}>
-                              {t('lastWeight', {
-                                weight: formatWeight(lastPerf.weightLbs, false),
-                                reps: lastPerf.reps,
-                              })}
-                            </span>
-                          )}
-                          {exercise?.referenceUrl && (
-                            <a
-                              href={exercise.referenceUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className={styles.howToLink}
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              {t('howToPerform')}
-                              <svg
-                                width="10"
-                                height="10"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2.5"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              >
-                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                                <polyline points="15 3 21 3 21 9" />
-                                <line x1="10" y1="14" x2="21" y2="3" />
-                              </svg>
-                            </a>
-                          )}
-                        </div>
-
-                        {swapIndex === index && (
-                          <SwapPicker
-                            alternatives={swapAlternatives}
-                            locale={locale}
-                            onSelect={(id) => handleSwapExercise(index, id)}
-                            onClose={() => setSwapIndex(null)}
-                            t={t}
-                          />
-                        )}
-
-                        <div className={styles.rowActions}>
-                          <button
-                            type="button"
-                            className={styles.actionBtn}
-                            onClick={() => setSwapIndex(swapIndex === index ? null : index)}
-                            aria-label={t('swapExercise')}
-                            title={t('swapExercise')}
-                          >
-                            <svg
-                              width="18"
-                              height="18"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            >
-                              <polyline points="17 1 21 5 17 9" />
-                              <path d="M3 11V9a4 4 0 0 1 4-4h14" />
-                              <polyline points="7 23 3 19 7 15" />
-                              <path d="M21 13v2a4 4 0 0 1-4 4H3" />
-                            </svg>
-                          </button>
-                          <button
-                            type="button"
-                            className={`${styles.actionBtn} ${styles.actionBtnDelete}`}
-                            onClick={() => removeExercise(index)}
-                            aria-label={t('removeExercise')}
-                            title={t('removeExercise')}
-                          >
-                            <svg
-                              width="18"
-                              height="18"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            >
-                              <polyline points="3 6 5 6 21 6" />
-                              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                              <line x1="10" y1="11" x2="10" y2="17" />
-                              <line x1="14" y1="11" x2="14" y2="17" />
-                            </svg>
-                          </button>
-                        </div>
-
-                        <div className={styles.controls}>
-                          <div className={styles.control}>
-                            <button
-                              className={styles.controlBtn}
-                              onClick={() => updateOverride(index, 'sets', override.sets - 1)}
-                              disabled={override.sets <= 1}
-                              aria-label={t('decreaseSets')}
-                            >
-                              −
-                            </button>
-                            <span className={styles.controlValue}>{override.sets}</span>
-                            <button
-                              className={styles.controlBtn}
-                              onClick={() => updateOverride(index, 'sets', override.sets + 1)}
-                              aria-label={t('increaseSets')}
-                            >
-                              +
-                            </button>
-                          </div>
-
-                          <div className={styles.control}>
-                            <button
-                              className={styles.controlBtn}
-                              onClick={() => updateOverride(index, 'reps', override.reps - 1)}
-                              disabled={override.reps <= 1}
-                              aria-label={t('decreaseReps')}
-                            >
-                              −
-                            </button>
-                            <span className={styles.controlValue}>{override.reps}</span>
-                            <button
-                              className={styles.controlBtn}
-                              onClick={() => updateOverride(index, 'reps', override.reps + 1)}
-                              aria-label={t('increaseReps')}
-                            >
-                              +
-                            </button>
-                          </div>
-
-                          <div className={styles.control}>
-                            <button
-                              className={styles.controlBtn}
-                              onClick={() =>
-                                updateOverride(
-                                  index,
-                                  'restTimeSeconds',
-                                  override.restTimeSeconds - 15
-                                )
-                              }
-                              disabled={override.restTimeSeconds <= 15}
-                              aria-label={t('decreaseRest')}
-                            >
-                              −
-                            </button>
-                            <span className={styles.controlValue}>
-                              {formatTime(override.restTimeSeconds)}
-                            </span>
-                            <button
-                              className={styles.controlBtn}
-                              onClick={() =>
-                                updateOverride(
-                                  index,
-                                  'restTimeSeconds',
-                                  override.restTimeSeconds + 15
-                                )
-                              }
-                              aria-label={t('increaseRest')}
-                            >
-                              +
-                            </button>
-                          </div>
-                        </div>
-                      </div>
+                        <svg
+                          width="18"
+                          height="18"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <polyline points="18 15 12 9 6 15" />
+                        </svg>
+                      </button>
+                      <button
+                        className={styles.moveBtn}
+                        onClick={() => moveDown(index)}
+                        disabled={index === overrides.length - 1}
+                        aria-label={t('moveDown')}
+                      >
+                        <svg
+                          width="18"
+                          height="18"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <polyline points="6 9 12 15 18 9" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                  <div className={styles.exerciseDetails}>
+                    <span className={styles.exerciseMeta}>
+                      {exercise?.category} · {exercise?.equipment}
+                      {isSwapped && defaultEx && (
+                        <span className={styles.swappedNote}>
+                          {' '}
+                          ·{' '}
+                          {t('replacesExercise', {
+                            name: (() => {
+                              const ex = getExerciseById(defaultEx.exerciseId);
+                              return ex
+                                ? getExerciseLocalized(ex, locale).name
+                                : defaultEx.exerciseId;
+                            })(),
+                          })}
+                        </span>
+                      )}
+                      {!isSwapped && defaultEx?.notes && (
+                        <span className={styles.exerciseNote}> · {defaultEx.notes}</span>
+                      )}
+                    </span>
+                    {lastPerf && (
+                      <span className={styles.lastWeight}>
+                        {t('lastWeight', {
+                          weight: formatWeight(lastPerf.weightLbs, false),
+                          reps: lastPerf.reps,
+                        })}
+                      </span>
                     )}
-                  </SortableRow>
-                );
-              })}
-            </SortableContext>
-          </DndContext>
+                    {exercise?.referenceUrl && (
+                      <a
+                        href={exercise.referenceUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.howToLink}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {t('howToPerform')}
+                        <svg
+                          width="10"
+                          height="10"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                          <polyline points="15 3 21 3 21 9" />
+                          <line x1="10" y1="14" x2="21" y2="3" />
+                        </svg>
+                      </a>
+                    )}
+                  </div>
+
+                  {swapIndex === index && (
+                    <SwapPicker
+                      alternatives={swapAlternatives}
+                      locale={locale}
+                      onSelect={(id) => handleSwapExercise(index, id)}
+                      onClose={() => setSwapIndex(null)}
+                      t={t}
+                    />
+                  )}
+
+                  <div className={styles.rowActions}>
+                    <button
+                      type="button"
+                      className={styles.actionBtn}
+                      onClick={() => setSwapIndex(swapIndex === index ? null : index)}
+                      aria-label={t('swapExercise')}
+                      title={t('swapExercise')}
+                    >
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <polyline points="17 1 21 5 17 9" />
+                        <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+                        <polyline points="7 23 3 19 7 15" />
+                        <path d="M21 13v2a4 4 0 0 1-4 4H3" />
+                      </svg>
+                    </button>
+                    <button
+                      type="button"
+                      className={`${styles.actionBtn} ${styles.actionBtnDelete}`}
+                      onClick={() => removeExercise(index)}
+                      aria-label={t('removeExercise')}
+                      title={t('removeExercise')}
+                    >
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                        <line x1="10" y1="11" x2="10" y2="17" />
+                        <line x1="14" y1="11" x2="14" y2="17" />
+                      </svg>
+                    </button>
+                  </div>
+
+                  <div className={styles.controls}>
+                    <div className={styles.control}>
+                      <button
+                        className={styles.controlBtn}
+                        onClick={() => updateOverride(index, 'sets', override.sets - 1)}
+                        disabled={override.sets <= 1}
+                        aria-label={t('decreaseSets')}
+                      >
+                        −
+                      </button>
+                      <span className={styles.controlValue}>{override.sets}</span>
+                      <button
+                        className={styles.controlBtn}
+                        onClick={() => updateOverride(index, 'sets', override.sets + 1)}
+                        aria-label={t('increaseSets')}
+                      >
+                        +
+                      </button>
+                    </div>
+
+                    <div className={styles.control}>
+                      <button
+                        className={styles.controlBtn}
+                        onClick={() => updateOverride(index, 'reps', override.reps - 1)}
+                        disabled={override.reps <= 1}
+                        aria-label={t('decreaseReps')}
+                      >
+                        −
+                      </button>
+                      <span className={styles.controlValue}>{override.reps}</span>
+                      <button
+                        className={styles.controlBtn}
+                        onClick={() => updateOverride(index, 'reps', override.reps + 1)}
+                        aria-label={t('increaseReps')}
+                      >
+                        +
+                      </button>
+                    </div>
+
+                    <div className={styles.control}>
+                      <button
+                        className={styles.controlBtn}
+                        onClick={() =>
+                          updateOverride(index, 'restTimeSeconds', override.restTimeSeconds - 15)
+                        }
+                        disabled={override.restTimeSeconds <= 15}
+                        aria-label={t('decreaseRest')}
+                      >
+                        −
+                      </button>
+                      <span className={styles.controlValue}>
+                        {formatTime(override.restTimeSeconds)}
+                      </span>
+                      <button
+                        className={styles.controlBtn}
+                        onClick={() =>
+                          updateOverride(index, 'restTimeSeconds', override.restTimeSeconds + 15)
+                        }
+                        aria-label={t('increaseRest')}
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 

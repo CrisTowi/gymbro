@@ -2263,6 +2263,1440 @@ export const exercises: Exercise[] = [
     tags: ['compound', 'forearms', 'grip', 'carry'],
     referenceUrl: 'https://exrx.net/WeightExercises/TrapeziusUpper/DBFarmerWalk',
   },
+
+  // NEW CHEST
+  {
+    id: 'incline-barbell-press',
+    name: { en: 'Incline Barbell Press', es: 'Press con barra en inclinado' },
+    category: 'chest',
+    secondaryMuscles: ['triceps', 'shoulders'],
+    equipment: 'barbell',
+    description: {
+      en: 'Upper chest barbell press on an inclined bench.',
+      es: 'Press con barra en banca inclinada para la parte superior del pecho.',
+    },
+    instructions: {
+      en: [
+        'Set bench to 30-45 degree incline',
+        'Grip bar slightly wider than shoulder-width',
+        'Lower bar to upper chest with control',
+        'Press back up to full extension',
+      ],
+      es: [
+        'Coloca la banca a 30-45 grados de inclinación',
+        'Agarra la barra algo más ancho que los hombros',
+        'Baja la barra al pecho alto con control',
+        'Empuja de vuelta hasta extender los brazos',
+      ],
+    },
+    tags: ['push', 'compound', 'upper-chest'],
+    referenceUrl: 'https://exrx.net/WeightExercises/PectoralClavicular/BBInclineBenchPress',
+  },
+  {
+    id: 'close-grip-bench-press',
+    name: { en: 'Close-Grip Bench Press', es: 'Press de banca agarre estrecho' },
+    category: 'chest',
+    secondaryMuscles: ['triceps'],
+    equipment: 'barbell',
+    description: {
+      en: 'Bench press with narrow grip to target inner chest and triceps.',
+      es: 'Press de banca con agarre estrecho para pecho interior y tríceps.',
+    },
+    instructions: {
+      en: [
+        'Lie on flat bench, grip bar shoulder-width or narrower',
+        'Lower bar to mid-chest with elbows tucked',
+        'Press back up to lockout',
+        'Keep core tight and feet flat',
+      ],
+      es: [
+        'Tumbado en banca, agarra la barra a la anchura de los hombros o más estrecho',
+        'Baja la barra al centro del pecho con los codos recogidos',
+        'Empuja hasta extender los brazos',
+        'Mantén el core tenso y los pies apoyados',
+      ],
+    },
+    tags: ['push', 'compound', 'chest', 'triceps'],
+    referenceUrl: 'https://exrx.net/WeightExercises/Triceps/BBCloseGripBenchPress',
+  },
+  {
+    id: 'high-to-low-cable-flyes',
+    name: { en: 'High-to-Low Cable Flyes', es: 'Aperturas en polea alta a baja' },
+    category: 'chest',
+    secondaryMuscles: ['shoulders'],
+    equipment: 'cable',
+    description: {
+      en: 'Cable fly from high to low to target the lower chest.',
+      es: 'Apertura en polea de arriba abajo para la parte inferior del pecho.',
+    },
+    instructions: {
+      en: [
+        'Set cables above shoulder height',
+        'Step forward, lean slightly',
+        'Pull handles down and together toward hips',
+        'Squeeze lower chest at bottom, return slowly',
+      ],
+      es: [
+        'Coloca las poleas por encima de los hombros',
+        'Da un paso adelante e inclínate levemente',
+        'Tira de los mangos hacia abajo y juntos hacia las caderas',
+        'Contrae el pecho inferior abajo y vuelve despacio',
+      ],
+    },
+    tags: ['push', 'isolation', 'chest', 'lower-chest'],
+    referenceUrl: 'https://exrx.net/WeightExercises/PectoralSternal/CBDeclineFly',
+  },
+  {
+    id: 'landmine-press',
+    name: { en: 'Landmine Press', es: 'Press landmine' },
+    category: 'chest',
+    secondaryMuscles: ['shoulders', 'triceps'],
+    equipment: 'barbell',
+    description: {
+      en: 'Single-arm angled press for upper chest and shoulder development.',
+      es: 'Press a un brazo en ángulo para pecho superior y hombros.',
+    },
+    instructions: {
+      en: [
+        'Secure one end of barbell in corner or landmine attachment',
+        'Hold the other end at shoulder level',
+        'Press bar up and forward in an arc',
+        'Lower with control to starting position',
+      ],
+      es: [
+        'Fija un extremo de la barra en un landmine o esquina',
+        'Sujeta el otro extremo a la altura del hombro',
+        'Empuja la barra hacia arriba y adelante en arco',
+        'Baja con control a la posición inicial',
+      ],
+    },
+    tags: ['push', 'compound', 'chest', 'shoulders'],
+    referenceUrl: 'https://exrx.net/WeightExercises/PectoralClavicular/BBLandminePress',
+  },
+  {
+    id: 'incline-push-ups',
+    name: { en: 'Incline Push-Ups', es: 'Flexiones en elevado' },
+    category: 'chest',
+    secondaryMuscles: ['triceps', 'shoulders'],
+    equipment: 'bodyweight',
+    description: {
+      en: 'Push-ups with hands elevated for lower chest emphasis.',
+      es: 'Flexiones con manos elevadas para énfasis en la parte inferior del pecho.',
+    },
+    instructions: {
+      en: [
+        'Place hands on bench or elevated surface',
+        'Body in straight line from head to heels',
+        'Lower chest to surface by bending elbows',
+        'Push back up to full extension',
+      ],
+      es: [
+        'Coloca las manos en un banco o superficie elevada',
+        'Cuerpo en línea recta de cabeza a talones',
+        'Baja el pecho hacia la superficie flexionando los codos',
+        'Empuja de vuelta hasta la extensión completa',
+      ],
+    },
+    tags: ['push', 'compound', 'chest', 'bodyweight'],
+    referenceUrl: 'https://exrx.net/WeightExercises/PectoralSternal/BWInclinePushup',
+  },
+
+  // NEW BACK
+  {
+    id: 'meadows-row',
+    name: { en: 'Meadows Row', es: 'Remo Meadows' },
+    category: 'back',
+    secondaryMuscles: ['biceps', 'forearms'],
+    equipment: 'barbell',
+    description: {
+      en: 'Single-arm landmine row for lat thickness and upper back.',
+      es: 'Remo unilateral con landmine para grosor de dorsales y espalda alta.',
+    },
+    instructions: {
+      en: [
+        'Stand perpendicular to loaded barbell end',
+        'Hinge forward and grip the end with one hand',
+        'Row the weight up toward your hip',
+        'Lower with control and repeat',
+      ],
+      es: [
+        'Ponte perpendicular al extremo cargado de la barra',
+        'Inclínate hacia adelante y agarra el extremo con una mano',
+        'Rema el peso hacia tu cadera',
+        'Baja con control y repite',
+      ],
+    },
+    tags: ['pull', 'compound', 'back', 'unilateral'],
+    referenceUrl: 'https://exrx.net/WeightExercises/LatissimusDorsi/BBMeadowsRow',
+  },
+  {
+    id: 'chest-supported-dumbbell-row',
+    name: { en: 'Chest-Supported Dumbbell Row', es: 'Remo con mancuernas apoyado en pecho' },
+    category: 'back',
+    secondaryMuscles: ['biceps'],
+    equipment: 'dumbbell',
+    description: {
+      en: 'Incline bench row eliminating lower back stress.',
+      es: 'Remo en banco inclinado que elimina el estrés lumbar.',
+    },
+    instructions: {
+      en: [
+        'Lie face down on incline bench at 45 degrees',
+        'Hold dumbbells hanging below bench',
+        'Row both dumbbells up, squeezing shoulder blades',
+        'Lower with control',
+      ],
+      es: [
+        'Túmbate boca abajo en el banco inclinado a 45 grados',
+        'Sujeta las mancuernas colgando bajo el banco',
+        'Rema ambas mancuernas hacia arriba juntando las escápulas',
+        'Baja con control',
+      ],
+    },
+    tags: ['pull', 'compound', 'back'],
+    referenceUrl: 'https://exrx.net/WeightExercises/BackGeneral/DBInclineSupportedRow',
+  },
+  {
+    id: 'inverted-row',
+    name: { en: 'Inverted Row', es: 'Remo invertido' },
+    category: 'back',
+    secondaryMuscles: ['biceps'],
+    equipment: 'bodyweight',
+    description: {
+      en: 'Horizontal pull using bodyweight on a bar or rings.',
+      es: 'Jalón horizontal con peso corporal en barra o anillas.',
+    },
+    instructions: {
+      en: [
+        'Set bar at waist height, hang underneath with arms extended',
+        'Keep body straight from heels to head',
+        'Pull chest up to the bar',
+        'Lower slowly to full extension',
+      ],
+      es: [
+        'Coloca la barra a la altura de la cadera, cuélgate con brazos extendidos',
+        'Mantén el cuerpo recto de talones a cabeza',
+        'Tira del pecho hacia la barra',
+        'Baja despacio hasta la extensión completa',
+      ],
+    },
+    tags: ['pull', 'compound', 'back', 'bodyweight'],
+    referenceUrl: 'https://exrx.net/WeightExercises/BackGeneral/BWInvertedRow',
+  },
+  {
+    id: 'single-arm-cable-row',
+    name: { en: 'Single-Arm Cable Row', es: 'Remo en polea a un brazo' },
+    category: 'back',
+    secondaryMuscles: ['biceps'],
+    equipment: 'cable',
+    description: {
+      en: 'Unilateral cable row for back width and core stability.',
+      es: 'Remo unilateral en polea para amplitud de espalda y estabilidad del core.',
+    },
+    instructions: {
+      en: [
+        'Attach single handle to low cable',
+        'Sit or stand, pull handle to side of torso',
+        'Squeeze shoulder blade at end position',
+        'Lower with control and repeat',
+      ],
+      es: [
+        'Engancha un mango individual a la polea baja',
+        'Sentado o de pie, tira del mango hacia el lado del torso',
+        'Contrae la escápula en la posición final',
+        'Baja con control y repite',
+      ],
+    },
+    tags: ['pull', 'compound', 'back', 'unilateral'],
+    referenceUrl: 'https://exrx.net/WeightExercises/LatissimusDorsi/CBOneArmRow',
+  },
+  {
+    id: 'rack-pull',
+    name: { en: 'Rack Pull', es: 'Tirón en rack' },
+    category: 'back',
+    secondaryMuscles: ['traps', 'hamstrings'],
+    equipment: 'barbell',
+    description: {
+      en: 'Partial deadlift from knee height for upper back and trap overload.',
+      es: 'Peso muerto parcial desde la altura de la rodilla para espalda alta y trapecios.',
+    },
+    instructions: {
+      en: [
+        'Set bar in rack at knee height',
+        'Grip bar outside knees with overhand or mixed grip',
+        'Drive hips forward, standing tall',
+        'Lower bar back to rack with control',
+      ],
+      es: [
+        'Coloca la barra en el rack a la altura de las rodillas',
+        'Agarra la barra por fuera de las rodillas con agarre prono o mixto',
+        'Lleva las caderas hacia adelante, erguido',
+        'Baja la barra al rack con control',
+      ],
+    },
+    tags: ['pull', 'compound', 'back', 'traps'],
+    referenceUrl: 'https://exrx.net/WeightExercises/ErectorSpinae/BBRackPull',
+  },
+  {
+    id: 'close-grip-lat-pulldown',
+    name: { en: 'Close-Grip Lat Pulldown', es: 'Jalón al pecho agarre estrecho' },
+    category: 'back',
+    secondaryMuscles: ['biceps', 'forearms'],
+    equipment: 'cable',
+    description: {
+      en: 'Lat pulldown with narrow grip to increase lat stretch.',
+      es: 'Jalón al pecho con agarre estrecho para mayor estiramiento de dorsales.',
+    },
+    instructions: {
+      en: [
+        'Sit at lat pulldown machine with thighs secured',
+        'Grip bar or V-bar at shoulder-width or narrower',
+        'Pull to upper chest, elbows tucked',
+        'Return to full extension with control',
+      ],
+      es: [
+        'Siéntate en la máquina con los muslos sujetos',
+        'Agarra la barra o mango V a la anchura de los hombros o más estrecho',
+        'Tira hacia el pecho alto con los codos recogidos',
+        'Vuelve a la extensión completa con control',
+      ],
+    },
+    tags: ['pull', 'compound', 'back'],
+    referenceUrl: 'https://exrx.net/WeightExercises/LatissimusDorsi/CBCloseGripPulldown',
+  },
+
+  // NEW SHOULDERS
+  {
+    id: 'cable-lateral-raise',
+    name: { en: 'Cable Lateral Raise', es: 'Elevación lateral en polea' },
+    category: 'shoulders',
+    secondaryMuscles: ['traps'],
+    equipment: 'cable',
+    description: {
+      en: 'Lateral raise with cable for constant tension on lateral delts.',
+      es: 'Elevación lateral en polea para tensión constante en el deltoides lateral.',
+    },
+    instructions: {
+      en: [
+        'Stand sideways to cable machine, low attachment',
+        'Grip handle with far hand, arm at side',
+        'Raise arm out to side until parallel to floor',
+        'Lower slowly with control',
+      ],
+      es: [
+        'Ponte de lado a la polea, enganche bajo',
+        'Agarra el mango con la mano más lejana, brazo al costado',
+        'Eleva el brazo hacia el lado hasta paralelo al suelo',
+        'Baja despacio con control',
+      ],
+    },
+    tags: ['push', 'isolation', 'shoulders'],
+    referenceUrl: 'https://exrx.net/WeightExercises/DeltoidLateral/CBLateralRaise',
+  },
+  {
+    id: 'machine-overhead-press',
+    name: { en: 'Machine Overhead Press', es: 'Press de hombros en máquina' },
+    category: 'shoulders',
+    secondaryMuscles: ['triceps'],
+    equipment: 'machine',
+    description: {
+      en: 'Seated machine shoulder press for controlled deltoid development.',
+      es: 'Press de hombros en máquina sentado para desarrollo controlado de deltoides.',
+    },
+    instructions: {
+      en: [
+        'Adjust seat so handles are at shoulder height',
+        'Grip handles and press overhead until arms extended',
+        'Lower with control to starting position',
+        'Keep back flat against pad',
+      ],
+      es: [
+        'Ajusta el asiento para que los mangos queden a la altura de los hombros',
+        'Agarra los mangos y empuja hasta extender los brazos',
+        'Baja con control a la posición inicial',
+        'Mantén la espalda apoyada en el respaldo',
+      ],
+    },
+    tags: ['push', 'compound', 'shoulders'],
+    referenceUrl: 'https://exrx.net/WeightExercises/DeltoidAnterior/LVShoulderPress',
+  },
+  {
+    id: 'cable-front-raise',
+    name: { en: 'Cable Front Raise', es: 'Elevación frontal en polea' },
+    category: 'shoulders',
+    secondaryMuscles: [],
+    equipment: 'cable',
+    description: {
+      en: 'Front raise with cable for constant tension on anterior delts.',
+      es: 'Elevación frontal en polea para tensión constante en el deltoides anterior.',
+    },
+    instructions: {
+      en: [
+        'Stand facing away from low cable, grip handle',
+        'Raise arm straight forward to shoulder height',
+        'Lower slowly with control',
+        'Alternate arms or perform bilaterally',
+      ],
+      es: [
+        'Ponte de espaldas a la polea baja, agarra el mango',
+        'Eleva el brazo recto hacia adelante hasta la altura del hombro',
+        'Baja despacio con control',
+        'Alterna brazos o hazlo bilateralmente',
+      ],
+    },
+    tags: ['push', 'isolation', 'shoulders'],
+    referenceUrl: 'https://exrx.net/WeightExercises/DeltoidAnterior/CBFrontRaise',
+  },
+  {
+    id: 'pike-push-up',
+    name: { en: 'Pike Push-Up', es: 'Flexión en pica' },
+    category: 'shoulders',
+    secondaryMuscles: ['triceps', 'core'],
+    equipment: 'bodyweight',
+    description: {
+      en: 'Bodyweight shoulder press variation in a pike position.',
+      es: 'Variante de press de hombros con peso corporal en posición de pica.',
+    },
+    instructions: {
+      en: [
+        'Start in downward dog position, hips high',
+        'Bend elbows to lower head toward floor',
+        'Press back up to full arm extension',
+        'Keep hips high throughout',
+      ],
+      es: [
+        'Empieza en posición de perro boca abajo con caderas altas',
+        'Flexiona los codos para bajar la cabeza hacia el suelo',
+        'Empuja de vuelta hasta extender los brazos',
+        'Mantén las caderas altas durante todo el ejercicio',
+      ],
+    },
+    tags: ['push', 'compound', 'shoulders', 'bodyweight'],
+    referenceUrl: 'https://exrx.net/WeightExercises/DeltoidAnterior/BWPikePushup',
+  },
+  {
+    id: 'band-pull-apart',
+    name: { en: 'Band Pull-Apart', es: 'Separación de banda' },
+    category: 'shoulders',
+    secondaryMuscles: ['traps'],
+    equipment: 'resistance-band',
+    description: {
+      en: 'Rear delt and upper back activation with resistance band.',
+      es: 'Activación de deltoides posterior y espalda alta con banda de resistencia.',
+    },
+    instructions: {
+      en: [
+        'Hold band at chest height with arms extended',
+        'Pull band apart, spreading hands to sides',
+        'Squeeze shoulder blades at end position',
+        'Return slowly to starting position',
+      ],
+      es: [
+        'Sujeta la banda a la altura del pecho con los brazos extendidos',
+        'Separa la banda llevando las manos a los lados',
+        'Contrae las escápulas en la posición final',
+        'Vuelve despacio a la posición inicial',
+      ],
+    },
+    tags: ['pull', 'isolation', 'rear-delts', 'shoulders'],
+    referenceUrl: 'https://exrx.net/WeightExercises/DeltoidPosterior/BandPullApart',
+  },
+
+  // NEW BICEPS
+  {
+    id: 'preacher-curl',
+    name: { en: 'Preacher Curl', es: 'Curl en banco predicador' },
+    category: 'biceps',
+    secondaryMuscles: ['forearms'],
+    equipment: 'barbell',
+    description: {
+      en: 'Strict curl on preacher bench for peak bicep isolation.',
+      es: 'Curl estricto en banco predicador para aislamiento máximo del bíceps.',
+    },
+    instructions: {
+      en: [
+        'Sit at preacher bench with arms over the pad',
+        'Hold barbell or EZ bar with underhand grip',
+        'Curl weight up fully contracting biceps',
+        'Lower slowly for full stretch',
+      ],
+      es: [
+        'Siéntate en el banco predicador con los brazos sobre el cojín',
+        'Sujeta la barra o barra EZ con agarre supino',
+        'Curl completo contrayendo bien los bíceps',
+        'Baja despacio para estirar completamente',
+      ],
+    },
+    tags: ['pull', 'isolation', 'biceps'],
+    referenceUrl: 'https://exrx.net/WeightExercises/Biceps/BBPreacherCurl',
+  },
+  {
+    id: 'spider-curl',
+    name: { en: 'Spider Curl', es: 'Curl araña' },
+    category: 'biceps',
+    secondaryMuscles: [],
+    equipment: 'dumbbell',
+    description: {
+      en: 'Prone incline curl for peak bicep contraction.',
+      es: 'Curl en banco inclinado boca abajo para contracción máxima del bíceps.',
+    },
+    instructions: {
+      en: [
+        'Lie face down on incline bench, arms hanging',
+        'Curl dumbbells up squeezing biceps',
+        'Lower with control to full extension',
+        'Keep upper arms still throughout',
+      ],
+      es: [
+        'Túmbate boca abajo en banco inclinado, brazos colgando',
+        'Curl de mancuernas contrayendo los bíceps',
+        'Baja con control hasta la extensión completa',
+        'Mantén los brazos superiores quietos durante todo el ejercicio',
+      ],
+    },
+    tags: ['pull', 'isolation', 'biceps'],
+    referenceUrl: 'https://exrx.net/WeightExercises/Biceps/DBSpiderCurl',
+  },
+  {
+    id: 'cable-hammer-curl',
+    name: { en: 'Cable Hammer Curl', es: 'Curl martillo en polea' },
+    category: 'biceps',
+    secondaryMuscles: ['forearms'],
+    equipment: 'cable',
+    description: {
+      en: 'Hammer curl variation using rope cable for constant tension.',
+      es: 'Variante de curl martillo en polea con cuerda para tensión constante.',
+    },
+    instructions: {
+      en: [
+        'Attach rope to low cable, stand facing machine',
+        'Grip rope with neutral grip, palms facing each other',
+        'Curl up to shoulder level',
+        'Lower with control, maintaining tension',
+      ],
+      es: [
+        'Engancha la cuerda a la polea baja, de pie frente a la máquina',
+        'Agarra la cuerda con agarre neutro, palmas enfrentadas',
+        'Curl hasta la altura del hombro',
+        'Baja con control manteniendo la tensión',
+      ],
+    },
+    tags: ['pull', 'isolation', 'biceps'],
+    referenceUrl: 'https://exrx.net/WeightExercises/Brachioradialis/CBHammerCurl',
+  },
+  {
+    id: 'reverse-barbell-curl',
+    name: { en: 'Reverse Barbell Curl', es: 'Curl inverso con barra' },
+    category: 'biceps',
+    secondaryMuscles: ['forearms'],
+    equipment: 'barbell',
+    description: {
+      en: 'Overhand curl targeting the brachialis and forearms.',
+      es: 'Curl en pronación para el braquial y los antebrazos.',
+    },
+    instructions: {
+      en: [
+        'Stand with barbell, overhand grip at shoulder width',
+        'Curl bar up toward shoulders',
+        'Keep elbows pinned to sides',
+        'Lower with control to full extension',
+      ],
+      es: [
+        'De pie con la barra, agarre prono a la anchura de los hombros',
+        'Curl de la barra hacia los hombros',
+        'Mantén los codos pegados a los costados',
+        'Baja con control hasta la extensión completa',
+      ],
+    },
+    tags: ['pull', 'isolation', 'biceps', 'forearms'],
+    referenceUrl: 'https://exrx.net/WeightExercises/Brachioradialis/BBReverseCurl',
+  },
+
+  // NEW TRICEPS
+  {
+    id: 'cable-overhead-tricep-extension',
+    name: {
+      en: 'Cable Overhead Tricep Extension',
+      es: 'Extensión de tríceps sobre la cabeza en polea',
+    },
+    category: 'triceps',
+    secondaryMuscles: [],
+    equipment: 'cable',
+    description: {
+      en: 'Overhead tricep extension with cable for constant tension on long head.',
+      es: 'Extensión de tríceps sobre la cabeza en polea para tensión constante en la cabeza larga.',
+    },
+    instructions: {
+      en: [
+        'Attach rope to high cable, face away from machine',
+        'Hold rope behind head with elbows bent',
+        'Extend arms overhead, squeezing triceps',
+        'Lower behind head with control',
+      ],
+      es: [
+        'Engancha la cuerda a la polea alta, de espaldas a la máquina',
+        'Sujeta la cuerda detrás de la cabeza con codos flexionados',
+        'Extiende los brazos sobre la cabeza contrayendo los tríceps',
+        'Baja detrás de la cabeza con control',
+      ],
+    },
+    tags: ['push', 'isolation', 'triceps'],
+    referenceUrl: 'https://exrx.net/WeightExercises/Triceps/CBOverheadTricepExt',
+  },
+  {
+    id: 'single-arm-cable-pushdown',
+    name: { en: 'Single-Arm Cable Pushdown', es: 'Jalón de tríceps a un brazo en polea' },
+    category: 'triceps',
+    secondaryMuscles: [],
+    equipment: 'cable',
+    description: {
+      en: 'Unilateral tricep pushdown for balanced development.',
+      es: 'Jalón de tríceps unilateral en polea para desarrollo equilibrado.',
+    },
+    instructions: {
+      en: [
+        'Stand facing cable machine with single handle attachment',
+        'Keep elbow pinned to side',
+        'Push handle down until arm fully extended',
+        'Return slowly to starting position',
+      ],
+      es: [
+        'De pie frente a la polea con mango individual',
+        'Mantén el codo pegado al costado',
+        'Empuja el mango hacia abajo hasta extender el brazo',
+        'Vuelve despacio a la posición inicial',
+      ],
+    },
+    tags: ['push', 'isolation', 'triceps', 'unilateral'],
+    referenceUrl: 'https://exrx.net/WeightExercises/Triceps/CBOneArmPushdown',
+  },
+  {
+    id: 'bench-dips',
+    name: { en: 'Bench Dips', es: 'Fondos en banco' },
+    category: 'triceps',
+    secondaryMuscles: ['chest', 'shoulders'],
+    equipment: 'bodyweight',
+    description: {
+      en: 'Tricep dips performed with hands on a bench.',
+      es: 'Fondos de tríceps con las manos apoyadas en un banco.',
+    },
+    instructions: {
+      en: [
+        'Sit on edge of bench, hands beside hips',
+        'Slide hips off bench, legs extended',
+        'Lower body by bending elbows to 90 degrees',
+        'Push back up to starting position',
+      ],
+      es: [
+        'Siéntate en el borde del banco, manos al lado de las caderas',
+        'Desliza las caderas fuera del banco, piernas extendidas',
+        'Baja el cuerpo flexionando los codos hasta 90 grados',
+        'Empuja de vuelta a la posición inicial',
+      ],
+    },
+    tags: ['push', 'compound', 'triceps', 'bodyweight'],
+    referenceUrl: 'https://exrx.net/WeightExercises/Triceps/BWBenchDip',
+  },
+  {
+    id: 'lying-dumbbell-extension',
+    name: { en: 'Lying Dumbbell Extension', es: 'Extensión de tríceps tumbado con mancuernas' },
+    category: 'triceps',
+    secondaryMuscles: [],
+    equipment: 'dumbbell',
+    description: {
+      en: 'Dumbbell variation of skull crushers for tricep isolation.',
+      es: 'Variante con mancuernas del skull crusher para aislamiento de tríceps.',
+    },
+    instructions: {
+      en: [
+        'Lie on flat bench, dumbbells above chest',
+        'Lower dumbbells toward temples by bending elbows',
+        'Keep upper arms perpendicular to floor',
+        'Extend arms back to starting position',
+      ],
+      es: [
+        'Tumbado en banco plano, mancuernas sobre el pecho',
+        'Baja las mancuernas hacia las sienes flexionando los codos',
+        'Mantén los brazos superiores perpendiculares al suelo',
+        'Extiende los brazos de vuelta a la posición inicial',
+      ],
+    },
+    tags: ['push', 'isolation', 'triceps'],
+    referenceUrl: 'https://exrx.net/WeightExercises/Triceps/DBLyingTriExt',
+  },
+
+  // NEW QUADRICEPS
+  {
+    id: 'step-ups',
+    name: { en: 'Step-Ups', es: 'Subidas al cajón' },
+    category: 'quadriceps',
+    secondaryMuscles: ['glutes', 'hamstrings'],
+    equipment: 'dumbbell',
+    description: {
+      en: 'Unilateral leg exercise stepping onto a box or bench.',
+      es: 'Ejercicio unilateral de piernas subiendo a un cajón o banco.',
+    },
+    instructions: {
+      en: [
+        'Hold dumbbells at sides, stand in front of box',
+        'Step up with one foot, driving through heel',
+        'Stand tall on box, then step down',
+        'Alternate legs or complete a set per side',
+      ],
+      es: [
+        'Sujeta las mancuernas a los lados, de pie frente al cajón',
+        'Sube con un pie empujando con el talón',
+        'Quédate erguido sobre el cajón, luego baja',
+        'Alterna piernas o completa una serie por lado',
+      ],
+    },
+    tags: ['legs', 'compound', 'quadriceps', 'unilateral'],
+    referenceUrl: 'https://exrx.net/WeightExercises/Quadriceps/DBStepUp',
+  },
+  {
+    id: 'dumbbell-sumo-squat',
+    name: { en: 'Dumbbell Sumo Squat', es: 'Sentadilla sumo con mancuerna' },
+    category: 'quadriceps',
+    secondaryMuscles: ['glutes', 'hamstrings', 'core'],
+    equipment: 'dumbbell',
+    description: {
+      en: 'Wide-stance squat with dumbbell for inner thigh and glute focus.',
+      es: 'Sentadilla con piernas abiertas y mancuerna para aductores y glúteos.',
+    },
+    instructions: {
+      en: [
+        'Hold dumbbell vertically at chest or between legs',
+        'Stand with feet wider than shoulder-width, toes out',
+        'Squat down keeping chest up',
+        'Drive through heels to stand',
+      ],
+      es: [
+        'Sujeta la mancuerna verticalmente en el pecho o entre las piernas',
+        'De pie con pies más abiertos que los hombros, puntas hacia fuera',
+        'Baja en sentadilla manteniendo el pecho alto',
+        'Empuja con los talones para levantarte',
+      ],
+    },
+    tags: ['legs', 'compound', 'quadriceps', 'glutes'],
+    referenceUrl: 'https://exrx.net/WeightExercises/Quadriceps/DBSumoSquat',
+  },
+  {
+    id: 'wall-sit',
+    name: { en: 'Wall Sit', es: 'Sentadilla en pared' },
+    category: 'quadriceps',
+    secondaryMuscles: ['glutes', 'hamstrings'],
+    equipment: 'bodyweight',
+    description: {
+      en: 'Isometric quad exercise holding a seated position against the wall.',
+      es: 'Ejercicio isométrico de cuádriceps manteniendo posición sentada contra la pared.',
+    },
+    instructions: {
+      en: [
+        'Stand with back against wall, feet hip-width',
+        'Slide down until thighs are parallel to floor',
+        'Keep knees at 90 degrees and back flat',
+        'Hold position for target time',
+      ],
+      es: [
+        'De pie con la espalda contra la pared, pies a la anchura de caderas',
+        'Deslízate hacia abajo hasta que los muslos estén paralelos al suelo',
+        'Mantén las rodillas a 90 grados y la espalda plana',
+        'Aguanta la posición el tiempo objetivo',
+      ],
+    },
+    tags: ['legs', 'isometric', 'quadriceps', 'bodyweight'],
+    referenceUrl: 'https://exrx.net/WeightExercises/Quadriceps/BWWallSit',
+  },
+  {
+    id: 'sissy-squat',
+    name: { en: 'Sissy Squat', es: 'Sissy squat' },
+    category: 'quadriceps',
+    secondaryMuscles: [],
+    equipment: 'bodyweight',
+    description: {
+      en: 'Advanced quad isolation exercise with backward lean.',
+      es: 'Ejercicio avanzado de aislamiento de cuádriceps con inclinación hacia atrás.',
+    },
+    instructions: {
+      en: [
+        'Stand holding support, feet close together',
+        'Rise onto toes, lean backward as you lower',
+        'Bend knees bringing them forward toward floor',
+        'Drive back up by extending knees',
+      ],
+      es: [
+        'De pie agarrado a un apoyo, pies juntos',
+        'Sube sobre las puntas e inclínate hacia atrás al bajar',
+        'Flexiona las rodillas llevándolas hacia el suelo',
+        'Sube de nuevo extendiendo las rodillas',
+      ],
+    },
+    tags: ['legs', 'isolation', 'quadriceps', 'bodyweight'],
+    referenceUrl: 'https://exrx.net/WeightExercises/Quadriceps/BWSissySquat',
+  },
+
+  // NEW HAMSTRINGS
+  {
+    id: 'nordic-curl',
+    name: { en: 'Nordic Curl', es: 'Curl nórdico' },
+    category: 'hamstrings',
+    secondaryMuscles: ['glutes'],
+    equipment: 'bodyweight',
+    description: {
+      en: 'Eccentric hamstring exercise with ankles anchored.',
+      es: 'Ejercicio excéntrico de isquiotibiales con tobillos anclados.',
+    },
+    instructions: {
+      en: [
+        'Kneel on pad with ankles secured under a bar or held by partner',
+        'Lower torso forward toward floor using hamstrings',
+        'Use hands to catch yourself at the bottom',
+        'Pull back up using hamstrings',
+      ],
+      es: [
+        'Arrodíllate con los tobillos sujetos bajo una barra o por un compañero',
+        'Baja el torso hacia el suelo usando los isquiotibiales',
+        'Usa las manos para frenarte al final',
+        'Vuelve arriba usando los isquiotibiales',
+      ],
+    },
+    tags: ['legs', 'compound', 'hamstrings', 'eccentric'],
+    referenceUrl: 'https://exrx.net/WeightExercises/Hamstrings/BWNordicHamstringCurl',
+  },
+  {
+    id: 'swiss-ball-leg-curl',
+    name: { en: 'Swiss Ball Leg Curl', es: 'Curl de piernas con fitball' },
+    category: 'hamstrings',
+    secondaryMuscles: ['glutes', 'core'],
+    equipment: 'bodyweight',
+    description: {
+      en: 'Hamstring curl using a stability ball for core engagement.',
+      es: 'Curl de isquiotibiales con fitball para activar también el core.',
+    },
+    instructions: {
+      en: [
+        'Lie on back, heels on stability ball, hips raised',
+        'Pull ball toward glutes by bending knees',
+        'Extend legs back out slowly',
+        'Keep hips elevated throughout',
+      ],
+      es: [
+        'Tumbado boca arriba, talones sobre el fitball, caderas elevadas',
+        'Acerca el balón a los glúteos flexionando las rodillas',
+        'Extiende las piernas despacio',
+        'Mantén las caderas elevadas durante todo el ejercicio',
+      ],
+    },
+    tags: ['legs', 'compound', 'hamstrings', 'bodyweight'],
+    referenceUrl: 'https://exrx.net/WeightExercises/Hamstrings/BWBallLegCurl',
+  },
+  {
+    id: 'cable-pull-through',
+    name: { en: 'Cable Pull-Through', es: 'Tirón de polea entre piernas' },
+    category: 'hamstrings',
+    secondaryMuscles: ['glutes'],
+    equipment: 'cable',
+    description: {
+      en: 'Hip hinge movement using cable for posterior chain development.',
+      es: 'Movimiento de bisagra de cadera en polea para desarrollar la cadena posterior.',
+    },
+    instructions: {
+      en: [
+        'Stand facing away from low cable, rope between legs',
+        'Hinge at hips pushing them back',
+        'Drive hips forward to stand pulling rope through',
+        'Squeeze glutes at lockout',
+      ],
+      es: [
+        'De espaldas a la polea baja, cuerda entre las piernas',
+        'Bisagra de cadera llevándola hacia atrás',
+        'Lleva las caderas adelante para levantarte tirando de la cuerda',
+        'Contrae los glúteos en la posición de bloqueo',
+      ],
+    },
+    tags: ['legs', 'compound', 'hamstrings', 'glutes'],
+    referenceUrl: 'https://exrx.net/WeightExercises/GluteusMaximus/CBPullThrough',
+  },
+  {
+    id: 'single-leg-dumbbell-deadlift',
+    name: { en: 'Single-Leg Dumbbell Deadlift', es: 'Peso muerto a una pierna con mancuerna' },
+    category: 'hamstrings',
+    secondaryMuscles: ['glutes', 'back'],
+    equipment: 'dumbbell',
+    description: {
+      en: 'Single-leg hinge for hamstring and balance development.',
+      es: 'Bisagra a una pierna para isquiotibiales y equilibrio.',
+    },
+    instructions: {
+      en: [
+        'Stand on one leg, hold dumbbell in opposite hand',
+        'Hinge forward at hip, extending free leg back',
+        'Lower dumbbell toward floor',
+        'Return to standing, squeezing glute',
+      ],
+      es: [
+        'De pie sobre una pierna, sujeta la mancuerna con la mano contraria',
+        'Inclínate desde la cadera extendiendo la pierna libre hacia atrás',
+        'Baja la mancuerna hacia el suelo',
+        'Vuelve a estar erguido contrayendo el glúteo',
+      ],
+    },
+    tags: ['legs', 'compound', 'hamstrings', 'unilateral'],
+    referenceUrl: 'https://exrx.net/WeightExercises/Hamstrings/DBOneLegDeadlift',
+  },
+
+  // NEW GLUTES
+  {
+    id: 'donkey-kicks',
+    name: { en: 'Donkey Kicks', es: 'Patadas de burro' },
+    category: 'glutes',
+    secondaryMuscles: ['hamstrings'],
+    equipment: 'bodyweight',
+    description: {
+      en: 'Quadruped hip extension for glute isolation.',
+      es: 'Extensión de cadera en cuadrupedia para aislamiento de glúteos.',
+    },
+    instructions: {
+      en: [
+        'Start on hands and knees, core tight',
+        'Kick one leg back and up, squeezing glute',
+        'Keep knee bent at 90 degrees',
+        'Lower and repeat, then switch legs',
+      ],
+      es: [
+        'Empieza a cuatro patas, core activado',
+        'Lleva una pierna hacia atrás y arriba contrayendo el glúteo',
+        'Mantén la rodilla a 90 grados',
+        'Baja y repite, luego cambia de pierna',
+      ],
+    },
+    tags: ['legs', 'isolation', 'glutes', 'bodyweight'],
+    referenceUrl: 'https://exrx.net/WeightExercises/GluteusMaximus/BWDonkeyKick',
+  },
+  {
+    id: 'frog-pump',
+    name: { en: 'Frog Pump', es: 'Bombeo de rana' },
+    category: 'glutes',
+    secondaryMuscles: [],
+    equipment: 'bodyweight',
+    description: {
+      en: 'High-rep glute pump with externally rotated legs.',
+      es: 'Ejercicio de glúteos de alta repetición con piernas en rotación externa.',
+    },
+    instructions: {
+      en: [
+        'Lie on back, soles of feet together, knees out',
+        'Push hips up contracting glutes hard',
+        'Lower slightly and repeat for high reps',
+        'Keep feet together throughout',
+      ],
+      es: [
+        'Tumbado boca arriba, plantas de los pies juntas, rodillas abiertas',
+        'Eleva las caderas contrayendo fuerte los glúteos',
+        'Baja ligeramente y repite para muchas repeticiones',
+        'Mantén los pies juntos durante todo el ejercicio',
+      ],
+    },
+    tags: ['legs', 'isolation', 'glutes', 'bodyweight'],
+    referenceUrl: 'https://exrx.net/WeightExercises/GluteusMaximus/BWFrogPump',
+  },
+  {
+    id: 'clamshell',
+    name: { en: 'Clamshell', es: 'Apertura de almeja' },
+    category: 'glutes',
+    secondaryMuscles: [],
+    equipment: 'resistance-band',
+    description: {
+      en: 'Hip abduction exercise for glute medius activation.',
+      es: 'Ejercicio de abducción de cadera para activar el glúteo medio.',
+    },
+    instructions: {
+      en: [
+        'Lie on side with knees bent at 45 degrees, band above knees',
+        'Keep feet together, rotate top knee upward',
+        'Open as far as possible without rotating pelvis',
+        'Lower with control and repeat',
+      ],
+      es: [
+        'Tumbado de lado con rodillas a 45 grados, banda por encima de las rodillas',
+        'Mantén los pies juntos y rota la rodilla de arriba hacia arriba',
+        'Abre todo lo posible sin rotar la pelvis',
+        'Baja con control y repite',
+      ],
+    },
+    tags: ['legs', 'isolation', 'glutes', 'abduction'],
+    referenceUrl: 'https://exrx.net/WeightExercises/GluteusMedius/BWClamshell',
+  },
+  {
+    id: 'lateral-band-walk',
+    name: { en: 'Lateral Band Walk', es: 'Marcha lateral con banda' },
+    category: 'glutes',
+    secondaryMuscles: ['quadriceps'],
+    equipment: 'resistance-band',
+    description: {
+      en: 'Side-stepping with resistance band for glute medius activation.',
+      es: 'Pasos laterales con banda para activar el glúteo medio.',
+    },
+    instructions: {
+      en: [
+        'Place band above ankles or knees, slight squat position',
+        'Step sideways, maintaining tension on band',
+        'Keep toes forward and knees tracking over toes',
+        'Walk for steps in each direction',
+      ],
+      es: [
+        'Coloca la banda por encima de los tobillos o rodillas, ligera posición de sentadilla',
+        'Da pasos laterales manteniendo tensión en la banda',
+        'Mantén las puntas al frente y las rodillas sobre los pies',
+        'Camina el número de pasos en cada dirección',
+      ],
+    },
+    tags: ['legs', 'isolation', 'glutes', 'abduction'],
+    referenceUrl: 'https://exrx.net/WeightExercises/GluteusMedius/BandLateralWalk',
+  },
+  {
+    id: 'sumo-deadlift',
+    name: { en: 'Sumo Deadlift', es: 'Peso muerto sumo' },
+    category: 'glutes',
+    secondaryMuscles: ['hamstrings', 'back', 'quadriceps'],
+    equipment: 'barbell',
+    description: {
+      en: 'Wide-stance deadlift emphasizing glutes and inner thighs.',
+      es: 'Peso muerto con piernas abiertas que enfatiza glúteos y aductores.',
+    },
+    instructions: {
+      en: [
+        'Stand with feet wider than shoulder-width, toes pointing out',
+        'Grip bar between legs, hips low',
+        'Drive through heels, extending hips and knees',
+        'Stand tall at top, then lower with control',
+      ],
+      es: [
+        'De pie con pies más abiertos que los hombros, puntas hacia fuera',
+        'Agarra la barra entre las piernas, caderas bajas',
+        'Empuja con los talones extendiendo caderas y rodillas',
+        'Quédate erguido arriba y baja con control',
+      ],
+    },
+    tags: ['legs', 'compound', 'glutes', 'pull'],
+    referenceUrl: 'https://exrx.net/WeightExercises/GluteusMaximus/BBSumoDeadlift',
+  },
+
+  // NEW CALVES
+  {
+    id: 'donkey-calf-raises',
+    name: { en: 'Donkey Calf Raises', es: 'Elevaciones de gemelo inclinado' },
+    category: 'calves',
+    secondaryMuscles: [],
+    equipment: 'bodyweight',
+    description: {
+      en: 'Bent-over calf raise for deep stretch and gastrocnemius loading.',
+      es: 'Elevación de gemelo inclinado para estiramiento profundo y carga del gastrocnemio.',
+    },
+    instructions: {
+      en: [
+        'Bend over at 90 degrees, hands on support, balls of feet on edge',
+        'Lower heels for maximum stretch',
+        'Rise up on toes as high as possible',
+        'Squeeze calves at top, lower with control',
+      ],
+      es: [
+        'Inclínate a 90 grados, manos en apoyo, puntas de los pies en el borde',
+        'Baja los talones para el máximo estiramiento',
+        'Sube sobre las puntas todo lo posible',
+        'Contrae los gemelos arriba y baja con control',
+      ],
+    },
+    tags: ['legs', 'isolation', 'calves'],
+    referenceUrl: 'https://exrx.net/WeightExercises/Gastrocnemius/BWBentKneeDonkeyCalfRaise',
+  },
+  {
+    id: 'standing-dumbbell-calf-raises',
+    name: {
+      en: 'Standing Dumbbell Calf Raises',
+      es: 'Elevaciones de gemelo de pie con mancuernas',
+    },
+    category: 'calves',
+    secondaryMuscles: [],
+    equipment: 'dumbbell',
+    description: {
+      en: 'Standing calf raise holding dumbbells for added resistance.',
+      es: 'Elevación de gemelo de pie con mancuernas para mayor resistencia.',
+    },
+    instructions: {
+      en: [
+        'Stand on edge of step holding dumbbells at sides',
+        'Lower heels below step level for full stretch',
+        'Rise onto toes as high as possible',
+        'Squeeze calves at top and lower with control',
+      ],
+      es: [
+        'De pie en el borde de un escalón con mancuernas a los lados',
+        'Baja los talones por debajo del escalón para estirar bien',
+        'Sube sobre las puntas todo lo posible',
+        'Contrae los gemelos arriba y baja con control',
+      ],
+    },
+    tags: ['legs', 'isolation', 'calves'],
+    referenceUrl: 'https://exrx.net/WeightExercises/Gastrocnemius/DBStandingCalfRaise',
+  },
+  {
+    id: 'tibialis-raise',
+    name: { en: 'Tibialis Raise', es: 'Elevación de tibial' },
+    category: 'calves',
+    secondaryMuscles: [],
+    equipment: 'bodyweight',
+    description: {
+      en: 'Shin strengthening exercise for ankle stability and balance.',
+      es: 'Ejercicio para fortalecer el tibial anterior y la estabilidad del tobillo.',
+    },
+    instructions: {
+      en: [
+        'Stand with back against wall, heels 12 inches out',
+        'Lift toes and forefeet as high as possible',
+        'Lower slowly to the floor',
+        'Repeat for target reps',
+      ],
+      es: [
+        'De pie con la espalda contra la pared, talones a unos 30 cm',
+        'Eleva los dedos y el antepié lo más alto posible',
+        'Baja despacio al suelo',
+        'Repite el número de repeticiones objetivo',
+      ],
+    },
+    tags: ['legs', 'isolation', 'calves', 'anterior'],
+    referenceUrl: 'https://exrx.net/WeightExercises/TibialisAnterior/BWTibialisRaise',
+  },
+
+  // NEW CORE
+  {
+    id: 'side-plank',
+    name: { en: 'Side Plank', es: 'Plancha lateral' },
+    category: 'core',
+    secondaryMuscles: ['shoulders'],
+    equipment: 'bodyweight',
+    description: {
+      en: 'Lateral isometric core exercise for obliques and stability.',
+      es: 'Ejercicio isométrico de core lateral para oblicuos y estabilidad.',
+    },
+    instructions: {
+      en: [
+        'Lie on side, prop up on forearm directly below shoulder',
+        'Stack feet or stagger for balance',
+        'Raise hips until body forms straight line',
+        'Hold position for target time',
+      ],
+      es: [
+        'Tumbado de lado, apóyate en el antebrazo justo bajo el hombro',
+        'Pies apilados o escalonados para equilibrio',
+        'Eleva las caderas hasta que el cuerpo forme una línea recta',
+        'Mantén la posición el tiempo objetivo',
+      ],
+    },
+    tags: ['core', 'isometric', 'obliques', 'bodyweight'],
+    referenceUrl: 'https://exrx.net/WeightExercises/Obliques/BWSidePlank',
+  },
+  {
+    id: 'ab-wheel-rollout',
+    name: { en: 'Ab Wheel Rollout', es: 'Rodillo abdominal' },
+    category: 'core',
+    secondaryMuscles: ['shoulders'],
+    equipment: 'bodyweight',
+    description: {
+      en: 'Advanced core stability exercise using an ab wheel.',
+      es: 'Ejercicio avanzado de estabilidad del core con rueda abdominal.',
+    },
+    instructions: {
+      en: [
+        'Kneel with ab wheel in front, arms extended',
+        'Roll forward slowly lowering body toward floor',
+        'Extend as far as core can control',
+        'Pull wheel back using core and lats',
+      ],
+      es: [
+        'Arrodíllate con la rueda abdominal delante, brazos extendidos',
+        'Rueda hacia adelante despacio bajando el cuerpo',
+        'Extiéndete hasta donde el core controle',
+        'Tira de la rueda de vuelta usando el core y los dorsales',
+      ],
+    },
+    tags: ['core', 'compound', 'bodyweight', 'abs'],
+    referenceUrl: 'https://exrx.net/WeightExercises/RectusAbdominis/BWAbWheelRollout',
+  },
+  {
+    id: 'v-ups',
+    name: { en: 'V-Ups', es: 'Elevaciones en V' },
+    category: 'core',
+    secondaryMuscles: [],
+    equipment: 'bodyweight',
+    description: {
+      en: 'Full range abs exercise bringing hands and feet together.',
+      es: 'Ejercicio abdominal de rango completo juntando manos y pies.',
+    },
+    instructions: {
+      en: [
+        'Lie flat on back, arms and legs extended',
+        'Simultaneously raise legs and torso',
+        'Reach hands toward feet at the top',
+        'Lower with control to starting position',
+      ],
+      es: [
+        'Tumbado boca arriba, brazos y piernas extendidos',
+        'Sube simultáneamente las piernas y el torso',
+        'Acerca las manos a los pies en la parte alta',
+        'Baja con control a la posición inicial',
+      ],
+    },
+    tags: ['core', 'isolation', 'abs', 'bodyweight'],
+    referenceUrl: 'https://exrx.net/WeightExercises/RectusAbdominis/BWVUp',
+  },
+  {
+    id: 'bicycle-crunches',
+    name: { en: 'Bicycle Crunches', es: 'Crunch bicicleta' },
+    category: 'core',
+    secondaryMuscles: [],
+    equipment: 'bodyweight',
+    description: {
+      en: 'Dynamic crunch targeting obliques and rectus abdominis.',
+      es: 'Crunch dinámico para oblicuos y recto abdominal.',
+    },
+    instructions: {
+      en: [
+        'Lie on back, hands behind head, knees bent',
+        'Bring opposite elbow to opposite knee',
+        'Extend other leg straight while rotating',
+        'Alternate sides in a pedaling motion',
+      ],
+      es: [
+        'Tumbado boca arriba, manos detrás de la cabeza, rodillas flexionadas',
+        'Lleva el codo contrario a la rodilla contraria',
+        'Extiende la otra pierna mientras rotas',
+        'Alterna lados en movimiento de pedaleo',
+      ],
+    },
+    tags: ['core', 'obliques', 'abs', 'bodyweight'],
+    referenceUrl: 'https://exrx.net/WeightExercises/Obliques/BWBicycleCrunch',
+  },
+  {
+    id: 'mountain-climbers',
+    name: { en: 'Mountain Climbers', es: 'Escaladores' },
+    category: 'core',
+    secondaryMuscles: ['shoulders'],
+    equipment: 'bodyweight',
+    description: {
+      en: 'Dynamic core exercise combining plank position with running motion.',
+      es: 'Ejercicio de core dinámico combinando posición de plancha con movimiento de carrera.',
+    },
+    instructions: {
+      en: [
+        'Start in high plank position',
+        'Drive one knee toward chest',
+        'Quickly alternate legs in running motion',
+        'Keep hips level and core tight',
+      ],
+      es: [
+        'Empieza en posición de plancha alta',
+        'Lleva una rodilla hacia el pecho',
+        'Alterna rápidamente las piernas en movimiento de carrera',
+        'Mantén las caderas niveladas y el core tenso',
+      ],
+    },
+    tags: ['core', 'cardio', 'compound', 'bodyweight'],
+    referenceUrl: 'https://exrx.net/WeightExercises/Illiopsoas/BWMountainClimber',
+  },
+  {
+    id: 'hollow-body-hold',
+    name: { en: 'Hollow Body Hold', es: 'Posición hollow body' },
+    category: 'core',
+    secondaryMuscles: [],
+    equipment: 'bodyweight',
+    description: {
+      en: 'Gymnastics-based isometric core exercise for full core engagement.',
+      es: 'Ejercicio isométrico de core de base gimnástica para activación total del core.',
+    },
+    instructions: {
+      en: [
+        'Lie on back, arms extended overhead',
+        'Press lower back into floor and lift shoulders and legs',
+        'Create a hollow dish shape with your body',
+        'Hold position with steady breathing',
+      ],
+      es: [
+        'Tumbado boca arriba, brazos extendidos sobre la cabeza',
+        'Presiona la zona lumbar contra el suelo y eleva hombros y piernas',
+        'Crea una forma cóncava con el cuerpo',
+        'Mantén la posición con respiración estable',
+      ],
+    },
+    tags: ['core', 'isometric', 'bodyweight', 'abs'],
+    referenceUrl: 'https://exrx.net/WeightExercises/RectusAbdominis/BWHollowBodyHold',
+  },
+
+  // NEW FOREARMS
+  {
+    id: 'reverse-curl',
+    name: { en: 'Reverse Curl', es: 'Curl inverso' },
+    category: 'forearms',
+    secondaryMuscles: ['biceps'],
+    equipment: 'barbell',
+    description: {
+      en: 'Overhand grip curl targeting brachioradialis and forearm extensors.',
+      es: 'Curl en pronación para el braquiorradial y los extensores del antebrazo.',
+    },
+    instructions: {
+      en: [
+        'Stand with barbell, overhand grip shoulder-width',
+        'Curl bar up keeping elbows at sides',
+        'Lower with control to full extension',
+        'Maintain overhand grip throughout',
+      ],
+      es: [
+        'De pie con la barra, agarre prono a la anchura de los hombros',
+        'Curl de la barra manteniendo los codos a los lados',
+        'Baja con control hasta la extensión completa',
+        'Mantén el agarre prono durante todo el ejercicio',
+      ],
+    },
+    tags: ['pull', 'isolation', 'forearms'],
+    referenceUrl: 'https://exrx.net/WeightExercises/Brachioradialis/BBReverseCurl',
+  },
+  {
+    id: 'zottman-curl',
+    name: { en: 'Zottman Curl', es: 'Curl Zottman' },
+    category: 'forearms',
+    secondaryMuscles: ['biceps'],
+    equipment: 'dumbbell',
+    description: {
+      en: 'Combination curl targeting both biceps and forearm extensors.',
+      es: 'Curl combinado que trabaja tanto los bíceps como los extensores del antebrazo.',
+    },
+    instructions: {
+      en: [
+        'Stand with dumbbells, palms up (supinated grip)',
+        'Curl up to shoulder level squeezing biceps',
+        'Rotate to overhand grip at the top',
+        'Lower slowly with overhand grip, then rotate back',
+      ],
+      es: [
+        'De pie con mancuernas, palmas arriba (agarre supino)',
+        'Curl hasta la altura del hombro contrayendo los bíceps',
+        'Rota al agarre prono en la parte alta',
+        'Baja despacio con agarre prono y rota de vuelta',
+      ],
+    },
+    tags: ['pull', 'isolation', 'forearms', 'biceps'],
+    referenceUrl: 'https://exrx.net/WeightExercises/Brachioradialis/DBZottmanCurl',
+  },
+  {
+    id: 'plate-pinch',
+    name: { en: 'Plate Pinch', es: 'Pellizco de disco' },
+    category: 'forearms',
+    secondaryMuscles: [],
+    equipment: 'bodyweight',
+    description: {
+      en: 'Grip strength exercise pinching weight plates with fingers.',
+      es: 'Ejercicio de fuerza de agarre pellizco discos con los dedos.',
+    },
+    instructions: {
+      en: [
+        'Pinch one or two plates between thumb and fingers',
+        'Hold for target time or distance',
+        'Keep wrist neutral and arm at side',
+        'Alternate hands or hold bilaterally',
+      ],
+      es: [
+        'Pellizca uno o dos discos entre el pulgar y los dedos',
+        'Aguanta el tiempo o distancia objetivo',
+        'Mantén la muñeca neutra y el brazo al costado',
+        'Alterna manos o aguanta bilateralmente',
+      ],
+    },
+    tags: ['isolation', 'forearms', 'grip'],
+    referenceUrl: 'https://exrx.net/WeightExercises/WristFlexors/BWPlatePinch',
+  },
+
+  // NEW TRAPS
+  {
+    id: 'cable-shrugs',
+    name: { en: 'Cable Shrugs', es: 'Encogimientos en polea' },
+    category: 'traps',
+    secondaryMuscles: ['forearms'],
+    equipment: 'cable',
+    description: {
+      en: 'Trap isolation using cable for constant tension throughout movement.',
+      es: 'Aislamiento de trapecios en polea para tensión constante en todo el movimiento.',
+    },
+    instructions: {
+      en: [
+        'Stand facing cable machine, bar at low position',
+        'Grip bar with overhand grip, arms straight',
+        'Shrug shoulders straight up toward ears',
+        'Hold briefly at top, lower with control',
+      ],
+      es: [
+        'De pie frente a la polea, barra en posición baja',
+        'Agarra la barra con agarre prono, brazos rectos',
+        'Encoge los hombros hacia arriba hacia las orejas',
+        'Aguanta un momento arriba y baja con control',
+      ],
+    },
+    tags: ['isolation', 'traps', 'pull'],
+    referenceUrl: 'https://exrx.net/WeightExercises/TrapeziusUpper/CBShrug',
+  },
+  {
+    id: 'behind-back-shrugs',
+    name: { en: 'Behind-Back Shrugs', es: 'Encogimientos detrás de la espalda' },
+    category: 'traps',
+    secondaryMuscles: ['forearms'],
+    equipment: 'barbell',
+    description: {
+      en: 'Shrug with bar behind body for different trap emphasis.',
+      es: 'Encogimiento con barra detrás del cuerpo para un énfasis diferente en los trapecios.',
+    },
+    instructions: {
+      en: [
+        'Stand with barbell behind back at arms length',
+        'Shrug shoulders straight up',
+        'Squeeze traps at top, lower with control',
+        'Keep arms straight throughout',
+      ],
+      es: [
+        'De pie con la barra detrás de la espalda a lo largo de los brazos',
+        'Encoge los hombros hacia arriba',
+        'Contrae los trapecios arriba y baja con control',
+        'Mantén los brazos rectos durante todo el ejercicio',
+      ],
+    },
+    tags: ['isolation', 'traps', 'pull'],
+    referenceUrl: 'https://exrx.net/WeightExercises/TrapeziusUpper/BBBehindBackShrug',
+  },
+  {
+    id: 'power-clean',
+    name: { en: 'Power Clean', es: 'Cargada de potencia' },
+    category: 'traps',
+    secondaryMuscles: ['back', 'shoulders', 'quadriceps', 'hamstrings'],
+    equipment: 'barbell',
+    description: {
+      en: 'Olympic-style explosive lift for full body power and trap development.',
+      es: 'Levantamiento explosivo de estilo olímpico para potencia total y desarrollo de trapecios.',
+    },
+    instructions: {
+      en: [
+        'Start in deadlift position, bar over mid-foot',
+        'Explosively pull bar upward, shrugging shoulders',
+        'Drop under bar catching it on front deltoids',
+        'Stand to finish with bar at shoulder height',
+      ],
+      es: [
+        'Empieza en posición de peso muerto, barra sobre el mediopie',
+        'Tira de la barra hacia arriba explosivamente encogiendo los hombros',
+        'Baja bajo la barra cogiéndola sobre los deltoides anteriores',
+        'Levántate para terminar con la barra a la altura de los hombros',
+      ],
+    },
+    tags: ['compound', 'traps', 'explosive', 'pull'],
+    referenceUrl: 'https://exrx.net/WeightExercises/OlympicLifts/PowerClean',
+  },
 ];
 export function getExerciseById(id: string): Exercise | undefined {
   return exercises.find((ex) => ex.id === id);
@@ -2287,11 +3721,20 @@ export function getAlternativeExercises(exerciseId: string, excludeIds: string[]
   const excluded = new Set([exerciseId, ...excludeIds]);
 
   return exercises
-    .filter((ex) => !excluded.has(ex.id) && ex.category === exercise.category)
+    .filter((ex) => !excluded.has(ex.id))
     .sort((a, b) => {
+      // Prioritize same category first
+      if (a.category === exercise.category && b.category !== exercise.category) return -1;
+      if (b.category === exercise.category && a.category !== exercise.category) return 1;
+
+      // Then prioritize shared tags
       const aSharedTags = a.tags.filter((t) => exercise.tags.includes(t)).length;
       const bSharedTags = b.tags.filter((t) => exercise.tags.includes(t)).length;
-      return bSharedTags - aSharedTags;
+      if (bSharedTags !== aSharedTags) {
+        return bSharedTags - aSharedTags;
+      }
+
+      return a.id.localeCompare(b.id);
     });
 }
 

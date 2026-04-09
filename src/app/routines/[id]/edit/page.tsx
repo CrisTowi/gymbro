@@ -1,32 +1,30 @@
 'use client';
 
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import {
-  DndContext,
-  DragEndEvent,
-  DragOverEvent,
-  PointerSensor,
-  TouchSensor,
-  useSensor,
-  useSensors,
-  closestCenter,
-} from '@dnd-kit/core';
-import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
 import { Routine, RoutineExercise, Exercise } from '@/types';
 import { fetchRoutineById, updateRoutine, fetchExercises } from '@/lib/api';
 import { getExerciseById, getAlternativeExercises, getExerciseLocalized } from '@/data/exercises';
 import { useLocale } from '@/context/LocaleContext';
+
+function arrayMoveMutable<T>(array: T[], fromIndex: number, toIndex: number) {
+  const startIndex = fromIndex < 0 ? array.length + fromIndex : fromIndex;
+  if (startIndex >= 0 && startIndex < array.length) {
+    const endIndex = toIndex < 0 ? array.length + toIndex : toIndex;
+    const [item] = array.splice(fromIndex, 1);
+    array.splice(endIndex, 0, item);
+  }
+}
+function arrayMove<T>(array: T[], fromIndex: number, toIndex: number): T[] {
+  const newArray = [...array];
+  arrayMoveMutable(newArray, fromIndex, toIndex);
+  return newArray;
+}
 import { formatTime } from '@/utils/time';
-import SortableRow from '@/components/SortableRow/SortableRow';
 import SwapPicker from './_components/SwapPicker/SwapPicker';
 import styles from './page.module.css';
-
-const touchActivation = { delay: 250, tolerance: 8 };
-const pointerActivation = { distance: 8 };
 
 const DEFAULT_EXERCISE: Omit<RoutineExercise, 'exerciseId'> = {
   sets: 3,
@@ -97,6 +95,31 @@ export default function EditRoutinePage() {
     }
   }, []);
 
+  const moveUp = useCallback((index: number) => {
+    if (index === 0) return;
+    setExercises((prev) => arrayMove(prev, index, index - 1));
+    setSwapIndex((current) => {
+      if (current === null) return null;
+      if (current === index) return index - 1;
+      if (current === index - 1) return index;
+      return current;
+    });
+  }, []);
+
+  const moveDown = useCallback(
+    (index: number) => {
+      if (index === exercises.length - 1) return;
+      setExercises((prev) => arrayMove(prev, index, index + 1));
+      setSwapIndex((current) => {
+        if (current === null) return null;
+        if (current === index) return index + 1;
+        if (current === index + 1) return index;
+        return current;
+      });
+    },
+    [exercises.length]
+  );
+
   const handleSave = async () => {
     if (!id || id === 'new') return;
     setSaving(true);
@@ -139,28 +162,6 @@ export default function EditRoutinePage() {
       return next;
     });
   };
-
-  const sensors = useSensors(
-    useSensor(TouchSensor, { activationConstraint: touchActivation }),
-    useSensor(PointerSensor, { activationConstraint: pointerActivation })
-  );
-
-  const lastOverIdRef = useRef<string | number | null>(null);
-
-  const handleDragOver = useCallback((event: DragOverEvent) => {
-    if (event.over) lastOverIdRef.current = event.over.id;
-  }, []);
-
-  const handleDragEnd = useCallback((event: DragEndEvent) => {
-    const { active, over } = event;
-    const overId = over?.id ?? lastOverIdRef.current;
-    lastOverIdRef.current = null;
-    if (overId == null || String(overId) === String(active.id)) return;
-    const fromIndex = Number(active.id);
-    const toIndex = Number(overId);
-    if (Number.isNaN(fromIndex) || Number.isNaN(toIndex)) return;
-    setExercises((prev) => arrayMove(prev, fromIndex, toIndex));
-  }, []);
 
   const handleSwapExercise = (index: number, newExerciseId: string) => {
     setExercises((prev) => {
@@ -288,240 +289,223 @@ export default function EditRoutinePage() {
           </div>
 
           <ul className={styles.exerciseList}>
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragOver={handleDragOver}
-              onDragEnd={handleDragEnd}
-            >
-              <SortableContext
-                items={exercises.map((_, i) => String(i))}
-                strategy={verticalListSortingStrategy}
-              >
-                {exercises.map((ex, index) => {
-                  const meta = getExerciseById(ex.exerciseId);
-                  return (
-                    <SortableRow key={`${ex.exerciseId}-${index}`} id={String(index)}>
-                      {({
-                        setNodeRef,
-                        setActivatorNodeRef,
-                        listeners,
-                        transform,
-                        transition,
-                        isDragging,
-                      }) => (
-                        <li
-                          ref={setNodeRef}
-                          style={{
-                            transform: CSS.Transform.toString(transform),
-                            transition,
-                          }}
-                          className={`${styles.exerciseRow} ${isDragging ? styles.dragging : ''}`}
+            {exercises.map((ex, index) => {
+              const meta = getExerciseById(ex.exerciseId);
+              return (
+                <li key={`${ex.exerciseId}-${index}`} className={styles.exerciseRow}>
+                  <div className={styles.cardHeader}>
+                    <div className={styles.exerciseInfo}>
+                      <span className={styles.exerciseIndex}>{index + 1}</span>
+                      <span className={styles.exerciseName}>
+                        {meta ? getExerciseLocalized(meta, locale).name : ex.exerciseId}
+                      </span>
+                    </div>
+                    <div className={styles.moveButtons}>
+                      <button
+                        type="button"
+                        className={styles.moveBtn}
+                        onClick={() => moveUp(index)}
+                        disabled={index === 0}
+                        aria-label={t('moveUp') || 'Move up'}
+                      >
+                        <svg
+                          width="18"
+                          height="18"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         >
-                          <div className={styles.cardHeader}>
-                            <div className={styles.exerciseInfo}>
-                              <span className={styles.exerciseIndex}>{index + 1}</span>
-                              <span className={styles.exerciseName}>
-                                {meta ? getExerciseLocalized(meta, locale).name : ex.exerciseId}
-                              </span>
-                            </div>
-                            <div
-                              ref={setActivatorNodeRef}
-                              className={styles.dragHandle}
-                              role="button"
-                              tabIndex={0}
-                              aria-label={t('dragToReorder')}
-                              title={t('dragToReorder')}
-                              {...listeners}
-                            >
-                              <svg
-                                width="18"
-                                height="18"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              >
-                                <circle cx="9" cy="5" r="1" />
-                                <circle cx="9" cy="12" r="1" />
-                                <circle cx="9" cy="19" r="1" />
-                                <circle cx="15" cy="5" r="1" />
-                                <circle cx="15" cy="12" r="1" />
-                                <circle cx="15" cy="19" r="1" />
-                              </svg>
-                            </div>
-                          </div>
-                          <div className={styles.exerciseDetails}>
-                            <span className={styles.exerciseMeta}>
-                              {meta?.category} · {meta?.equipment}
-                            </span>
-                            {meta?.referenceUrl && (
-                              <a
-                                href={meta.referenceUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className={styles.howToLink}
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                {t('howToPerform')}
-                                <svg
-                                  width="10"
-                                  height="10"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth="2.5"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                >
-                                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                                  <polyline points="15 3 21 3 21 9" />
-                                  <line x1="10" y1="14" x2="21" y2="3" />
-                                </svg>
-                              </a>
-                            )}
-                          </div>
+                          <polyline points="18 15 12 9 6 15" />
+                        </svg>
+                      </button>
+                      <button
+                        type="button"
+                        className={styles.moveBtn}
+                        onClick={() => moveDown(index)}
+                        disabled={index === exercises.length - 1}
+                        aria-label={t('moveDown') || 'Move down'}
+                      >
+                        <svg
+                          width="18"
+                          height="18"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <polyline points="6 9 12 15 18 9" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                  <div className={styles.exerciseDetails}>
+                    <span className={styles.exerciseMeta}>
+                      {meta?.category} · {meta?.equipment}
+                    </span>
+                    {meta?.referenceUrl && (
+                      <a
+                        href={meta.referenceUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.howToLink}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {t('howToPerform')}
+                        <svg
+                          width="10"
+                          height="10"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                          <polyline points="15 3 21 3 21 9" />
+                          <line x1="10" y1="14" x2="21" y2="3" />
+                        </svg>
+                      </a>
+                    )}
+                  </div>
 
-                          {swapIndex === index && (
-                            <SwapPicker
-                              alternatives={swapAlternatives}
-                              locale={locale}
-                              onSelect={(newId) => handleSwapExercise(index, newId)}
-                              onClose={() => setSwapIndex(null)}
-                              t={t}
-                            />
-                          )}
+                  {swapIndex === index && (
+                    <SwapPicker
+                      alternatives={swapAlternatives}
+                      locale={locale}
+                      onSelect={(newId) => handleSwapExercise(index, newId)}
+                      onClose={() => setSwapIndex(null)}
+                      t={t}
+                    />
+                  )}
 
-                          <div className={styles.rowActions}>
-                            <button
-                              type="button"
-                              className={styles.actionBtn}
-                              onClick={() => setSwapIndex(swapIndex === index ? null : index)}
-                              aria-label={t('replaceWithAlternative')}
-                              title={t('replaceWithAlternative')}
-                            >
-                              <svg
-                                width="18"
-                                height="18"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              >
-                                <polyline points="17 1 21 5 17 9" />
-                                <path d="M3 11V9a4 4 0 0 1 4-4h14" />
-                                <polyline points="7 23 3 19 7 15" />
-                                <path d="M21 13v2a4 4 0 0 1-4 4H3" />
-                              </svg>
-                            </button>
-                            <button
-                              type="button"
-                              className={`${styles.actionBtn} ${styles.actionBtnDelete}`}
-                              onClick={() => removeExercise(index)}
-                              aria-label={t('removeExercise')}
-                              title={t('removeExercise')}
-                            >
-                              <svg
-                                width="18"
-                                height="18"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              >
-                                <polyline points="3 6 5 6 21 6" />
-                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                                <line x1="10" y1="11" x2="10" y2="17" />
-                                <line x1="14" y1="11" x2="14" y2="17" />
-                              </svg>
-                            </button>
-                          </div>
+                  <div className={styles.rowActions}>
+                    <button
+                      type="button"
+                      className={styles.actionBtn}
+                      onClick={() => setSwapIndex(swapIndex === index ? null : index)}
+                      aria-label={t('replaceWithAlternative')}
+                      title={t('replaceWithAlternative')}
+                    >
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <polyline points="17 1 21 5 17 9" />
+                        <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+                        <polyline points="7 23 3 19 7 15" />
+                        <path d="M21 13v2a4 4 0 0 1-4 4H3" />
+                      </svg>
+                    </button>
+                    <button
+                      type="button"
+                      className={`${styles.actionBtn} ${styles.actionBtnDelete}`}
+                      onClick={() => removeExercise(index)}
+                      aria-label={t('removeExercise')}
+                      title={t('removeExercise')}
+                    >
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                        <line x1="10" y1="11" x2="10" y2="17" />
+                        <line x1="14" y1="11" x2="14" y2="17" />
+                      </svg>
+                    </button>
+                  </div>
 
-                          <div className={styles.controls}>
-                            <div className={styles.control}>
-                              <button
-                                type="button"
-                                className={styles.controlBtn}
-                                onClick={() => updateExercise(index, 'sets', ex.sets - 1)}
-                                disabled={ex.sets <= 1}
-                                aria-label={t('decreaseSets')}
-                              >
-                                −
-                              </button>
-                              <span className={styles.controlValue}>{ex.sets}</span>
-                              <button
-                                type="button"
-                                className={styles.controlBtn}
-                                onClick={() => updateExercise(index, 'sets', ex.sets + 1)}
-                                aria-label={t('increaseSets')}
-                              >
-                                +
-                              </button>
-                            </div>
-                            <div className={styles.control}>
-                              <button
-                                type="button"
-                                className={styles.controlBtn}
-                                onClick={() => updateExercise(index, 'reps', ex.reps - 1)}
-                                disabled={ex.reps <= 1}
-                                aria-label={t('decreaseReps')}
-                              >
-                                −
-                              </button>
-                              <span className={styles.controlValue}>{ex.reps}</span>
-                              <button
-                                type="button"
-                                className={styles.controlBtn}
-                                onClick={() => updateExercise(index, 'reps', ex.reps + 1)}
-                                aria-label={t('increaseReps')}
-                              >
-                                +
-                              </button>
-                            </div>
-                            <div className={styles.control}>
-                              <button
-                                type="button"
-                                className={styles.controlBtn}
-                                onClick={() =>
-                                  updateExercise(
-                                    index,
-                                    'restTimeSeconds',
-                                    Math.max(0, ex.restTimeSeconds - 15)
-                                  )
-                                }
-                                disabled={ex.restTimeSeconds < 15}
-                                aria-label={t('decreaseRest')}
-                              >
-                                −
-                              </button>
-                              <span className={styles.controlValue}>
-                                {formatTime(ex.restTimeSeconds)}
-                              </span>
-                              <button
-                                type="button"
-                                className={styles.controlBtn}
-                                onClick={() =>
-                                  updateExercise(index, 'restTimeSeconds', ex.restTimeSeconds + 15)
-                                }
-                                aria-label={t('increaseRest')}
-                              >
-                                +
-                              </button>
-                            </div>
-                          </div>
-                        </li>
-                      )}
-                    </SortableRow>
-                  );
-                })}
-              </SortableContext>
-            </DndContext>
+                  <div className={styles.controls}>
+                    <div className={styles.control}>
+                      <button
+                        type="button"
+                        className={styles.controlBtn}
+                        onClick={() => updateExercise(index, 'sets', ex.sets - 1)}
+                        disabled={ex.sets <= 1}
+                        aria-label={t('decreaseSets')}
+                      >
+                        −
+                      </button>
+                      <span className={styles.controlValue}>{ex.sets}</span>
+                      <button
+                        type="button"
+                        className={styles.controlBtn}
+                        onClick={() => updateExercise(index, 'sets', ex.sets + 1)}
+                        aria-label={t('increaseSets')}
+                      >
+                        +
+                      </button>
+                    </div>
+                    <div className={styles.control}>
+                      <button
+                        type="button"
+                        className={styles.controlBtn}
+                        onClick={() => updateExercise(index, 'reps', ex.reps - 1)}
+                        disabled={ex.reps <= 1}
+                        aria-label={t('decreaseReps')}
+                      >
+                        −
+                      </button>
+                      <span className={styles.controlValue}>{ex.reps}</span>
+                      <button
+                        type="button"
+                        className={styles.controlBtn}
+                        onClick={() => updateExercise(index, 'reps', ex.reps + 1)}
+                        aria-label={t('increaseReps')}
+                      >
+                        +
+                      </button>
+                    </div>
+                    <div className={styles.control}>
+                      <button
+                        type="button"
+                        className={styles.controlBtn}
+                        onClick={() =>
+                          updateExercise(
+                            index,
+                            'restTimeSeconds',
+                            Math.max(0, ex.restTimeSeconds - 15)
+                          )
+                        }
+                        disabled={ex.restTimeSeconds < 15}
+                        aria-label={t('decreaseRest')}
+                      >
+                        −
+                      </button>
+                      <span className={styles.controlValue}>{formatTime(ex.restTimeSeconds)}</span>
+                      <button
+                        type="button"
+                        className={styles.controlBtn}
+                        onClick={() =>
+                          updateExercise(index, 'restTimeSeconds', ex.restTimeSeconds + 15)
+                        }
+                        aria-label={t('increaseRest')}
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         </section>
 
