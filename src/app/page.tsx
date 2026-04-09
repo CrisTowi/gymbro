@@ -16,6 +16,7 @@ import {
   fetchRoutines,
   seedDefaultRoutines,
 } from '@/lib/api';
+import { getRoutines, getWeeklyPlan as loadCachedWeeklyPlan, saveRoutines } from '@/utils/storage';
 import styles from './page.module.css';
 
 export default function Home() {
@@ -28,6 +29,17 @@ export default function Home() {
   const [seeding, setSeeding] = useState(false);
 
   const loadData = useCallback(async () => {
+    // Load from cache immediately for fast first paint
+    const cached = getRoutines();
+    if (cached.routines.length > 0) {
+      setRoutines(cached.routines);
+    }
+    const cachedPlan = loadCachedWeeklyPlan();
+    if (cachedPlan !== DEFAULT_WEEKLY_PLAN) {
+      setWeeklyPlan(cachedPlan);
+    }
+
+    // Fetch from API in background
     try {
       const [plan, routineList, session] = await Promise.all([
         fetchWeeklyPlan(),
@@ -37,6 +49,8 @@ export default function Home() {
       setWeeklyPlan(plan);
       setRoutines(routineList);
       setLastSession(session);
+      // Update cache with fresh data
+      saveRoutines(routineList);
     } catch (err) {
       console.error('Failed to load home data:', err);
     }

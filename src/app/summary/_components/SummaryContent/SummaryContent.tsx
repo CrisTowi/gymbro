@@ -8,7 +8,7 @@ import { getExerciseById, getExerciseLocalized } from '@/data/exercises';
 import { useLocale } from '@/context/LocaleContext';
 import { formatDuration } from '@/utils/time';
 import { formatWeight, lbsToKg } from '@/utils/weight';
-import { getMotivationalMessage, getSessionGrade } from '@/utils/motivation';
+import { getSessionGrade } from '@/utils/motivation';
 import { fetchSessionById, fetchPersonalRecords, fetchRoutineById } from '@/lib/api';
 import styles from '../../page.module.css';
 
@@ -24,7 +24,17 @@ export default function SummaryContent() {
   const [personalRecords, setPersonalRecords] = useState<
     Record<string, { maxWeight: number; maxVolume: number; date: string }>
   >({});
-  const [message] = useState(getMotivationalMessage());
+  const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    const motivationalMessages = Array.isArray(t('motivational')) ? t('motivational') : [];
+    if (motivationalMessages.length > 0) {
+      const index = Math.floor(Math.random() * motivationalMessages.length);
+      setMessage(motivationalMessages[index]);
+    } else {
+      setMessage('Great work!');
+    }
+  }, [t]);
 
   useEffect(() => {
     if (!sessionId) return;
@@ -68,7 +78,8 @@ export default function SummaryContent() {
     ex.sets.some((s) => s.completed)
   ).length;
 
-  const { grade, message: gradeMessage } = getSessionGrade(totalCompletedSets, totalSets);
+  const { grade } = getSessionGrade(totalCompletedSets, totalSets);
+  const gradeMessage = t(`grade${grade}`) || t('gradeMsg');
 
   const newPRs: { exerciseName: string; weight: number }[] = [];
   for (const ex of session.exercises) {
@@ -91,6 +102,7 @@ export default function SummaryContent() {
     <div className={styles.page}>
       <div className={styles.container}>
         <div className={styles.celebration}>
+          <span className={styles.gradeLabel}>{t('grade')}</span>
           <div className={styles.gradeCircle} style={{ borderColor: routine?.color }}>
             <span className={styles.grade}>{grade}</span>
           </div>

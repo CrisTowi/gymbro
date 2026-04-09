@@ -101,7 +101,14 @@ export default function WorkoutContent() {
   const [showConfirmEnd, setShowConfirmEnd] = useState(false);
   const [isPracticeMode, setIsPracticeMode] = useState(false);
   const [showPracticeSummary, setShowPracticeSummary] = useState(false);
+  const [showIncompleteWarning, setShowIncompleteWarning] = useState(false);
   const shouldFinishAfterLastSetRef = useRef(false);
+
+  const hasIncompleteSets = useCallback((sessionLog: SessionLog) => {
+    return sessionLog.exercises.some((ex) =>
+      ex.sets.some((set) => !set.completed || set.reps === 0)
+    );
+  }, []);
 
   const [lastPerfMap, setLastPerfMap] = useState<Record<string, LastExercisePerformance | null>>(
     {}
@@ -520,9 +527,13 @@ export default function WorkoutContent() {
   useEffect(() => {
     if (shouldFinishAfterLastSetRef.current && session) {
       shouldFinishAfterLastSetRef.current = false;
-      handleFinishWorkout(session);
+      if (hasIncompleteSets(session)) {
+        setShowIncompleteWarning(true);
+      } else {
+        handleFinishWorkout(session);
+      }
     }
-  }, [session, handleFinishWorkout]);
+  }, [session, handleFinishWorkout, hasIncompleteSets]);
 
   if (routineLoading || !routine) {
     return (
@@ -682,6 +693,32 @@ export default function WorkoutContent() {
               </button>
               <button className={styles.confirmEnd} onClick={() => handleFinishWorkout()}>
                 {t('finish')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showIncompleteWarning && (
+        <div className={styles.confirmOverlay}>
+          <div className={styles.confirmModal}>
+            <h3 className={styles.confirmTitle}>{t('incompleteWarningTitle')}</h3>
+            <p className={styles.confirmText}>{t('incompleteWarningText')}</p>
+            <div className={styles.confirmButtons}>
+              <button
+                className={styles.confirmCancel}
+                onClick={() => setShowIncompleteWarning(false)}
+              >
+                {t('goBack')}
+              </button>
+              <button
+                className={styles.confirmEnd}
+                onClick={() => {
+                  setShowIncompleteWarning(false);
+                  if (session) handleFinishWorkout(session);
+                }}
+              >
+                {t('finishAnyway')}
               </button>
             </div>
           </div>

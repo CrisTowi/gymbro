@@ -1,10 +1,12 @@
-import { SessionLog, WeeklyPlan, DEFAULT_WEEKLY_PLAN } from '@/types';
+import { SessionLog, WeeklyPlan, Routine, DEFAULT_WEEKLY_PLAN } from '@/types';
 
 const STORAGE_KEYS = {
   SESSIONS: 'gymbro_sessions',
   WEEKLY_PLAN: 'gymbro_weekly_plan',
   ACTIVE_SESSION: 'gymbro_active_session',
   PENDING_SYNC: 'gymbro_pending_sync',
+  ROUTINES: 'gymbro_routines',
+  ROUTINES_TIMESTAMP: 'gymbro_routines_timestamp',
 } as const;
 
 function getItem<T>(key: string, fallback: T): T {
@@ -212,4 +214,31 @@ export function getPendingSyncKeys(): string[] {
 export function clearPendingSync(): void {
   if (typeof window === 'undefined') return;
   localStorage.setItem(STORAGE_KEYS.PENDING_SYNC, '[]');
+}
+
+export function saveRoutines(routines: Routine[]): void {
+  setItem(STORAGE_KEYS.ROUTINES, routines);
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem(STORAGE_KEYS.ROUTINES_TIMESTAMP, new Date().toISOString());
+    } catch {
+      // Ignore
+    }
+  }
+}
+
+export function getRoutines(): { routines: Routine[]; timestamp: number } {
+  const routines = getItem<Routine[]>(STORAGE_KEYS.ROUTINES, []);
+  let timestamp = 0;
+  if (typeof window !== 'undefined') {
+    try {
+      const ts = localStorage.getItem(STORAGE_KEYS.ROUTINES_TIMESTAMP);
+      if (ts) {
+        timestamp = new Date(ts).getTime();
+      }
+    } catch {
+      // Ignore
+    }
+  }
+  return { routines, timestamp };
 }

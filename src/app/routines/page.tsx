@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { Routine, WeeklyPlan } from '@/types';
 import { getDayOfWeek } from '@/utils/time';
 import { fetchRoutines, fetchWeeklyPlan, updateWeeklyPlan, deleteRoutine } from '@/lib/api';
+import { getRoutines } from '@/utils/storage';
 import styles from './page.module.css';
 
 export default function RoutinesPage() {
@@ -17,6 +18,13 @@ export default function RoutinesPage() {
   const [loading, setLoading] = useState(true);
 
   const loadData = useCallback(async () => {
+    // Load from cache immediately for fast first paint
+    const cached = getRoutines();
+    if (cached.routines.length > 0) {
+      setRoutines(cached.routines);
+    }
+
+    // Fetch from API in background
     try {
       const [list, plan] = await Promise.all([fetchRoutines(), fetchWeeklyPlan()]);
       setRoutines(list);
