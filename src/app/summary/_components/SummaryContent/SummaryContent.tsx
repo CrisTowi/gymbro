@@ -10,6 +10,9 @@ import { formatDuration } from '@/utils/time';
 import { formatWeight, lbsToKg } from '@/utils/weight';
 import { getSessionGrade } from '@/utils/motivation';
 import { fetchSessionById, fetchPersonalRecords, fetchRoutineById } from '@/lib/api';
+import { getOfflineSessionById, getLocalPersonalRecords } from './offlineSummaryHelpers';
+import { getOfflineQueue } from '@/utils/offlineQueue';
+import { getRoutines } from '@/utils/storage';
 import styles from '../../page.module.css';
 
 export default function SummaryContent() {
@@ -18,6 +21,7 @@ export default function SummaryContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const sessionId = searchParams.get('sessionId');
+  const isOfflineSession = searchParams.get('offline') === 'true';
 
   const [session, setSession] = useState<SessionLog | null>(null);
   const [routine, setRoutine] = useState<Routine | null>(null);
@@ -25,6 +29,7 @@ export default function SummaryContent() {
     Record<string, { maxWeight: number; maxVolume: number; date: string }>
   >({});
   const [message, setMessage] = useState('');
+  const [isPendingSync, setIsPendingSync] = useState(false);
 
   useEffect(() => {
     const motivationalMessages = Array.isArray(t('motivational')) ? t('motivational') : [];
@@ -40,6 +45,22 @@ export default function SummaryContent() {
     if (!sessionId) return;
 
     async function load() {
+      if (isOfflineSession) {
+        // Load entirely from localStorage — no network calls needed
+        const localSession = getOfflineSessionById(sessionId!);
+        if (localSession) {
+          setSession(localSession);
+          setPersonalRecords(getLocalPersonalRecords());
+          setIsPendingSync(true);
+          // Attempt to load routine from cache
+          const { routines: cachedRoutines } = getRoutines();
+          const cachedRoutine =
+            cachedRoutines.find((cachedR) => cachedR.id === localSession.routineId) ?? null;
+          setRoutine(cachedRoutine);
+        }
+        return;
+      }
+
       try {
         const [sess, records] = await Promise.all([
           fetchSessionById(sessionId!),
@@ -47,20 +68,33 @@ export default function SummaryContent() {
         ]);
         setSession(sess);
         setPersonalRecords(records);
+        // Check if this session is still in the offline queue (e.g., sync hasn't run yet)
+        const queue = getOfflineQueue();
+        setIsPendingSync(queue.some((entry) => entry.sessionId === sessionId));
         if (sess.routineId) {
           try {
-            const r = await fetchRoutineById(sess.routineId);
-            setRoutine(r);
+            const fetchedRoutine = await fetchRoutineById(sess.routineId);
+            setRoutine(fetchedRoutine);
           } catch {
             setRoutine(null);
           }
         }
-      } catch (err) {
-        console.error('Failed to load summary:', err);
+      } catch {
+        // Network failed — fall back to localStorage
+        const localSession = getOfflineSessionById(sessionId!);
+        if (localSession) {
+          setSession(localSession);
+          setPersonalRecords(getLocalPersonalRecords());
+          setIsPendingSync(true);
+          const { routines: cachedRoutines } = getRoutines();
+          const cachedRoutine =
+            cachedRoutines.find((cachedR) => cachedR.id === localSession.routineId) ?? null;
+          setRoutine(cachedRoutine);
+        }
       }
     }
     load();
-  }, [sessionId]);
+  }, [sessionId, isOfflineSession]);
 
   if (!session) {
     return (
@@ -101,6 +135,7 @@ export default function SummaryContent() {
   return (
     <div className={styles.page}>
       <div className={styles.container}>
+        {isPendingSync && <div className={styles.pendingSyncBanner}>{t('pendingSync')}</div>}
         <div className={styles.celebration}>
           <span className={styles.gradeLabel}>{t('grade')}</span>
           <div className={styles.gradeCircle} style={{ borderColor: routine?.color }}>

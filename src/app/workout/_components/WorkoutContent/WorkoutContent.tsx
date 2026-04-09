@@ -10,6 +10,7 @@ import { getExerciseById, getExerciseLocalized } from '@/data/exercises';
 import { useLocale } from '@/context/LocaleContext';
 import { useTimer } from '@/hooks/useTimer';
 import { useNotification } from '@/hooks/useNotification';
+import { useNetworkStatus } from '@/hooks/useNetworkStatus';
 import { formatDuration } from '@/utils/time';
 import { useTranslations } from 'next-intl';
 import {
@@ -21,6 +22,14 @@ import {
   LastExercisePerformance,
   RecommendedSet,
 } from '@/lib/api';
+import {
+  getRoutines,
+  getLastSessionForExercise,
+  getRecommendedSetsForExercise,
+  saveSession,
+  saveActiveSession,
+} from '@/utils/storage';
+import { addToOfflineQueue } from '@/utils/offlineQueue';
 import WorkoutExercise from '@/components/WorkoutExercise/WorkoutExercise';
 import RestTimer from '@/components/RestTimer/RestTimer';
 import styles from '../../page.module.css';
@@ -60,6 +69,7 @@ export default function WorkoutContent() {
   const { locale } = useLocale();
   const searchParams = useSearchParams();
   const router = useRouter();
+  const isOnline = useNetworkStatus();
   const routineId = searchParams.get('routine');
   const [routine, setRoutine] = useState<Routine | null>(null);
   const [routineLoading, setRoutineLoading] = useState(!!routineId);
@@ -70,16 +80,22 @@ export default function WorkoutContent() {
       return;
     }
     let cancelled = false;
-    fetchRoutineById(routineId)
-      .then((r) => {
-        if (!cancelled) setRoutine(r);
-      })
-      .catch(() => {
-        if (!cancelled) setRoutine(null);
-      })
-      .finally(() => {
+
+    async function loadRoutine() {
+      try {
+        const fetchedRoutine = await fetchRoutineById(routineId!);
+        if (!cancelled) setRoutine(fetchedRoutine);
+      } catch {
+        // Network failed — try the locally cached routines
+        const { routines: cached } = getRoutines();
+        const found = cached.find((cachedRoutine) => cachedRoutine.id === routineId) ?? null;
+        if (!cancelled) setRoutine(found);
+      } finally {
         if (!cancelled) setRoutineLoading(false);
-      });
+      }
+    }
+
+    loadRoutine();
     return () => {
       cancelled = true;
     };
@@ -189,28 +205,39 @@ export default function WorkoutContent() {
     };
   }, [session]);
 
-  const loadExerciseData = useCallback(async (exerciseConfigs: RoutineExercise[]) => {
-    const perfMap: Record<string, LastExercisePerformance | null> = {};
-    const recsMap: Record<string, RecommendedSet[]> = {};
+  const loadExerciseData = useCallback(
+    async (exerciseConfigs: RoutineExercise[]) => {
+      const perfMap: Record<string, LastExercisePerformance | null> = {};
+      const recsMap: Record<string, RecommendedSet[]> = {};
 
-    await Promise.all(
-      exerciseConfigs.map(async (ex) => {
-        try {
-          perfMap[ex.exerciseId] = await fetchLastExercisePerformance(ex.exerciseId);
-        } catch {
-          perfMap[ex.exerciseId] = null;
+      if (!isOnline) {
+        // Offline: read from locally cached session history
+        for (const ex of exerciseConfigs) {
+          perfMap[ex.exerciseId] = getLastSessionForExercise(ex.exerciseId);
+          recsMap[ex.exerciseId] = getRecommendedSetsForExercise(ex.exerciseId, ex.sets);
         }
-        try {
-          recsMap[ex.exerciseId] = await fetchRecommendedSets(ex.exerciseId, ex.sets);
-        } catch {
-          recsMap[ex.exerciseId] = [];
-        }
-      })
-    );
+      } else {
+        await Promise.all(
+          exerciseConfigs.map(async (ex) => {
+            try {
+              perfMap[ex.exerciseId] = await fetchLastExercisePerformance(ex.exerciseId);
+            } catch {
+              perfMap[ex.exerciseId] = null;
+            }
+            try {
+              recsMap[ex.exerciseId] = await fetchRecommendedSets(ex.exerciseId, ex.sets);
+            } catch {
+              recsMap[ex.exerciseId] = [];
+            }
+          })
+        );
+      }
 
-    setLastPerfMap(perfMap);
-    setRecSetsMap(recsMap);
-  }, []);
+      setLastPerfMap(perfMap);
+      setRecSetsMap(recsMap);
+    },
+    [isOnline]
+  );
 
   useEffect(() => {
     if (!routine || !routineId) return;
@@ -220,7 +247,7 @@ export default function WorkoutContent() {
 
     async function init() {
       try {
-        if (!practice) {
+        if (!practice && isOnline) {
           const existingSession = await fetchActiveSession();
           if (existingSession && existingSession.routineId === routineId) {
             setSession(existingSession);
@@ -243,11 +270,11 @@ export default function WorkoutContent() {
         const overrides = readOverrides();
 
         const exerciseConfig: RoutineExercise[] = overrides
-          ? overrides.map((o, i) => ({
-              exerciseId: o.exerciseId,
-              sets: o.sets,
-              reps: o.reps,
-              restTimeSeconds: o.restTimeSeconds,
+          ? overrides.map((overrideEx, i) => ({
+              exerciseId: overrideEx.exerciseId,
+              sets: overrideEx.sets,
+              reps: overrideEx.reps,
+              restTimeSeconds: overrideEx.restTimeSeconds,
               notes: routine!.exercises[i]?.notes,
             }))
           : routine!.exercises;
@@ -259,8 +286,8 @@ export default function WorkoutContent() {
 
         const exerciseLogs: ExerciseLog[] = exerciseConfig.map((ex) => ({
           exerciseId: ex.exerciseId,
-          sets: Array.from({ length: ex.sets }, (_, i) => ({
-            setNumber: i + 1,
+          sets: Array.from({ length: ex.sets }, (_, setIndex) => ({
+            setNumber: setIndex + 1,
             reps: 0,
             weightLbs: 0,
             completed: false,
@@ -277,8 +304,13 @@ export default function WorkoutContent() {
           completed: false,
         };
 
-        if (practice) {
+        if (practice || !isOnline) {
+          // Practice mode or offline: run the session entirely in local state.
+          // Offline sessions will be queued for sync on completion.
           setSession(sessionPayload);
+          if (!isOnline) {
+            saveActiveSession(sessionPayload);
+          }
         } else {
           const newSession = await createSession({
             sessionId,
@@ -297,7 +329,7 @@ export default function WorkoutContent() {
 
     init();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [routine, routineId]);
+  }, [routine, routineId, isOnline]);
 
   useEffect(() => {
     if (!session) return;
@@ -312,6 +344,11 @@ export default function WorkoutContent() {
   const persistSession = useCallback(
     async (updated: SessionLog) => {
       if (isPracticeMode) return;
+      if (!isOnline) {
+        // Offline: keep local state consistent in case the tab is closed mid-workout
+        saveActiveSession(updated);
+        return;
+      }
       try {
         await apiUpdateSession(updated.id, {
           exercises: updated.exercises,
@@ -321,7 +358,7 @@ export default function WorkoutContent() {
         console.error('Failed to sync session:', err);
       }
     },
-    [isPracticeMode]
+    [isPracticeMode, isOnline]
   );
 
   const updateSessionLocal = useCallback(
@@ -501,6 +538,21 @@ export default function WorkoutContent() {
         (new Date(endTime).getTime() - new Date(sessionToUse.startTime).getTime()) / 1000
       );
 
+      if (!isOnline) {
+        // Offline: save locally and queue for sync on reconnect
+        const completedSession: SessionLog = {
+          ...sessionToUse,
+          endTime,
+          duration,
+          completed: true,
+        };
+        saveSession(completedSession);
+        addToOfflineQueue(completedSession);
+        saveActiveSession(null);
+        router.push(`/summary?sessionId=${sessionToUse.id}&offline=true`);
+        return;
+      }
+
       try {
         await apiUpdateSession(sessionToUse.id, {
           endTime,
@@ -515,7 +567,7 @@ export default function WorkoutContent() {
 
       router.push(`/summary?sessionId=${sessionToUse.id}`);
     },
-    [session, router, isPracticeMode]
+    [session, router, isPracticeMode, isOnline]
   );
 
   const handleSkipTimer = useCallback(() => {
@@ -590,6 +642,11 @@ export default function WorkoutContent() {
               {isPracticeMode && (
                 <span className={styles.practiceBadge} title={t('practiceBadgeTitle')}>
                   {t('practiceBadge')}
+                </span>
+              )}
+              {!isOnline && !isPracticeMode && (
+                <span className={styles.practiceBadge} title={t('offlineBadgeTitle')}>
+                  {t('offlineBadge')}
                 </span>
               )}
             </h1>

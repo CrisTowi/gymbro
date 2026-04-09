@@ -88,7 +88,9 @@
     "notSavedNote": "No guardado — para pruebas o sesiones no planificadas.",
     "backToHome": "Volver al inicio",
     "restCompleteTitle": "¡Descanso completado!",
-    "restCompleteBody": "Hora del siguiente set. ¡Vamos!"
+    "restCompleteBody": "Hora del siguiente set. ¡Vamos!",
+    "offlineBadge": "Sin conexión",
+    "offlineBadgeTitle": "Sin internet — tu entrenamiento se sincronizará cuando te conectes"
   },
   "workoutPreview": {
     "back": "Atrás",
@@ -226,7 +228,15 @@
     "setsCompletedCount": "{count} sets completados",
     "max": "Máx",
     "vol": "Vol",
-    "backToHome": "Volver al inicio"
+    "backToHome": "Volver al inicio",
+    "pendingSync": "Esta sesión se sincronizará con tu historial cuando estés en línea."
+  },
+  "offlineStatus": {
+    "youAreOffline": "Estás sin conexión",
+    "pendingSync": "{count} sesión(es) pendiente(s) de sincronización",
+    "syncing": "Sincronizando {count} sesión(es)…",
+    "syncComplete": "Sesiones sincronizadas",
+    "syncFailed": "Algunas sesiones no se pudieron sincronizar. Se reintentará cuando estés en línea."
   },
   "routines": {
     "title": "Rutinas",

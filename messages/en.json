@@ -88,7 +88,9 @@
     "notSavedNote": "Not saved — for testing or unplanned sessions.",
     "backToHome": "Back to Home",
     "restCompleteTitle": "Rest Complete!",
-    "restCompleteBody": "Time to start your next set. Let's go!"
+    "restCompleteBody": "Time to start your next set. Let's go!",
+    "offlineBadge": "Offline",
+    "offlineBadgeTitle": "No internet — your workout will sync when you reconnect"
   },
   "workoutPreview": {
     "back": "Back",
@@ -226,7 +228,15 @@
     "setsCompletedCount": "{count} sets completed",
     "max": "Max",
     "vol": "Vol",
-    "backToHome": "Back to Home"
+    "backToHome": "Back to Home",
+    "pendingSync": "This session will sync to your history once you are back online."
+  },
+  "offlineStatus": {
+    "youAreOffline": "You are offline",
+    "pendingSync": "{count} session(s) pending sync",
+    "syncing": "Syncing {count} session(s)…",
+    "syncComplete": "Sessions synced",
+    "syncFailed": "Some sessions failed to sync. Will retry when online."
   },
   "routines": {
     "title": "Routines",

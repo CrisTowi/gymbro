@@ -2,8 +2,10 @@ import type { Metadata, Viewport } from 'next';
 import { Suspense } from 'react';
 import { AuthProvider } from '@/context/AuthContext';
 import { LocaleProvider } from '@/context/LocaleContext';
+import { NetworkStatusProvider } from '@/context/NetworkStatusContext';
 import AuthGuard from '@/components/AuthGuard/AuthGuard';
 import Navigation from '@/components/Navigation/Navigation';
+import OfflineStatusBanner from '@/components/OfflineStatusBanner/OfflineStatusBanner';
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
 import DevTools from '@/components/DevTools/DevTools';
 import './globals.css';
@@ -38,10 +40,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ServiceWorkerRegister />
         <AuthProvider>
           <LocaleProvider>
-            <AuthGuard>
-              <main>{children}</main>
-              <Navigation />
-            </AuthGuard>
+            <NetworkStatusProvider>
+              <AuthGuard>
+                <main>{children}</main>
+                <Navigation />
+                <OfflineStatusBanner />
+              </AuthGuard>
+            </NetworkStatusProvider>
           </LocaleProvider>
         </AuthProvider>
         <Suspense fallback={null}>

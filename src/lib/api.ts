@@ -329,6 +329,35 @@ export async function fetchLastSession(): Promise<SessionLog | null> {
   return data ? normalizeSession(data) : null;
 }
 
+export async function syncOfflineSession(session: SessionLog): Promise<void> {
+  // Step 1: Create the session on the server as completed (offline sync path).
+  // The backend skips active-session deletion when completed=true.
+  await request<SessionResponse>('/api/sessions', {
+    method: 'POST',
+    body: JSON.stringify({
+      sessionId: session.id,
+      date: session.date,
+      routineId: session.routineId,
+      startTime: session.startTime,
+      exercises: session.exercises,
+      completed: true,
+      totalWeightLbs: session.totalWeightLbs,
+    }),
+  });
+
+  // Step 2: Push the full completion data including endTime, duration, and exercises.
+  await request<SessionResponse>(`/api/sessions/${session.id}`, {
+    method: 'PUT',
+    body: JSON.stringify({
+      endTime: session.endTime,
+      duration: session.duration,
+      completed: true,
+      exercises: session.exercises,
+      totalWeightLbs: session.totalWeightLbs,
+    }),
+  });
+}
+
 // ─── Auth ─────────────────────────────────────────────────────
 
 export interface User {
