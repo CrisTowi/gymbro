@@ -58,10 +58,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const user = await fetchMe();
       setState({ token: stored, user, isLoading: false });
-    } catch {
-      localStorage.removeItem(STORAGE_KEY);
-      setAuthToken(null);
-      setState({ token: null, user: null, isLoading: false });
+    } catch (error) {
+      // TypeError (e.g., "Failed to fetch") = network is down, not an auth failure.
+      // Preserve the token so the user stays logged in while offline.
+      if (error instanceof TypeError) {
+        setState({ token: stored, user: null, isLoading: false });
+      } else {
+        localStorage.removeItem(STORAGE_KEY);
+        setAuthToken(null);
+        setState({ token: null, user: null, isLoading: false });
+      }
     }
   }, []);
 
