@@ -70,6 +70,10 @@ export default function WorkoutContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const isOnline = useNetworkStatus();
+  const isOnlineRef = useRef(isOnline);
+  useEffect(() => {
+    isOnlineRef.current = isOnline;
+  }, [isOnline]);
   const routineId = searchParams.get('routine');
   const [routine, setRoutine] = useState<Routine | null>(null);
   const [routineLoading, setRoutineLoading] = useState(!!routineId);
@@ -210,7 +214,7 @@ export default function WorkoutContent() {
       const perfMap: Record<string, LastExercisePerformance | null> = {};
       const recsMap: Record<string, RecommendedSet[]> = {};
 
-      if (!isOnline) {
+      if (!isOnlineRef.current) {
         // Offline: read from locally cached session history
         for (const ex of exerciseConfigs) {
           perfMap[ex.exerciseId] = getLastSessionForExercise(ex.exerciseId);
@@ -236,7 +240,9 @@ export default function WorkoutContent() {
       setLastPerfMap(perfMap);
       setRecSetsMap(recsMap);
     },
-    [isOnline]
+    // isOnlineRef is a stable ref — no need to list it as a dependency
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
   );
 
   useEffect(() => {
@@ -247,7 +253,12 @@ export default function WorkoutContent() {
 
     async function init() {
       try {
-        if (!practice && isOnline) {
+        // Snapshot the online state at init time. We use a ref so that changes
+        // to isOnline during the workout do NOT re-trigger this effect and reset
+        // the session — only a new routine/routineId should do that.
+        const online = isOnlineRef.current;
+
+        if (!practice && online) {
           const existingSession = await fetchActiveSession();
           if (existingSession && existingSession.routineId === routineId) {
             setSession(existingSession);
@@ -304,11 +315,11 @@ export default function WorkoutContent() {
           completed: false,
         };
 
-        if (practice || !isOnline) {
+        if (practice || !online) {
           // Practice mode or offline: run the session entirely in local state.
           // Offline sessions will be queued for sync on completion.
           setSession(sessionPayload);
-          if (!isOnline) {
+          if (!online) {
             saveActiveSession(sessionPayload);
           }
         } else {
@@ -329,7 +340,7 @@ export default function WorkoutContent() {
 
     init();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [routine, routineId, isOnline]);
+  }, [routine, routineId]);
 
   useEffect(() => {
     if (!session) return;

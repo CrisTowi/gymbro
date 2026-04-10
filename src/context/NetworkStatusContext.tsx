@@ -33,7 +33,9 @@ function getQueueCount(): number {
 
 export function NetworkStatusProvider({ children }: { children: React.ReactNode }) {
   const isOnline = useNetworkStatus();
-  const [pendingSyncCount, setPendingSyncCount] = useState<number>(() => getQueueCount());
+  // Start with 0 to match server-rendered HTML. The useEffect below syncs the real
+  // localStorage value on the client after hydration to avoid a hydration mismatch.
+  const [pendingSyncCount, setPendingSyncCount] = useState<number>(0);
   const [isSyncing, setIsSyncing] = useState(false);
   const wasOnlineRef = useRef(isOnline);
   const isSyncingRef = useRef(false);
@@ -41,6 +43,11 @@ export function NetworkStatusProvider({ children }: { children: React.ReactNode 
   const refreshCount = useCallback(() => {
     setPendingSyncCount(getQueueCount());
   }, []);
+
+  // Sync pendingSyncCount from localStorage after hydration
+  useEffect(() => {
+    refreshCount();
+  }, [refreshCount]);
 
   const triggerSync = useCallback(async () => {
     if (isSyncingRef.current) return;

@@ -3,12 +3,14 @@
 import { useEffect, useState } from 'react';
 
 export function useNetworkStatus(): boolean {
-  const [isOnline, setIsOnline] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return true;
-    return navigator.onLine;
-  });
+  // Always start with true to match the server-rendered HTML and avoid hydration mismatch.
+  // The useEffect below immediately corrects the value on the client after hydration.
+  const [isOnline, setIsOnline] = useState<boolean>(true);
 
   useEffect(() => {
+    // Sync with the real value after hydration
+    setIsOnline(navigator.onLine);
+
     function handleOnline() {
       setIsOnline(true);
     }
