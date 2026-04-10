@@ -4,6 +4,7 @@ import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { fetchRoutineById } from '@/lib/api';
+import { getRoutines } from '@/utils/storage';
 import type { Routine } from '@/types';
 import { getExerciseById, getAlternativeExercises, getExerciseLocalized } from '@/data/exercises';
 import { useLocale } from '@/context/LocaleContext';
@@ -76,7 +77,10 @@ export default function PreviewContent() {
         if (!cancelled) setRoutine(r);
       })
       .catch(() => {
-        if (!cancelled) setRoutine(null);
+        // Network failed — fall back to locally cached routines
+        const { routines: cached } = getRoutines();
+        const found = cached.find((cachedRoutine) => cachedRoutine.id === routineId) ?? null;
+        if (!cancelled) setRoutine(found);
       })
       .finally(() => {
         if (!cancelled) setRoutineLoading(false);
