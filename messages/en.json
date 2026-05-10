@@ -29,7 +29,12 @@
     "startWorkout": "Start Workout",
     "restDay": "Rest Day",
     "restDayDesc": "Recovery is part of the process. But if you're feeling energized...",
-    "manageRoutines": "Manage routines"
+    "manageRoutines": "Manage routines",
+    "deloadWeekActive": "Deload Week Active",
+    "deloadWeekNote": "Weight targets at 60% · PRs paused",
+    "enableDeload": "Enable Deload Week",
+    "disableDeload": "Disable Deload Week",
+    "togglingDeload": "Updating…"
   },
   "auth": {
     "signIn": "Sign in",
@@ -84,6 +89,8 @@
     "lbsTotal": "lbs total",
     "practiceBadge": "Practice",
     "practiceBadgeTitle": "This workout will not be saved",
+    "deloadBadge": "Deload",
+    "deloadBadgeTitle": "Deload Week — focus on form",
     "workoutComplete": "Workout complete",
     "notSavedNote": "Not saved — for testing or unplanned sessions.",
     "backToHome": "Back to Home",
@@ -306,7 +313,8 @@
     "exercises": "Exercises",
     "sets": "Sets",
     "duration": "Duration",
-    "moreExercises": "+{count} more exercises"
+    "moreExercises": "+{count} more exercises",
+    "deloadTag": "Deload"
   },
   "weeklyPlan": {
     "title": "Your weekly plan",

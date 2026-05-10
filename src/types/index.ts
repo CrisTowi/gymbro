@@ -108,6 +108,7 @@ export interface SessionLog {
   totalWeightLbs: number;
   duration?: number; // in seconds
   personalRecords?: PersonalRecord[];
+  isDeload?: boolean;
 }
 
 export interface PersonalRecord {

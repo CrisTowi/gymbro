@@ -29,7 +29,12 @@
     "startWorkout": "Empezar entrenamiento",
     "restDay": "Día de descanso",
     "restDayDesc": "La recuperación es parte del proceso. Pero si te sientes con energía...",
-    "manageRoutines": "Gestionar rutinas"
+    "manageRoutines": "Gestionar rutinas",
+    "deloadWeekActive": "Semana de Descarga Activa",
+    "deloadWeekNote": "Pesos al 60% · PRs en pausa",
+    "enableDeload": "Activar semana de descarga",
+    "disableDeload": "Desactivar semana de descarga",
+    "togglingDeload": "Actualizando…"
   },
   "auth": {
     "signIn": "Iniciar sesión",
@@ -84,6 +89,8 @@
     "lbsTotal": "lbs total",
     "practiceBadge": "Práctica",
     "practiceBadgeTitle": "Este entrenamiento no se guardará",
+    "deloadBadge": "Descarga",
+    "deloadBadgeTitle": "Semana de descarga — enfócate en la técnica",
     "workoutComplete": "Entrenamiento completado",
     "notSavedNote": "No guardado — para pruebas o sesiones no planificadas.",
     "backToHome": "Volver al inicio",
@@ -306,7 +313,8 @@
     "exercises": "Ejercicios",
     "sets": "Series",
     "duration": "Duración",
-    "moreExercises": "+{count} ejercicios más"
+    "moreExercises": "+{count} ejercicios más",
+    "deloadTag": "Descarga"
   },
   "weeklyPlan": {
     "title": "Tu plan semanal",

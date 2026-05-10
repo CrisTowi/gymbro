@@ -41,14 +41,19 @@ export default function LastSessionCard({ session, routine }: LastSessionCardPro
         <span className={styles.date}>{getRelativeDate(session.date)}</span>
       </div>
 
-      <div
-        className={styles.routineBadge}
-        style={{
-          backgroundColor: routine?.color ? `${routine.color}22` : undefined,
-          color: routine?.color,
-        }}
-      >
-        {routine ? `${routine.icon} ${routine.name}` : session.routineId}
+      <div className={styles.routineBadgeRow}>
+        <div
+          className={styles.routineBadge}
+          style={{
+            backgroundColor: routine?.color ? `${routine.color}22` : undefined,
+            color: routine?.color,
+          }}
+        >
+          {routine ? `${routine.icon} ${routine.name}` : session.routineId}
+        </div>
+        {session.isDeload && (
+          <span className={styles.deloadTag}>{t('deloadTag')}</span>
+        )}
       </div>
 
       <div className={styles.stats}>

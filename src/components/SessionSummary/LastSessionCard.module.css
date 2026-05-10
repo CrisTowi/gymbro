@@ -23,6 +23,14 @@
   color: var(--color-text-muted);
 }
 
+.routineBadgeRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-md);
+}
+
 .routineBadge {
   display: inline-flex;
   align-items: center;
@@ -31,7 +39,18 @@
   border-radius: var(--radius-full);
   font-size: var(--text-sm);
   font-weight: 600;
-  margin-bottom: var(--space-md);
+}
+
+.deloadTag {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--space-sm);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-accent);
+  border: 1px solid var(--color-accent);
+  background: transparent;
 }
 
 .stats {

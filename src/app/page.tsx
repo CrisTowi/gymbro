@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { useLocale } from '@/context/LocaleContext';
+import { useAuth } from '@/context/AuthContext';
 import WeeklyPlan from '@/components/WeeklyPlan/WeeklyPlan';
 import LastSessionCard from '@/components/SessionSummary/LastSessionCard';
 import AIRoutineGenerator from '@/components/AIRoutineGenerator/AIRoutineGenerator';
@@ -15,6 +16,7 @@ import {
   fetchLastSession,
   fetchRoutines,
   seedDefaultRoutines,
+  updateMe,
 } from '@/lib/api';
 import { getRoutines, getWeeklyPlan as loadCachedWeeklyPlan, saveRoutines } from '@/utils/storage';
 import styles from './page.module.css';
@@ -22,11 +24,13 @@ import styles from './page.module.css';
 export default function Home() {
   const t = useTranslations('home');
   const { locale } = useLocale();
+  const { user, refreshUser } = useAuth();
   const [weeklyPlan, setWeeklyPlan] = useState<WeeklyPlanType>(DEFAULT_WEEKLY_PLAN);
   const [routines, setRoutines] = useState<Routine[]>([]);
   const [lastSession, setLastSession] = useState<SessionLog | null>(null);
   const [mounted, setMounted] = useState(false);
   const [seeding, setSeeding] = useState(false);
+  const [togglingDeload, setTogglingDeload] = useState(false);
 
   const loadData = useCallback(async () => {
     // Load from cache immediately for fast first paint
@@ -67,6 +71,18 @@ export default function Home() {
       await updateWeeklyPlan(plan);
     } catch (err) {
       console.error('Failed to save weekly plan:', err);
+    }
+  };
+
+  const handleDeloadToggle = async () => {
+    setTogglingDeload(true);
+    try {
+      await updateMe({ isDeloadWeek: !user?.isDeloadWeek });
+      await refreshUser();
+    } catch (err) {
+      console.error('Failed to toggle deload week:', err);
+    } finally {
+      setTogglingDeload(false);
     }
   };
 
@@ -205,6 +221,32 @@ export default function Home() {
               ))}
             </div>
           </div>
+        )}
+
+        {user?.isDeloadWeek ? (
+          <div className={styles.deloadBannerActive}>
+            <div className={styles.deloadBannerInfo}>
+              <span className={styles.deloadBannerTitle}>{t('deloadWeekActive')}</span>
+              <span className={styles.deloadBannerNote}>{t('deloadWeekNote')}</span>
+            </div>
+            <button
+              type="button"
+              className={styles.deloadToggleButton}
+              onClick={handleDeloadToggle}
+              disabled={togglingDeload}
+            >
+              {togglingDeload ? t('togglingDeload') : t('disableDeload')}
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            className={styles.deloadEnableButton}
+            onClick={handleDeloadToggle}
+            disabled={togglingDeload}
+          >
+            {togglingDeload ? t('togglingDeload') : t('enableDeload')}
+          </button>
         )}
 
         <WeeklyPlan plan={weeklyPlan} onPlanChange={handlePlanChange} routines={routines} />

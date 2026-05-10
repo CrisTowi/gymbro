@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { v4 as uuidv4 } from 'uuid';
 import { SessionLog, ExerciseLog, SetLog, RoutineExercise } from '@/types';
@@ -8,6 +8,7 @@ import type { Routine } from '@/types';
 import { fetchRoutineById } from '@/lib/api';
 import { getExerciseById, getExerciseLocalized } from '@/data/exercises';
 import { useLocale } from '@/context/LocaleContext';
+import { useAuth } from '@/context/AuthContext';
 import { useTimer } from '@/hooks/useTimer';
 import { useNotification } from '@/hooks/useNotification';
 import { useNetworkStatus } from '@/hooks/useNetworkStatus';
@@ -67,6 +68,7 @@ function readPracticeFlag(): boolean {
 export default function WorkoutContent() {
   const t = useTranslations('workout');
   const { locale } = useLocale();
+  const { user } = useAuth();
   const searchParams = useSearchParams();
   const router = useRouter();
   const isOnline = useNetworkStatus();
@@ -134,6 +136,16 @@ export default function WorkoutContent() {
     {}
   );
   const [recSetsMap, setRecSetsMap] = useState<Record<string, RecommendedSet[]>>({});
+
+  const effectiveRecSetsMap = useMemo(() => {
+    if (!user?.isDeloadWeek) return recSetsMap;
+    return Object.fromEntries(
+      Object.entries(recSetsMap).map(([id, sets]) => [
+        id,
+        sets.map((s) => ({ ...s, weightLbs: Math.round(s.weightLbs * 0.6) })),
+      ])
+    );
+  }, [recSetsMap, user?.isDeloadWeek]);
 
   const { permission, requestPermission, sendNotification } = useNotification();
 
@@ -313,6 +325,7 @@ export default function WorkoutContent() {
           exercises: exerciseLogs,
           totalWeightLbs: 0,
           completed: false,
+          isDeload: user?.isDeloadWeek ?? false,
         };
 
         if (practice || !online) {
@@ -329,6 +342,7 @@ export default function WorkoutContent() {
             routineId: routineId!,
             startTime: now,
             exercises: exerciseLogs,
+            isDeload: user?.isDeloadWeek ?? false,
           });
           setSession(newSession);
         }
@@ -427,7 +441,7 @@ export default function WorkoutContent() {
         : effectiveExercises[exerciseIndex + 1]?.exerciseId;
       const nextExercise = nextExerciseId ? getExerciseById(nextExerciseId) : null;
       const localized = nextExercise ? getExerciseLocalized(nextExercise, locale) : null;
-      const nextRecSets = nextExerciseId ? (recSetsMap[nextExerciseId] ?? []) : [];
+      const nextRecSets = nextExerciseId ? (effectiveRecSetsMap[nextExerciseId] ?? []) : [];
       const nextRec = nextRecSets[nextSetIndex];
       setNextExercisePreview(
         localized
@@ -451,7 +465,7 @@ export default function WorkoutContent() {
       timer.start(restTime);
       setShowTimer(true);
     },
-    [updateSessionLocal, effectiveExercises, timer, locale, recSetsMap]
+    [updateSessionLocal, effectiveExercises, timer, locale, effectiveRecSetsMap]
   );
 
   const handleUpdateSet = useCallback(
@@ -655,6 +669,11 @@ export default function WorkoutContent() {
                   {t('practiceBadge')}
                 </span>
               )}
+              {user?.isDeloadWeek && !isPracticeMode && (
+                <span className={styles.deloadBadge} title={t('deloadBadgeTitle')}>
+                  {t('deloadBadge')}
+                </span>
+              )}
               {!isOnline && !isPracticeMode && (
                 <span className={styles.practiceBadge} title={t('offlineBadgeTitle')}>
                   {t('offlineBadge')}
@@ -704,7 +723,7 @@ export default function WorkoutContent() {
               canMoveUp={index > 0}
               canMoveDown={index < session.exercises.length - 1}
               lastPerformance={lastPerfMap[exerciseLog.exerciseId] ?? null}
-              recommendedSets={recSetsMap[exerciseLog.exerciseId] ?? []}
+              recommendedSets={effectiveRecSetsMap[exerciseLog.exerciseId] ?? []}
               onSetComplete={(setIdx, weight, reps) =>
                 handleSetComplete(index, setIdx, weight, reps)
               }

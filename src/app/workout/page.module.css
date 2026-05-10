@@ -226,6 +226,19 @@
   vertical-align: middle;
 }
 
+.deloadBadge {
+  display: inline-block;
+  margin-left: var(--space-sm);
+  padding: 2px var(--space-xs);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-accent);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-sm);
+  vertical-align: middle;
+}
+
 .practiceSummaryNote {
   font-size: var(--text-sm);
   color: var(--color-text-muted);

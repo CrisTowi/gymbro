@@ -204,12 +204,14 @@ export async function generateWeeklyPlanFromDescription(description: string): Pr
 interface SessionResponse extends Omit<SessionLog, 'id'> {
   sessionId: string;
   id?: string;
+  isDeload?: boolean;
 }
 
 function normalizeSession(s: SessionResponse): SessionLog {
   return {
     ...s,
     id: s.sessionId ?? s.id ?? '',
+    isDeload: s.isDeload ?? false,
   };
 }
 
@@ -247,6 +249,7 @@ export async function createSession(session: {
   routineId: string;
   startTime: string;
   exercises: ExerciseLog[];
+  isDeload?: boolean;
 }): Promise<SessionLog> {
   const data = await request<SessionResponse>('/api/sessions', {
     method: 'POST',
@@ -342,6 +345,7 @@ export async function syncOfflineSession(session: SessionLog): Promise<void> {
       exercises: session.exercises,
       completed: true,
       totalWeightLbs: session.totalWeightLbs,
+      isDeload: session.isDeload ?? false,
     }),
   });
 
@@ -368,6 +372,7 @@ export interface User {
   weight: number | null;
   goal: string | null;
   language?: 'en' | 'es';
+  isDeloadWeek?: boolean;
 }
 
 export async function validateInvitation(
@@ -409,7 +414,7 @@ export async function fetchMe(): Promise<User> {
 }
 
 export async function updateMe(
-  updates: Partial<Pick<User, 'name' | 'height' | 'weight' | 'goal' | 'language'>>
+  updates: Partial<Pick<User, 'name' | 'height' | 'weight' | 'goal' | 'language' | 'isDeloadWeek'>>
 ): Promise<User> {
   return request<User>('/api/auth/me', {
     method: 'PATCH',
